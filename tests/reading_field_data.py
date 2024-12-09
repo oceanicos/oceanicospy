@@ -4,7 +4,9 @@ import os
 from oceanicospy.observations import Awac,AQUAlogger
 from oceanicospy.plots import *
 
-out_dir = f'../tests/{os.path.basename(__file__)[:-3]}'    # Output directory
+ # Output directory
+out_dir = f'../tests/{os.path.basename(__file__)[:-3]}'   
+
 # Create output directory if it doesn't exist
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
