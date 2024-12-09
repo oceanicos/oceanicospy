@@ -1,0 +1,46 @@
+$ Encabezado --------------------------------------------
+PROJECT 'name' 'case_number'
+'case_description'
+$
+$ Malla computacional -----------------------------------
+SET NAUT
+MODE stat_label TWOD
+COORD CART
+CGRID REG  lon_ll_corner lat_ll_corner 0 x_extent y_extent nx ny CIRCLE 72 0.04 1
+$
+$ Batimetria --------------------------------------------
+INP BOT REG lon_ll_corner lat_ll_corner 0 x_bot y_bot spacing_x spacing_y EXC -9999.
+READ BOT 1 'bathy_ordered.bot' 1 FREE
+$
+$
+$ Viento ------------------------------------------------
+WIND wind_speed wind_dir
+$
+$ Condiciones iniciales----------------------------------
+INIT DEF
+$
+$ Condiciones de frontera --------------------------------
+BOU SHAP JON PEAK
+$
+BOU SIDE segment_dir CLOCKW CON values_bounds
+$
+$ Parametros fisicos y numericos ------------------------
+GEN3 JANS 9 1
+QUAD
+TRI
+BRE
+FRIC MAD
+DIFFR
+$ Numerics -----------------------------------
+PROP BSBT
+NUM STOPC 0 0.01 0.001 101 STAT mxitst=120
+NUM CT 0.4
+$
+$ Resultados ---------------------------------------------
+$  -> Campos de oleaje
+BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 DIR
+$
+$ Final --------------------------------------------------
+TEST 1, 0
+COMP 
+STOP

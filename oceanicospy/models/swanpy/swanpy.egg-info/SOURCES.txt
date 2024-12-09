@@ -1,0 +1,16 @@
+setup.py
+swanpy/__init__.py
+swanpy/init_setup.py
+swanpy.egg-info/PKG-INFO
+swanpy.egg-info/SOURCES.txt
+swanpy.egg-info/dependency_links.txt
+swanpy.egg-info/top_level.txt
+swanpy/execution/__init__.py
+swanpy/execution/run_case.py
+swanpy/preprocess/__init__.py
+swanpy/preprocess/boundary_conds.py
+swanpy/preprocess/make_bathy.py
+swanpy/preprocess/make_grid.py
+swanpy/preprocess/wind_forcing.py
+swanpy/utils/__init__.py
+swanpy/utils/files.py

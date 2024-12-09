@@ -1,0 +1,62 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% XBeach parameter settings input file                                     %%%
+%%%                                                                          %%%
+%%% date:     30-May-24 	                                                 %%%
+%%% function: manual   
+%%% case:     case_description                                               %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Physics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+flow = 1
+morphology = 0
+sedtrans = 0
+swrunup = 0
+wavemodel = 1
+
+%%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+xyfile    = grdfilepath
+gridform  = model_origin
+depfile   = depfilepath
+posdwn    = 1
+thetamin  = 270
+thetamax  = 90
+dtheta    = 10
+thetanaut = 1
+
+%%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+wbctype   = params
+Hrms      = hsig_value
+Trep      = tp_value
+dir0      = dir_value
+
+%%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+windv      = wind_speed
+windth     = wind_direction
+
+%%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tideloc      = 0
+zs0          = sealevelvalue
+
+%%% Bed composition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+D50          = D50_value
+
+%%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tstart       = 0
+tstop        = tstop_value
+tint         = tint_value
+tintg        = tintg_value
+
+%%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+outputformat = netcdf
+ncfilename = outputfilepath
+
+nglobalvar   = 8
+zs
+hh
+zb0
+H
+sigm
+thet
+u
+v

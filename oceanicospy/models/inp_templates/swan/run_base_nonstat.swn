@@ -1,0 +1,57 @@
+$ Header --------------------------------------------
+PROJECT 'name' 'case_number'
+'case_description'
+$
+$ Malla computacional -----------------------------------
+SET NAUT
+MODE stat_label TWOD
+COORD SPHE CCM
+CGRID REG  lon_ll_corner lat_ll_corner 0 x_extent y_extent nx ny CIRCLE 72 0.04 1
+$
+$ Batimetria --------------------------------------------
+INP BOT REG lon_ll_bat_corner lat_ll_bat_corner 0 x_bot y_bot spacing_x spacing_y EXC -9999.
+READ BOT 1 'bathymetry.bot' 3 FREE
+$
+$ Viento ------------------------------------------------
+INP WIND REG lon_ll_wind lat_ll_wind 0 meshes_x_wind meshes_y_wind dx_wind dy_wind
+READ WIND 1 'winds.wnd' 3 FREE
+$
+$ Water level section -----------------------------------
+INP WLEV REG lon_ll_wl lat_ll_wl 0 meshes_x_wl meshes_y_wl dx_wl dy_wl -9999.
+READ WLEV 1 'water_levels.wl' 3 FREE
+$
+$ Friction ----------------------------------------------
+INP FR REG lon_ll_fric lat_ll_fric 0 meshes_x_fric meshes_y_fric dx_fric dy_fric -9.
+READ FR 1 'friction.fric' 3 FREE
+$
+$ Condiciones iniciales----------------------------------
+INIT DEF
+$
+$ Condiciones de frontera --------------------------------
+BOU SHAP JON PEAK
+$
+values_bounds
+$
+$ Parametros fisicos y numericos ------------------------
+GEN3 JANS 9 1
+QUAD
+TRI
+BRE
+FRIC MAD
+DIFFR
+$ Numerics -----------------------------------
+NUM ACCUR
+NUM CT 0.4
+PROP BSBT
+$
+$ Resultados ---------------------------------------------
+$  -> Campos de oleaje
+BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 DIR OUTPUT ini_output_date output_res_min MIN
+POINTS 'out' FILE 'points.loc'
+TABLE 'out' HEADER 'SalidasSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR OUTPUT ini_output_date output_res_min MIN
+SPEC 'out' SPEC2D ABS L 'SpecSWAN.out' OUTPUT ini_output_date output_res_min MIN
+$
+$ Final --------------------------------------------------
+TEST 1, 0
+string_comp
+STOP

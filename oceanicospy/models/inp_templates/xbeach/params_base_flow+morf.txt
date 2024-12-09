@@ -1,0 +1,80 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% XBeach parameter settings input file                                     %%%
+%%%                                                                          %%%
+%%% date:     30-May-24 	                                                 %%%
+%%% function: manual   
+%%% case:     case_description                                               %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Physics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+flow = 1
+morphology = 1
+sedtrans = 1
+swrunup = 0
+wavemodel = 1
+vegetation = 1
+
+%%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+xfile     = xfilepath
+yfile     = yfilepath
+depfile   = depfilepath
+posdwn    = 1
+nx        = meshes_x
+ny        = meshes_y
+vardx     = 1
+thetamin  = 270
+thetamax  = 90
+dtheta    = 180
+thetanaut = 1
+
+%%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+wbctype    = swan
+bcfile     = bcfilepath
+
+%%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+windfile     = windfilepath
+
+%%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tideloc      = 1
+zs0file      = sealevelfilepath
+
+%%% Bed composition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+D50          = D50_value
+
+%%% Veggetation parameteras %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+nveg         = number_species
+veggiefile   = vegetation_file
+veggiemapfile = vegetation_map_file
+
+%%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tstart       = 0
+CFL          = 0.7
+tstop        = tstop_value
+tint         = tint_value
+tintg        = tintg_value
+
+%%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+outputformat = netcdf
+ncfilename = outputfilepath
+
+nglobalvar   = 6
+zs
+hh
+zb
+zb0
+H
+sigm
+
+npoints = lenpoints
+0 0
+string_points
+
+npointvar =6
+zs
+hh
+zb
+zb0
+H
+sigm
