@@ -1,4 +1,5 @@
 import numpy as np
+import constants
 
 def wavelength(T,h):
     """
@@ -14,14 +15,19 @@ def wavelength(T,h):
     Returns
     -------
     L : wavelength
+
+    Notes
+    -----
+    01-Sep-2023 : First Python function - Juan Diego Toro
+
     """
 
-    Lo = (9.81*T**2)/(2*np.pi);
-    L1  = (9.81*T**2)/(2*np.pi)*np.tanh((h*2*np.pi)/Lo);
+    Lo = (constants.GRAVITY*T**2)/(2*np.pi);
+    L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh((h*2*np.pi)/Lo);
     i = 0;
     while (abs(Lo-L1)>0.0001):
         Lo = L1;
-        L1  = (9.81*T**2)/(2*np.pi)*np.tanh(h*2*np.pi/Lo);
+        L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh(h*2*np.pi/Lo);
         i = i+1;
         if (i>5000):
             break
@@ -42,6 +48,11 @@ def direction(vn,ve):
     -------
     d_degrees: float
         wave direction in degrees w.r.t. north
+
+    Notes
+    -----
+    01-Sep-2023 : First Python function - Juan Diego Toro
+
     """
 
     if vn == float(0):

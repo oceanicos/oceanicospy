@@ -1,5 +1,5 @@
 import numpy as np
-from ..utils import wave_props
+from ..utils import wave_props,constants
 
 def spectrum_from_surflevel(burst_serie,sampling_freq,anchoring_depth,sensor_height):
     """
@@ -34,6 +34,8 @@ def spectrum_from_surflevel(burst_serie,sampling_freq,anchoring_depth,sensor_hei
     -----
     Based on https://currents.soest.hawaii.edu/ocn_data_analysis/_static/Spectrum.html
 
+    01-Sep-2023 : Origination - Juan Diego Toro
+
     """
 
     freq = np.fft.fftfreq(len(burst_serie),sampling_freq)
@@ -63,6 +65,7 @@ def spectrum_from_surflevel(burst_serie,sampling_freq,anchoring_depth,sensor_hei
     return power,power_kp,freq,T,Kpmin,fmax_kp
 
 def spectrum_puv_method(p,u,v,sampling_freq,anchoring_depth,sensor_height):
+
     """
     This function uses the PUV method to obtain the frequency spectrum of the waves measured
     with a pressure sensor at a specified depth
@@ -110,16 +113,11 @@ def spectrum_puv_method(p,u,v,sampling_freq,anchoring_depth,sensor_height):
     Notes
     -----
     The SWASH (Simulating WAves till SHore) model script: crosgk.m is used to estimate the cross-spectrum
-    between pressure velocity u and velocity v
-    """
+    between pressure velocity u and velocity v.
 
-    #
-    # Versiones:
-    # ----------
-    #  -  2014/01/13 ---> Calcula el espectro solo en frecuencias
-    #  -  2014/01/15 ---> Calcula la direccion de las olas
-    #  -  2014/01/18 ---> Se usa el script del SWASH para el espectro cruzado
-    #
+    18-Jan-2014 : First Matlab function - Daniel Peláez
+
+    """
 
     # Variable definition
     nfft = 128
@@ -132,11 +130,10 @@ def spectrum_puv_method(p,u,v,sampling_freq,anchoring_depth,sensor_height):
     f = f[ix]
 
     # Dispersion relation
-    g = 9.8
     w = 2 * np.pi * f
-    k0 = (w**2) / g
+    k0 = (w**2) / constants.GRAVITY
     for cnt in range(100):
-        k = (w**2) / (g * np.tanh(k0 * anchoring_depth))
+        k = (w**2) / (constants.GRAVITY * np.tanh(k0 * anchoring_depth))
         k0 = k
 
     # Transference function
@@ -181,7 +178,6 @@ def wave_params_from_spectrum_v1(spectral_density,freqs):
 
     freq : list or ndarray
         Frequencies of the spectrum
-       
     
     Returns
     -------
@@ -202,6 +198,11 @@ def wave_params_from_spectrum_v1(spectral_density,freqs):
 
     Tm02 : float
         Mean period - second order [s]
+    
+    Notes
+    -----
+    10-Dec-2024 : Origination - Franklin Ayala
+
     """
 
     m0 = np.trapz(spectral_density, freqs.flatten())
@@ -283,7 +284,7 @@ def wave_params_from_spectrum_v2(spectral_density,freq,fs,bL):
 
     return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
-def crosgk(X, Y, N, M, DT=1, DW=1, stats=''):
+def crosgk(X, Y, N, M, DT=1, DW=1, stats=0):
     """
     Power cross-spectrum computation, with smoothing in the frequency domain
     
@@ -308,7 +309,7 @@ def crosgk(X, Y, N, M, DT=1, DW=1, stats=''):
     DW : int
         Data window type (optional): DW = 1 for Hann window (default)
                                      DW = 2 for rectangular window
-    stats :  
+    stats :  bool
         Display resolution, degrees of freedom (optimal, YES=1, NO=0)
 
     Returns
@@ -343,11 +344,11 @@ def crosgk(X, Y, N, M, DT=1, DW=1, stats=''):
     ny = max(Y.shape)
     avgx = np.sum(X) / nx
     avgy = np.sum(Y) / ny
-    px = np.zeros(N)
-    py = np.zeros(N)
-    Pxx = np.zeros(N)
-    Pxy = np.zeros(N)
-    Pyy = np.zeros(N)
+    px = np.zeros(w)
+    py = np.zeros(w)
+    Pxx = np.zeros(w)
+    Pxy = np.zeros(w)
+    Pyy = np.zeros(w)
     ns = 0
 
     for j in range(0, nx - N + 1, int(dj)):
@@ -389,7 +390,7 @@ def crosgk(X, Y, N, M, DT=1, DW=1, stats=''):
     Pxy = np.real(Pxy[:N // 2])
 
     # frequencies
-    F = np.arange(1, N // 2 + 1) * df
+    F = np.arange(0, N // 2 + 1) * df
 
     # signal variance
     if DW == 1:
@@ -402,9 +403,9 @@ def crosgk(X, Y, N, M, DT=1, DW=1, stats=''):
     vary = np.sum((Y[:int(nn)] - avgy) ** 2) / (nn - 1)
     covxy = np.sum((X[:int(nn)] - avgx) * (Y[:int(nn)] - avgy)) / (nn - 1)
 
-    m0xx = (0.5 * Pxx[0] + np.sum(Pxx[1:N // 2 - 1]) + 0.5 * Pxx[N // 2 - 1]) * df
-    m0yy = (0.5 * Pyy[0] + np.sum(Pyy[1:N // 2 - 1]) + 0.5 * Pyy[N // 2 - 1]) * df
-    m0xy = (0.5 * Pxy[0] + np.sum(Pxy[1:N // 2 - 1]) + 0.5 * Pxy[N // 2 - 1]) * df
+    m0xx = (0.5 * Pxx[0] + np.sum(Pxx[1:N // 2 - 1]) + 0.5 * Pxx[N // 2]) * df
+    m0yy = (0.5 * Pyy[0] + np.sum(Pyy[1:N // 2 - 1]) + 0.5 * Pyy[N // 2]) * df
+    m0xy = (0.5 * Pxy[0] + np.sum(Pxy[1:N // 2 - 1]) + 0.5 * Pxy[N // 2]) * df
 
     Pxx = Pxx * (varx / m0xx)
     Pyy = Pyy * (vary / m0yy)

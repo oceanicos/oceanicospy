@@ -2,7 +2,6 @@ import glob
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
 from scipy.signal import detrend
 import pandas as pd
 
@@ -15,18 +14,50 @@ warnings.filterwarnings('ignore')
 
 
 class Awac():
+    """
+    A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A). 
+
+    Notes
+    -----
+    04-Jan-2018 : First Matlab function - Daniel Peláez
+    01-Sep-2023 : First Python version - Alejandro Henao
+    10-Dec-2024 : Class implementation - Franklin Ayala
+
+    """
     def __init__(self,directory_path,sampling_data,obs_name):
+        """
+        Initializes the Awac class with the given directory path, sampling data, and observation name.
+
+        Parameters
+        ----------
+        directory_path : str
+            Path to the directory containing the .hdr and .wad files.
+        sampling_data : dict
+            Dictionary containing the information about the device installation
+        obs_name : str
+            The observation name.
+        """
         self.directory_path = directory_path
         self.sampling_data=sampling_data
         self.obs_name=obs_name
         
     def reading_header(self):
-        
+        """
+        Reads and parses the header file (.hdr) to extract the column names.
+
+        The function filters and processes the header information to generate a list of column names.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of column names extracted from the .hdr file.
+        """
+    
         self.header=glob.glob(self.directory_path+'*.hdr') # File with headers
         self.headers=open(self.header[0],'r')
         self.headers=self.headers.read().split('\n')
 
-        #Replacing the title with a mask
+        # Replacing the title with a mask
         self.tf=[]
         self.control=False
         for i in self.headers:
@@ -49,8 +80,19 @@ class Awac():
         return self.columns
 
     def reading_records(self):
+        """
+        Reads and processes the .wad files to create a DataFrame containing the burst data.
+
+        For each .wad file, the function reads the data, adds a 'burstId' column, and combines all the data into a single DataFrame.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A DataFrame containing the concatenated data from all the .wad files with an added 'burstId' column.
+        """
+
         self.columns_=self.reading_header()
-        self.data=sorted(glob.glob(self.directory_path+'*.wad')) #Cada archivo .wad mide en superficie y representa 1 burst
+        self.data=sorted(glob.glob(self.directory_path+'*.wad')) #Each .wad file represents one burst
 
         self.wads=[]
         self.burst_id=1
@@ -66,6 +108,18 @@ class Awac():
         return self.wads
     
     def getting_clean_records(self):
+        """
+        Processes the raw data by converting certain columns to numeric types, adding a timestamp, and filtering the data 
+        by the specified time range.
+
+        The function also renames columns and returns a cleaned DataFrame that includes only relevant data.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A cleaned DataFrame containing 'pressure', 'u', 'v', and 'burstId' columns, filtered by the specified time range.
+        """
+
         self.wads=self.reading_records()
         self.wads.iloc[:,[11,12]]=self.wads.iloc[:,[11,12]].astype(float)
         self.raw_data=self.wads.iloc[:,[0,1,2,3,4,5,6,11,12,17]]
@@ -87,13 +141,14 @@ class Awac():
         self.wave_spectra_vars=["S","dir","freq","time"]
         self.wave_spectra_data={var:[] for var in self.wave_spectra_vars}
 
-        # self.detrended_data=clean_records.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
-        # self.detrended_data[clean_records.columns[-1]] = clean_records.iloc[:, -1]
+        self.clean_data=clean_records
 
-        self.detrended_data=clean_records
+        for i in self.clean_data['burstId'].unique():
 
-        for i in self.detrended_data['burstId'].unique():
-            burst_series = self.detrended_data[self.detrended_data['burstId'] == i]
+            self.burst_series = self.clean_data[self.clean_data['burstId'] == i]
+
+            self.burst_series_detrended = self.burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
+            self.burst_series_detrended[clean_records.columns[-1]] = self.burst_series.iloc[:, -1]
 
             # Compute the spectrum
             power, direction, freqs, Su, Sv = spectral.spectrum_puv_method(burst_series['pressure'],burst_series['u'],burst_series['v'],
@@ -170,6 +225,7 @@ class Awac():
     def params_from_zero_crossing(self,clean_records):
         self.wave_params=["time","H1/3","Tmean"]
         self.wave_params_data={param:[] for param in self.wave_params}
+
         # The depth is computed dividing the pressure by the density and gravity. 
         # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
         self.clean_data=clean_records
@@ -184,7 +240,10 @@ class Awac():
 
         for i in self.clean_data['burstId'].unique():
             #Para cada uno de los burst se calculan parametros por pasos por cero
-            burst_series=self.clean_data[self.clean_data['burstId']==i]
+            self.burst_series=self.clean_data[self.clean_data['burstId']==i]
+
+            self.burst_series_detrended = self.burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
+            self.burst_series_detrended[clean_records.columns[-1]] = self.burst_series.iloc[:, -1]
 
             H13, Tm = temporal.zero_crossing(burst_series['n'], self.sampling_data['sampling_freq'],
                                     self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
@@ -196,3 +255,18 @@ class Awac():
         self.wave_params_data=pd.DataFrame(self.wave_params_data).set_index('time')
 
         return self.wave_params_data
+    
+    def getting_currents(self,filename,measurement_origin=0,distance_to_sensor=0.5):
+
+        self.datos = np.loadtxt(os.path.join(self.directory_path,filename))
+
+        # Number of cells (assumed to be stored in the 19th column of 'datos')
+        self.num_cells = int(self.datos[0, 18])
+
+        # Separate metadata profiles from the main data
+        self.metadata = self.datos[::(self.num_cells + 1), :]
+
+        # Identify the profiles where the 19th column value is 0
+        self.zero_value_profiles = np.where(self.datos[:, 18] == 0)[0]
+        self.profiles = self.datos[self.zero_value_profiles, :]
+        
