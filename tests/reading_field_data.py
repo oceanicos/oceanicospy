@@ -42,3 +42,16 @@ for idx,path_folder in enumerate(campaigns_directories):
 
     plot_1d_wave_spectra(spectra_puv,out_dir,metadata_list[idx],label_comparison='puv')
     plot_1d_wave_spectra(spectra_surflevel,out_dir,metadata_list[idx],label_comparison='surf_level')
+
+campaigns_directories=['/homes/medellin/ffayalac/data/LR1_LittleReef-out/']
+
+sampling_data_LR1_2019=dict(anchoring_depth=11.6,sensor_height=1.20,sampling_freq=1,
+                            start_time=datetime(2019,11,16,13,0,0),end_time=datetime(2019,11,20,8,0,0))
+
+sampling_data_list=[sampling_data_LR1_2019]
+metadata_list=['aqualogger_LR1_2019']
+
+for idx,path_folder in enumerate(campaigns_directories):
+    print(metadata_list[idx])
+    AWAC_measurements=AQUAlogger(path_folder,sampling_data_list[idx],metadata_list[idx])
+    records=AWAC_measurements.getting_clean_records()
