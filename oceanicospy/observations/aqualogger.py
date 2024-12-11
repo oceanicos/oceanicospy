@@ -140,8 +140,6 @@ class AQUAlogger():
 
         if np.all(['depth' not in column.lower() for column in self.clean_data.columns]):
             self.clean_data['depth']=((self.clean_data['pressure']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
-
-        print(self.clean_data)
    
         # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.        
         self.clean_data[self.clean_data.columns[:-1]] = self.clean_data.groupby('burstId')[self.clean_data.columns[:-1]].transform(lambda x: x - x.mean())

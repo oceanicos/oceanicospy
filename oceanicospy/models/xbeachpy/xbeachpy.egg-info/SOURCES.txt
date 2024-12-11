@@ -1,9 +1,0 @@
-setup.py
-xbeachpy/__init__.py
-xbeachpy/init_setup.py
-xbeachpy.egg-info/PKG-INFO
-xbeachpy.egg-info/SOURCES.txt
-xbeachpy.egg-info/dependency_links.txt
-xbeachpy.egg-info/top_level.txt
-xbeachpy/utils/__init__.py
-xbeachpy/utils/files.py

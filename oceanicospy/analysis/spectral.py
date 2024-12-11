@@ -1,5 +1,98 @@
 import numpy as np
 from ..utils import wave_props,constants
+from scipy.signal import detrend
+import pandas as pd 
+
+def spectra_from_puv(clean_records,sampling_data):
+    wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
+    wave_params_data={param:[] for param in wave_params}
+
+    wave_spectra_vars=["S","dir","freq","time"]
+    wave_spectra_data={var:[] for var in wave_spectra_vars}
+
+    clean_data=clean_records
+
+    for i in clean_data['burstId'].unique():
+
+        burst_series = clean_data[clean_data['burstId'] == i]
+
+        burst_series_detrended = burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
+        burst_series_detrended[clean_records.columns[-1]] = burst_series.iloc[:, -1]
+
+        # Compute the spectrum
+        power, direction, freqs, Su, Sv = spectrum_puv_method(burst_series_detrended['pressure'],burst_series_detrended['u'],
+                                                                        burst_series_detrended['v'],sampling_data['sampling_freq'], 
+                                                                        sampling_data['anchoring_depth'], sampling_data['sensor_height'])                                                     
+        wave_spectra_data["S"].append(power)
+        wave_spectra_data["dir"].append(direction)
+        wave_spectra_data["freq"].append(freqs)
+        wave_spectra_data["time"].append(burst_series_detrended.index[0])
+
+        # Compute wave parameters from the spectrum
+        Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
+
+        # Store wave parameters
+        wave_params_data['time'].append(burst_series_detrended.index[0])
+        wave_params_data['Hm0'].append(Hm0)
+        wave_params_data['Hrms'].append(Hrms)
+        wave_params_data['Hmean'].append(Hmean)
+        wave_params_data['Tp'].append(Tp)
+        wave_params_data['Tm01'].append(Tm01)
+        wave_params_data['Tm02'].append(Tm02)
+
+    wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
+
+    return wave_spectra_data,wave_params_data
+
+def spectra_from_fft(clean_records,sampling_data):
+
+    # The depth is computed dividing the pressure by the density and gravity. 
+    # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
+    clean_data=clean_records.copy()
+    if np.all(['depth' not in column.lower() for column in clean_data.columns]):
+        clean_data['depth']=((clean_data['pressure']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
+
+    # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.        
+    clean_data[clean_data.columns[[0,1,2,4]]] = clean_data.groupby('burstId')[clean_data.columns[[0,1,2,4]]].transform(lambda x: x - x.mean())
+
+    # Subtracting the mean depth in each burst
+    try:
+        clean_data['n']=clean_data['depth']
+    except:
+        clean_data['n']=clean_data['Depth[m]']
+
+    wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
+    wave_params_data={param:[] for param in wave_params}
+
+    wave_spectra_vars=["S","dir","freq","time"]
+    wave_spectra_data={var:[] for var in wave_spectra_vars}
+
+    for i in clean_data['burstId'].unique():
+        burst_series = clean_data[clean_data['burstId'] == i]
+
+        # Compute the spectrum
+        power, power_kp, freqs, T, kpmin, fmax_kp = spectrum_from_surflevel(burst_series['n'][::2], sampling_data['sampling_freq']/2,
+                                                                                sampling_data['anchoring_depth'], 
+                                                                                sampling_data['sensor_height'])
+        wave_spectra_data["S"].append(power_kp)
+        wave_spectra_data["time"].append(burst_series.index[0])
+        wave_spectra_data["freq"].append(freqs)
+
+        # Compute wave parameters from the spectrum
+        Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
+
+        # Store wave parameters
+        wave_params_data['time'].append(burst_series.index[0])
+        wave_params_data['Hm0'].append(Hm0)
+        wave_params_data['Hrms'].append(Hrms)
+        wave_params_data['Hmean'].append(Hmean)
+        wave_params_data['Tp'].append(Tp)
+        wave_params_data['Tm01'].append(Tm01)
+        wave_params_data['Tm02'].append(Tm02)
+
+    wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
+
+    return wave_spectra_data,wave_params_data
 
 def spectrum_from_surflevel(burst_serie,sampling_freq,anchoring_depth,sensor_height):
     """

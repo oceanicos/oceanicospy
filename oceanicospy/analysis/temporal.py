@@ -1,6 +1,31 @@
-from scipy.signal import resample
+from scipy.signal import resample,detrend
+import pandas as pd
+
 import numpy as np
 from ..utils import wave_props
+
+def params_from_zero_crossing(clean_records,sampling_data):
+    wave_params=["time","H1/3","Tmean"]
+    wave_params_data={param:[] for param in wave_params}
+
+    clean_data=clean_records.copy()
+
+    for i in clean_data['burstId'].unique():
+        burst_series=clean_data[clean_data['burstId']==i]
+
+        burst_series_detrended = burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
+        burst_series_detrended[clean_records.columns[-1]] = burst_series.iloc[:, -1]
+
+        H13, Tm, Lm, Hmax = zero_crossing(burst_series_detrended['pressure'], sampling_data['sampling_freq'],
+                                sampling_data['anchoring_depth'], sampling_data['sensor_height'])
+
+        wave_params_data['time'].append(burst_series_detrended.index[0])
+        wave_params_data['H1/3'].append(H13)
+        wave_params_data['Tmean'].append(Tm)
+
+    wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
+
+    return wave_params_data
 
 def zero_crossing(burst,fs,h,zp):
     """

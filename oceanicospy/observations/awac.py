@@ -2,10 +2,9 @@ import glob
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from scipy.signal import detrend
 import pandas as pd
 
-from ..utils import constants
+from ..utils import constants,wave_props
 from ..analysis import spectral,temporal
 
 import warnings
@@ -41,7 +40,7 @@ class Awac():
         self.sampling_data=sampling_data
         self.obs_name=obs_name
         
-    def reading_header(self):
+    def read_wave_header(self):
         """
         Reads and parses the header file (.hdr) to extract the column names.
 
@@ -79,7 +78,7 @@ class Awac():
             self.columns=self.columns[:-1]
         return self.columns
 
-    def reading_records(self):
+    def read_wave_records(self):
         """
         Reads and processes the .wad files to create a DataFrame containing the burst data.
 
@@ -91,7 +90,7 @@ class Awac():
             A DataFrame containing the concatenated data from all the .wad files with an added 'burstId' column.
         """
 
-        self.columns_=self.reading_header()
+        self.columns_=self.read_wave_header()
         self.data=sorted(glob.glob(self.directory_path+'*.wad')) #Each .wad file represents one burst
 
         self.wads=[]
@@ -107,7 +106,7 @@ class Awac():
 
         return self.wads
     
-    def getting_clean_records(self):
+    def get_clean_wave_records(self):
         """
         Processes the raw data by converting certain columns to numeric types, adding a timestamp, and filtering the data 
         by the specified time range.
@@ -120,7 +119,7 @@ class Awac():
             A cleaned DataFrame containing 'pressure', 'u', 'v', and 'burstId' columns, filtered by the specified time range.
         """
 
-        self.wads=self.reading_records()
+        self.wads=self.read_wave_records()
         self.wads.iloc[:,[11,12]]=self.wads.iloc[:,[11,12]].astype(float)
         self.raw_data=self.wads.iloc[:,[0,1,2,3,4,5,6,11,12,17]]
 
@@ -133,133 +132,73 @@ class Awac():
         self.clean_data=self.clean_data[self.sampling_data['start_time']:self.sampling_data['end_time']]
 
         return self.clean_data
-
-    def spectra_from_puv(self,clean_records):
-        self.wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
-        self.wave_params_data={param:[] for param in self.wave_params}
-
-        self.wave_spectra_vars=["S","dir","freq","time"]
-        self.wave_spectra_data={var:[] for var in self.wave_spectra_vars}
-
-        self.clean_data=clean_records
-
-        for i in self.clean_data['burstId'].unique():
-
-            self.burst_series = self.clean_data[self.clean_data['burstId'] == i]
-
-            self.burst_series_detrended = self.burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
-            self.burst_series_detrended[clean_records.columns[-1]] = self.burst_series.iloc[:, -1]
-
-            # Compute the spectrum
-            power, direction, freqs, Su, Sv = spectral.spectrum_puv_method(self.burst_series_detrended['pressure'],self.burst_series_detrended['u'],
-                                                                            self.burst_series_detrended['v'],self.sampling_data['sampling_freq'], 
-                                                                            self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])                                                     
-            self.wave_spectra_data["S"].append(power)
-            self.wave_spectra_data["dir"].append(direction)
-            self.wave_spectra_data["freq"].append(freqs)
-            self.wave_spectra_data["time"].append(self.burst_series_detrended.index[0])
-
-            # Compute wave parameters from the spectrum
-            Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = spectral.wave_params_from_spectrum_v1(power, freqs)
-
-            # Store wave parameters
-            self.wave_params_data['time'].append(self.burst_series_detrended.index[0])
-            self.wave_params_data['Hm0'].append(Hm0)
-            self.wave_params_data['Hrms'].append(Hrms)
-            self.wave_params_data['Hmean'].append(Hmean)
-            self.wave_params_data['Tp'].append(Tp)
-            self.wave_params_data['Tm01'].append(Tm01)
-            self.wave_params_data['Tm02'].append(Tm02)
-
-        self.wave_params_data=pd.DataFrame(self.wave_params_data).set_index('time')
-
-        return self.wave_spectra_data,self.wave_params_data
-
-    def spectra_from_fft(self,clean_records):
-
-        # The depth is computed dividing the pressure by the density and gravity. 
-        # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
-        self.clean_data=clean_records.copy()
-        if np.all(['depth' not in column.lower() for column in self.clean_data.columns]):
-            self.clean_data['depth']=((self.clean_data['pressure']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
-
-        print(self.clean_data)
-        # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.        
-        self.clean_data[self.clean_data.columns[[0,1,2,4]]] = self.clean_data.groupby('burstId')[self.clean_data.columns[[0,1,2,4]]].transform(lambda x: x - x.mean())
-
-        # Subtracting the mean depth in each burst
-        try:
-            self.clean_data['n']=self.clean_data['depth']
-        except:
-            self.clean_data['n']=self.clean_data['Depth[m]']
-
-        self.wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
-        self.wave_params_data={param:[] for param in self.wave_params}
-
-        self.wave_spectra_vars=["S","dir","freq","time"]
-        self.wave_spectra_data={var:[] for var in self.wave_spectra_vars}
-
-        for i in self.clean_data['burstId'].unique():
-            self.burst_series = self.clean_data[self.clean_data['burstId'] == i]
-
-            # Compute the spectrum
-            power, power_kp, freqs, T, kpmin, fmax_kp = spectral.spectrum_from_surflevel(self.burst_series['n'][::2], self.sampling_data['sampling_freq']/2,
-                                                                                    self.sampling_data['anchoring_depth'], 
-                                                                                    self.sampling_data['sensor_height'])
-            self.wave_spectra_data["S"].append(power_kp)
-            self.wave_spectra_data["time"].append(self.burst_series.index[0])
-            self.wave_spectra_data["freq"].append(freqs)
-
-            # Compute wave parameters from the spectrum
-            Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = spectral.wave_params_from_spectrum_v1(power, freqs)
-
-            # Store wave parameters
-            self.wave_params_data['time'].append(self.burst_series.index[0])
-            self.wave_params_data['Hm0'].append(Hm0)
-            self.wave_params_data['Hrms'].append(Hrms)
-            self.wave_params_data['Hmean'].append(Hmean)
-            self.wave_params_data['Tp'].append(Tp)
-            self.wave_params_data['Tm01'].append(Tm01)
-            self.wave_params_data['Tm02'].append(Tm02)
-
-        self.wave_params_data=pd.DataFrame(self.wave_params_data).set_index('time')
-
-        return self.wave_spectra_data,self.wave_params_data
-
-    def params_from_zero_crossing(self,clean_records):
-        self.wave_params=["time","H1/3","Tmean"]
-        self.wave_params_data={param:[] for param in self.wave_params}
-
-        self.clean_data=clean_records.copy()
-
-        for i in self.clean_data['burstId'].unique():
-            self.burst_series=self.clean_data[self.clean_data['burstId']==i]
-
-            self.burst_series_detrended = self.burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
-            self.burst_series_detrended[clean_records.columns[-1]] = self.burst_series.iloc[:, -1]
-
-            H13, Tm, Lm, Hmax = temporal.zero_crossing(self.burst_series_detrended['pressure'], self.sampling_data['sampling_freq'],
-                                    self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
-
-            self.wave_params_data['time'].append(self.burst_series_detrended.index[0])
-            self.wave_params_data['H1/3'].append(H13)
-            self.wave_params_data['Tmean'].append(Tm)
-
-        self.wave_params_data=pd.DataFrame(self.wave_params_data).set_index('time')
-
-        return self.wave_params_data
     
-    def getting_currents(self,filename,measurement_origin=0,distance_to_sensor=0.5):
+    def read_current_header(self):
+        """
+        Reads the section of profile setup from the header file (.hdr) .
 
-        self.datos = np.loadtxt(os.path.join(self.directory_path,filename))
+        Returns
+        -------
+        dict
+            A dictionary with the most important data for the current records.
+        """        
+        self.header=glob.glob(self.directory_path+'*.hdr') # File with headers
+        self.headers=open(self.header[0],'r')
+        self.headers=self.headers.read().split('\n')
 
-        # Number of cells (assumed to be stored in the 19th column of 'datos')
-        self.num_cells = int(self.datos[0, 18])
-
-        # Separate metadata profiles from the main data
-        self.metadata = self.datos[::(self.num_cells + 1), :]
-
-        # Identify the profiles where the 19th column value is 0
-        self.zero_value_profiles = np.where(self.datos[:, 18] == 0)[0]
-        self.profiles = self.datos[self.zero_value_profiles, :]
+        self.filtered_lines = []
+        for line in self.headers:
+            if any(keyword in line for keyword in ['first measurement', 'Profile interval', 'Number of cells', 'Cell size', 'Blanking distance']):
+                self.filtered_lines.append(line)
         
+        self.current_header = {}
+        for line in self.filtered_lines:
+            key=[]
+            value=[]
+            for element in line.split():
+                if element.isalpha() == True:
+                    key.append(element)
+                else:
+                    value.append(element)
+            key=' '.join(key)
+            value = ' '.join(value)
+
+            if 'first measurement' in key:
+                key = 'start_time'
+            else:
+                value = float(value)
+            self.current_header[key]=value
+        
+        return self.current_header
+
+    def read_currents_records(self):
+        """
+        Reads and processes the .v1 and .v2 files to create a DataFrame.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A DataFrame containing the current magnitude and direction.
+        """
+        self.curent_header=self.read_current_header()
+
+        self.x_component_file=sorted(glob.glob(self.directory_path+'*.v1'))[0]
+        self.y_component_file=sorted(glob.glob(self.directory_path+'*.v2'))[0]
+        
+        self.x_component = pd.read_csv(self.x_component_file,delim_whitespace=True,header=None)
+        self.y_component = pd.read_csv(self.y_component_file,delim_whitespace=True,header=None)
+
+        self.date_range = pd.date_range(self.current_header['start_time'],periods=self.x_component.shape[0],
+                                        freq=f"{self.current_header['Profile interval sec']}s")
+
+        self.x_component = self.x_component.set_index(self.date_range)
+        self.x_component.columns = map(str,np.arange(1,self.current_header['Number of cells']+1,dtype=int))
+
+        self.y_component = self.y_component.set_index(self.date_range)
+        self.y_component.columns = map(str,np.arange(1,self.current_header['Number of cells']+1,dtype=int))
+
+        self.current_magnitude = np.sqrt((self.x_component**2)+(self.y_component**2))
+        self.current_dir = np.array([list(map(wave_props.angulo_norte,row_x,row_y)) for row_x,row_y in zip(self.x_component.values,self.y_component.values)])
+        self.current_dir = pd.DataFrame(data=self.current_dir,index=self.date_range,columns=self.current_magnitude.columns)
+ 
+        return self.current_magnitude,self.current_dir

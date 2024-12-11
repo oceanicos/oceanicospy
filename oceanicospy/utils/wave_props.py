@@ -71,3 +71,14 @@ def direction(vn,ve):
     d_degrees = d*180/np.pi
     
     return d_degrees
+
+def angulo_norte(x,y):
+    if x > 0 and y > 0:
+        theta = 90 - (np.arctan(abs(y/x))*(180/np.pi))
+    elif x < 0 and y > 0:
+        theta = 270 + (np.arctan(abs(y/x))*(180/np.pi))
+    elif x < 0 and y < 0:
+        theta = 270 - (np.arctan(abs(y/x))*(180/np.pi))
+    else:
+        theta = 90 + (np.arctan(abs(y/x))*(180/np.pi))
+    return theta
