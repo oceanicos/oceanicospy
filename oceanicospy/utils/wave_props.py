@@ -1,5 +1,5 @@
 import numpy as np
-import constants
+from . import constants
 
 def wavelength(T,h):
     """

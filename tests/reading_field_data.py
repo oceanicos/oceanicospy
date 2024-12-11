@@ -24,7 +24,7 @@ sampling_data_awac_2024=dict(anchoring_depth=11.6,sensor_height=1.20,sampling_fr
 sampling_data_list=[sampling_data_awac_2018,sampling_data_awac_2023,sampling_data_awac_2024]
 metadata_list=['awac_1000_2018','awac_1000_2023','awac_1000_2024']
 
-for idx,path_folder in enumerate(campaigns_directories):
+for idx,path_folder in enumerate(campaigns_directories[:1]):
     print(metadata_list[idx])
     AWAC_measurements=Awac(path_folder,sampling_data_list[idx],metadata_list[idx])
     records=AWAC_measurements.getting_clean_records()
@@ -32,26 +32,33 @@ for idx,path_folder in enumerate(campaigns_directories):
     spectra_surflevel,params_surflevel=AWAC_measurements.spectra_from_fft(records)
     params_zerocross=AWAC_measurements.params_from_zero_crossing(records)
 
-    fig_params_hs = plot_wave_parameters(params_puv,out_dir,metadata_list[idx],label_comparison='puv')
-    plot_wave_parameters(params_surflevel,out_dir,metadata_list[idx],fig_comparison=fig_params_hs,label_comparison='surf')
-    plot_wave_parameters(params_zerocross,out_dir,metadata_list[idx],["H1/3"],fig_comparison=fig_params_hs,label_comparison='zerocross')
+#     fig_params_hs = plot_wave_parameters(params_puv,out_dir,metadata_list[idx],label_comparison='puv')
+#     plot_wave_parameters(params_surflevel,out_dir,metadata_list[idx],fig_comparison=fig_params_hs,label_comparison='surf')
+#     plot_wave_parameters(params_zerocross,out_dir,metadata_list[idx],["H1/3"],fig_comparison=fig_params_hs,label_comparison='zerocross')
 
-    fig_params_t = plot_wave_parameters(params_puv,out_dir,metadata_list[idx],["Tp","Tm01","Tm02"],ylabel='Period [s]',label_comparison='puv')
-    plot_wave_parameters(params_surflevel,out_dir,metadata_list[idx],["Tp","Tm01","Tm02"],ylabel='Period [s]',fig_comparison=fig_params_t,label_comparison='surf')
-    plot_wave_parameters(params_zerocross,out_dir,metadata_list[idx],["Tmean"],ylabel='Period [s]',fig_comparison=fig_params_t,label_comparison='zerocross')
+#     fig_params_t = plot_wave_parameters(params_puv,out_dir,metadata_list[idx],["Tp","Tm01","Tm02"],ylabel='Period [s]',label_comparison='puv')
+#     plot_wave_parameters(params_surflevel,out_dir,metadata_list[idx],["Tp","Tm01","Tm02"],ylabel='Period [s]',fig_comparison=fig_params_t,label_comparison='surf')
+#     plot_wave_parameters(params_zerocross,out_dir,metadata_list[idx],["Tmean"],ylabel='Period [s]',fig_comparison=fig_params_t,label_comparison='zerocross')
 
-    plot_1d_wave_spectra(spectra_puv,out_dir,metadata_list[idx],label_comparison='puv')
-    plot_1d_wave_spectra(spectra_surflevel,out_dir,metadata_list[idx],label_comparison='surf_level')
+#     plot_1d_wave_spectra(spectra_puv,out_dir,metadata_list[idx],label_comparison='puv')
+#     plot_1d_wave_spectra(spectra_surflevel,out_dir,metadata_list[idx],label_comparison='surf_level')
 
 campaigns_directories=['/homes/medellin/ffayalac/data/LR1_LittleReef-out/']
 
 sampling_data_LR1_2019=dict(anchoring_depth=11.6,sensor_height=1.20,sampling_freq=1,
-                            start_time=datetime(2019,11,16,13,0,0),end_time=datetime(2019,11,20,8,0,0))
+                            start_time=datetime(2019,11,16,13,0,0),end_time=datetime(2019,11,20,8,0,0)-timedelta(minutes=1))
 
 sampling_data_list=[sampling_data_LR1_2019]
 metadata_list=['aqualogger_LR1_2019']
 
 for idx,path_folder in enumerate(campaigns_directories):
     print(metadata_list[idx])
-    AWAC_measurements=AQUAlogger(path_folder,sampling_data_list[idx],metadata_list[idx])
-    records=AWAC_measurements.getting_clean_records()
+    AQUAlogger_measurements=AQUAlogger(path_folder,sampling_data_list[idx],metadata_list[idx])
+    records=AQUAlogger_measurements.getting_clean_records()
+
+    print(records)
+    spectra_surflevel,params_surflevel=AQUAlogger_measurements.spectra_from_fft(records)
+    params_zerocross=AQUAlogger_measurements.params_from_zero_crossing(records)
+
+    fig_params_hs = plot_wave_parameters(params_surflevel,out_dir,metadata_list[idx],label_comparison='puv')
+    plot_wave_parameters(params_zerocross,out_dir,metadata_list[idx],["H1/3"],fig_comparison=fig_params_hs,label_comparison='zerocross')

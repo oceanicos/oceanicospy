@@ -1,3 +1,4 @@
+from scipy.signal import resample
 import numpy as np
 from ..utils import wave_props
 
@@ -34,8 +35,11 @@ def zero_crossing(burst,fs,h,zp):
     """
 
     tt = np.arange(1,len(burst)+1,1/fs)
+    ratio = 100
+    pp = resample(burst, len(burst) * ratio)  # Resample p by the ratio
+    tt = np.linspace(1, 1024, len(pp)+1)  # Create the time vector
     sign = np.sign(burst)
-    index_cross = np.where(np.diff(sign) == 2)[0]
+    index_cross = np.where(np.diff(sign) > 0)[0]
 
     Hp = []
     T = []

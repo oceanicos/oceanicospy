@@ -151,19 +151,19 @@ class Awac():
             self.burst_series_detrended[clean_records.columns[-1]] = self.burst_series.iloc[:, -1]
 
             # Compute the spectrum
-            power, direction, freqs, Su, Sv = spectral.spectrum_puv_method(burst_series['pressure'],burst_series['u'],burst_series['v'],
-                                                                self.sampling_data['sampling_freq'], self.sampling_data['anchoring_depth'], 
-                                                                self.sampling_data['sensor_height'])                                                     
+            power, direction, freqs, Su, Sv = spectral.spectrum_puv_method(self.burst_series_detrended['pressure'],self.burst_series_detrended['u'],
+                                                                            self.burst_series_detrended['v'],self.sampling_data['sampling_freq'], 
+                                                                            self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])                                                     
             self.wave_spectra_data["S"].append(power)
             self.wave_spectra_data["dir"].append(direction)
             self.wave_spectra_data["freq"].append(freqs)
-            self.wave_spectra_data["time"].append(burst_series.index[0])
+            self.wave_spectra_data["time"].append(self.burst_series_detrended.index[0])
 
             # Compute wave parameters from the spectrum
             Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = spectral.wave_params_from_spectrum_v1(power, freqs)
 
             # Store wave parameters
-            self.wave_params_data['time'].append(burst_series.index[0])
+            self.wave_params_data['time'].append(self.burst_series_detrended.index[0])
             self.wave_params_data['Hm0'].append(Hm0)
             self.wave_params_data['Hrms'].append(Hrms)
             self.wave_params_data['Hmean'].append(Hmean)
@@ -179,15 +179,19 @@ class Awac():
 
         # The depth is computed dividing the pressure by the density and gravity. 
         # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
-        self.clean_data=clean_records
-        self.clean_data['depth']=((self.clean_data['pressure']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
+        self.clean_data=clean_records.copy()
+        if np.all(['depth' not in column.lower() for column in self.clean_data.columns]):
+            self.clean_data['depth']=((self.clean_data['pressure']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
 
+        print(self.clean_data)
         # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.        
-        mean_depths=self.clean_data.groupby('burstId').mean().drop('pressure',axis=1)
-        self.clean_data['mean_depth']=[mean_depths['depth'][i] for i in self.clean_data['burstId']]
+        self.clean_data[self.clean_data.columns[[0,1,2,4]]] = self.clean_data.groupby('burstId')[self.clean_data.columns[[0,1,2,4]]].transform(lambda x: x - x.mean())
 
         # Subtracting the mean depth in each burst
-        self.clean_data['n']=self.clean_data['depth']-self.clean_data['mean_depth']
+        try:
+            self.clean_data['n']=self.clean_data['depth']
+        except:
+            self.clean_data['n']=self.clean_data['Depth[m]']
 
         self.wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
         self.wave_params_data={param:[] for param in self.wave_params}
@@ -196,21 +200,21 @@ class Awac():
         self.wave_spectra_data={var:[] for var in self.wave_spectra_vars}
 
         for i in self.clean_data['burstId'].unique():
-            burst_series = self.clean_data[self.clean_data['burstId'] == i]
+            self.burst_series = self.clean_data[self.clean_data['burstId'] == i]
 
             # Compute the spectrum
-            power, power_kp, freqs, T, kpmin, fmax_kp = spectral.spectrum_from_surflevel(burst_series['n'][::2], self.sampling_data['sampling_freq']/2,
+            power, power_kp, freqs, T, kpmin, fmax_kp = spectral.spectrum_from_surflevel(self.burst_series['n'][::2], self.sampling_data['sampling_freq']/2,
                                                                                     self.sampling_data['anchoring_depth'], 
                                                                                     self.sampling_data['sensor_height'])
             self.wave_spectra_data["S"].append(power_kp)
-            self.wave_spectra_data["time"].append(burst_series.index[0])
+            self.wave_spectra_data["time"].append(self.burst_series.index[0])
             self.wave_spectra_data["freq"].append(freqs)
 
             # Compute wave parameters from the spectrum
             Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = spectral.wave_params_from_spectrum_v1(power, freqs)
 
             # Store wave parameters
-            self.wave_params_data['time'].append(burst_series.index[0])
+            self.wave_params_data['time'].append(self.burst_series.index[0])
             self.wave_params_data['Hm0'].append(Hm0)
             self.wave_params_data['Hrms'].append(Hrms)
             self.wave_params_data['Hmean'].append(Hmean)
@@ -226,29 +230,18 @@ class Awac():
         self.wave_params=["time","H1/3","Tmean"]
         self.wave_params_data={param:[] for param in self.wave_params}
 
-        # The depth is computed dividing the pressure by the density and gravity. 
-        # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
-        self.clean_data=clean_records
-        self.clean_data['depth']=((self.clean_data['pressure']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
-
-        # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.        
-        mean_depths=self.clean_data.groupby('burstId').mean().drop('pressure',axis=1)
-        self.clean_data['mean_depth']=[mean_depths['depth'][i] for i in self.clean_data['burstId']]
-
-        # Subtracting the mean depth in each burst
-        self.clean_data['n']=self.clean_data['depth']-self.clean_data['mean_depth']
+        self.clean_data=clean_records.copy()
 
         for i in self.clean_data['burstId'].unique():
-            #Para cada uno de los burst se calculan parametros por pasos por cero
             self.burst_series=self.clean_data[self.clean_data['burstId']==i]
 
             self.burst_series_detrended = self.burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
             self.burst_series_detrended[clean_records.columns[-1]] = self.burst_series.iloc[:, -1]
 
-            H13, Tm = temporal.zero_crossing(burst_series['n'], self.sampling_data['sampling_freq'],
+            H13, Tm, Lm, Hmax = temporal.zero_crossing(self.burst_series_detrended['pressure'], self.sampling_data['sampling_freq'],
                                     self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
 
-            self.wave_params_data['time'].append(burst_series.index[0])
+            self.wave_params_data['time'].append(self.burst_series_detrended.index[0])
             self.wave_params_data['H1/3'].append(H13)
             self.wave_params_data['Tmean'].append(Tm)
 

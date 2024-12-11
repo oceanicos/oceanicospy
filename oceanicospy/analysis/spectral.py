@@ -344,11 +344,11 @@ def crosgk(X, Y, N, M, DT=1, DW=1, stats=0):
     ny = max(Y.shape)
     avgx = np.sum(X) / nx
     avgy = np.sum(Y) / ny
-    px = np.zeros(w)
-    py = np.zeros(w)
-    Pxx = np.zeros(w)
-    Pxy = np.zeros(w)
-    Pyy = np.zeros(w)
+    px = np.zeros(N)
+    py = np.zeros(N)
+    Pxx = np.zeros(N)
+    Pxy = np.zeros(N)
+    Pyy = np.zeros(N)
     ns = 0
 
     for j in range(0, nx - N + 1, int(dj)):
@@ -403,9 +403,9 @@ def crosgk(X, Y, N, M, DT=1, DW=1, stats=0):
     vary = np.sum((Y[:int(nn)] - avgy) ** 2) / (nn - 1)
     covxy = np.sum((X[:int(nn)] - avgx) * (Y[:int(nn)] - avgy)) / (nn - 1)
 
-    m0xx = (0.5 * Pxx[0] + np.sum(Pxx[1:N // 2 - 1]) + 0.5 * Pxx[N // 2]) * df
-    m0yy = (0.5 * Pyy[0] + np.sum(Pyy[1:N // 2 - 1]) + 0.5 * Pyy[N // 2]) * df
-    m0xy = (0.5 * Pxy[0] + np.sum(Pxy[1:N // 2 - 1]) + 0.5 * Pxy[N // 2]) * df
+    m0xx = (0.5 * Pxx[0] + np.sum(Pxx[1:N // 2 - 1]) + 0.5 * Pxx[N // 2 - 1]) * df
+    m0yy = (0.5 * Pyy[0] + np.sum(Pyy[1:N // 2 - 1]) + 0.5 * Pyy[N // 2 - 1]) * df
+    m0xy = (0.5 * Pxy[0] + np.sum(Pxy[1:N // 2 - 1]) + 0.5 * Pxy[N // 2 - 1]) * df
 
     Pxx = Pxx * (varx / m0xx)
     Pyy = Pyy * (vary / m0yy)
