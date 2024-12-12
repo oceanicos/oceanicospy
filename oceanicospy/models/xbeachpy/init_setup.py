@@ -1,5 +1,6 @@
 import subprocess
 from . import utils
+from pathlib import Path
 import shutil
 import os
 
@@ -26,7 +27,10 @@ class InitialSetup():
             if self.dic_ini_data['activate_morf']==True:
                 self.stat_label=self.stat_label+'+morf'
 
-        shutil.copy(f'/home/fayalacruz/runs/modelling/inp_templates/params_base_{self.stat_label.lower()}.txt', f'{self.dict_folders["run"]}/params.txt')
+        self.script_dir = Path(__file__).resolve().parent
+        self.data_dir = self.script_dir.parent.parent.parent / 'data'
+
+        shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/params_base_{self.stat_label.lower()}.txt', f'{self.dict_folders["run"]}/params.txt')
         #shutil.copy(f'/home/fayalacruz/runs/modelling/inp_templates/params_base_{self.stat_label.lower()}_2.txt', f'{self.dict_folders["run"]}/params.txt')
         print ('\n*** Copying base swan configuration file into run folder ***\n')
 

@@ -5,6 +5,7 @@ import datetime as dt
 import numpy as np
 import glob as glob
 import scipy.interpolate
+from pathlib import Path
 
 from .. import utils
 from ..init_setup import InitialSetup
@@ -30,8 +31,11 @@ class RunCase(InitialSetup):
         string_points=[f'{round(x,2)} 0\n' for x in x_points]
         self.dict_comp_data['string_points']=''.join(string_points)
 
-    def fill_computation_section(self):
-        shutil.copy('/home/fayalacruz/runs/modelling/inp_templates/launcher_xbeach_base.slurm',
+    def fill_computation_section(self): 
+        self.script_dir = Path(__file__).resolve().parent
+        self.data_dir = self.script_dir.parent.parent.parent.parent / 'data'
+
+        shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/launcher_xbeach_base.slurm',
                     f'{self.dict_folders["run"]}launcher_xbeach.slurm')
 
         launch_dict=dict(path_case=f'{self.dict_folders["run"]}',case_number='matthew')

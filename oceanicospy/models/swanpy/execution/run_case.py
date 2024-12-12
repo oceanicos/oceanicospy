@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import pandas as pd
+from pathlib import Path
 
 from .. import utils
 from ..init_setup import InitialSetup
@@ -36,17 +37,20 @@ class RunCase(InitialSetup):
             utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.child_grid_info)
 
     def fill_computation_section(self):
+        self.script_dir = Path(__file__).resolve().parent.parent
+        self.data_dir = self.script_dir.parent.parent.parent / 'data'
+
         if self.dict_ini_data["nested_domains"]>0:
-            shutil.copy('/homes/medellin/ffayalac/modelling/inp_templates/swan/launcher_base_nest_cecc.slurm',
+            shutil.copy(f'{self.data_dir}/model_config_templates/swan/launcher_base_nest_cecc.slurm',
                         f'{self.dict_folders["run"]}launcher_swan.slurm')
-            shutil.copy('/homes/medellin/ffayalac/modelling/inp_templates/swan/swaninit',
+            shutil.copy(f'{self.data_dir}/model_config_templates/swan/swaninit',
                         f'{self.dict_folders["run"]}domain_0{self.domain_number}/swaninit')
             launch_dict=dict(path_case=self.root_path,simulation_name=self.dict_ini_data["name"].replace(" ","_"),number_domains=self.dict_ini_data["nested_domains"])
 
         else:
-            shutil.copy('/homes/medellin/ffayalac/modelling/inp_templates/swan/launcher_base_cecc.slurm',
+            shutil.copy(f'{self.data_dir}/model_config_templates/swan/launcher_base_cecc.slurm',
                         f'{self.dict_folders["run"]}launcher_swan.slurm')
-            shutil.copy('/homes/medellin/ffayalac/modelling/inp_templates/swan/swaninit',
+            shutil.copy(f'{self.data_dir}/model_config_templates/swan/swaninit',
                         f'{self.dict_folders["run"]}swaninit')
             launch_dict=dict(path_case=self.root_path,simulation_name=self.dict_ini_data["name"].replace(" ","_"),number_domains=self.dict_ini_data["nested_domains"])
         utils.fill_files(f'{self.dict_folders["run"]}launcher_swan.slurm',launch_dict,strict=False)

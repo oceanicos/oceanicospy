@@ -23,7 +23,7 @@ class Awac():
     10-Dec-2024 : Class implementation - Franklin Ayala
 
     """
-    def __init__(self,directory_path,sampling_data,obs_name):
+    def __init__(self,directory_path,sampling_data):
         """
         Initializes the Awac class with the given directory path, sampling data, and observation name.
 
@@ -33,12 +33,9 @@ class Awac():
             Path to the directory containing the .hdr and .wad files.
         sampling_data : dict
             Dictionary containing the information about the device installation
-        obs_name : str
-            The observation name.
         """
         self.directory_path = directory_path
         self.sampling_data=sampling_data
-        self.obs_name=obs_name
         
     def read_wave_header(self):
         """

@@ -1,4 +1,5 @@
 import subprocess
+from pathlib import Path
 from . import utils
 import shutil
 import os
@@ -48,11 +49,15 @@ class InitialSetup():
 
         print ('\n*** Copying base swan configuration file into run folder ***\n')
 
+        self.script_dir = Path(__file__).resolve().parent
+        self.data_dir = self.script_dir.parent.parent.parent / 'data'
+
         if self.dict_ini_data["nested_domains"]==0:
-            shutil.copy(f'/homes/medellin/ffayalac/modelling/inp_templates/swan/run_base_{self.stat_label.lower()}_SAI.swn', f'{self.dict_folders["run"]}run.swn')
+
+            shutil.copy(f'{self.data_dir}/model_config_templates/swan/run_base_{self.stat_label.lower()}_SAI.swn', f'{self.dict_folders["run"]}run.swn')
             utils.fill_files(f'{self.dict_folders["run"]}run.swn',self.dict_ini_data)
 
         else:
             for domain in range(1,self.dict_ini_data["nested_domains"]+1):
-                shutil.copy(f'/homes/medellin/ffayalac/modelling/inp_templates/swan/run_base_{self.stat_label.lower()}_SAI.swn', f'{self.dict_folders["run"]}domain_0{domain}/run.swn')
+                shutil.copy(f'{self.data_dir}/model_config_templates/swan/run_base_{self.stat_label.lower()}_SAI.swn', f'{self.dict_folders["run"]}domain_0{domain}/run.swn')
                 utils.fill_files(f'{self.dict_folders["run"]}domain_0{domain}/run.swn',self.dict_ini_data)

@@ -52,14 +52,12 @@ def spectra_from_fft(clean_records,sampling_data):
     if np.all(['depth' not in column.lower() for column in clean_data.columns]):
         clean_data['depth']=((clean_data['pressure']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
 
-    # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.        
-    clean_data[clean_data.columns[[0,1,2,4]]] = clean_data.groupby('burstId')[clean_data.columns[[0,1,2,4]]].transform(lambda x: x - x.mean())
+    # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.       
+    columns_with_variables = [col for col in clean_data.columns if col != 'burstId']
+    clean_data[columns_with_variables] = clean_data.groupby('burstId')[columns_with_variables].transform(lambda x: x - x.mean())
 
     # Subtracting the mean depth in each burst
-    try:
-        clean_data['n']=clean_data['depth']
-    except:
-        clean_data['n']=clean_data['Depth[m]']
+    clean_data['n']=clean_data['depth']
 
     wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
     wave_params_data={param:[] for param in wave_params}
