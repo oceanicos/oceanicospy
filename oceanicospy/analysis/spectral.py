@@ -4,6 +4,37 @@ from scipy.signal import detrend
 import pandas as pd 
 
 def spectra_from_puv(clean_records,sampling_data):
+    """
+    Compute wave spectra and wave parameters from pressure, u, and v components.
+
+    Parameters
+    ----------
+    clean_records : pandas.DataFrame
+        DataFrame containing cleaned records with columns for 'pressure', 'u', 'v', and 'burstId'.
+    sampling_data : dict
+        Dictionary containing sampling information with keys:
+        - 'sampling_freq': Sampling frequency of the data.
+        - 'anchoring_depth': Depth at which the sensor is anchored.
+        - 'sensor_height': Height of the sensor above the seabed.
+
+    Returns
+    -------
+    wave_spectra_data : dict
+        Dictionary containing wave spectra data with keys:
+        - 'S': List of power spectra for each burst.
+        - 'dir': List of direction spectra for each burst.
+        - 'freq': List of frequency arrays for each burst.
+        - 'time': List of timestamps corresponding to each burst.
+    wave_params_data : pandas.DataFrame
+        DataFrame containing wave parameters with columns:
+        - 'time': Timestamps corresponding to each burst.
+        - 'Hm0': Zero-moment wave height.
+        - 'Hrms': Root mean square wave height.
+        - 'Hmean': Mean wave height.
+        - 'Tp': Peak period.
+        - 'Tm01': Mean period (first moment).
+        - 'Tm02': Mean period (second moment).
+    """
     wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
     wave_params_data={param:[] for param in wave_params}
 
@@ -45,6 +76,37 @@ def spectra_from_puv(clean_records,sampling_data):
     return wave_spectra_data,wave_params_data
 
 def spectra_from_fft(clean_records,sampling_data):
+    """
+    Compute wave spectra and wave parameters from FFT.
+
+    Parameters
+    ----------
+    clean_records : pandas.DataFrame
+        DataFrame containing the cleaned records with columns such as 'pressure', 'burstId', etc.
+    sampling_data : dict
+        Dictionary containing sampling information with keys:
+        - 'sampling_freq': Sampling frequency of the data.
+        - 'anchoring_depth': Depth at which the sensor is anchored.
+        - 'sensor_height': Height of the sensor from the seabed.
+
+    Returns
+    -------
+    wave_spectra_data : dict
+        Dictionary containing wave spectra data with keys:
+        - 'S': List of power spectral densities for each burst.
+        - 'dir': List of directions (currently not computed, placeholder).
+        - 'freq': List of frequency arrays for each burst.
+        - 'time': List of timestamps corresponding to each burst.
+    wave_params_data : pandas.DataFrame
+        DataFrame containing wave parameters with columns:
+        - 'Hm0': Zero-moment wave height.
+        - 'Hrms': Root mean square wave height.
+        - 'Hmean': Mean wave height.
+        - 'Tp': Peak period.
+        - 'Tm01': Mean period (first moment).
+        - 'Tm02': Mean period (second moment).
+        - Index is the timestamp corresponding to each burst.
+    """
 
     # The depth is computed dividing the pressure by the density and gravity. 
     # The atmospheric pressure is also subtracted and it is converted from bars to pascals.

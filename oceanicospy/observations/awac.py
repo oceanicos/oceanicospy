@@ -130,7 +130,7 @@ class Awac():
 
         return self.clean_data
     
-    def read_current_header(self):
+    def read_currents_header(self):
         """
         Reads the section of profile setup from the header file (.hdr) .
 
@@ -177,7 +177,7 @@ class Awac():
         pandas.DataFrame
             A DataFrame containing the current magnitude and direction.
         """
-        self.curent_header=self.read_current_header()
+        self.curent_header=self.read_currents_header()
 
         self.x_component_file=sorted(glob.glob(self.directory_path+'*.v1'))[0]
         self.y_component_file=sorted(glob.glob(self.directory_path+'*.v2'))[0]

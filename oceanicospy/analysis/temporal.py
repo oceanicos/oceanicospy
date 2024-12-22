@@ -5,6 +5,26 @@ import numpy as np
 from ..utils import wave_props
 
 def params_from_zero_crossing(clean_records,sampling_data):
+    """
+    Calculate wave parameters from zero-crossing analysis of pressure data.
+
+    Parameters
+    ----------
+    clean_records : pandas.DataFrame
+        DataFrame containing cleaned pressure records with a 'burstId' column to identify different bursts.
+    sampling_data : dict
+        Dictionary containing sampling information with keys:
+        - 'sampling_freq': Sampling frequency of the pressure data.
+        - 'anchoring_depth': Depth at which the sensor is anchored.
+        - 'sensor_height': Height of the sensor from the seabed.
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame with wave parameters indexed by time, containing columns:
+        - 'H1/3': Significant wave height (H1/3).
+        - 'Tmean': Mean wave period (Tmean).
+    """
     wave_params=["time","H1/3","Tmean"]
     wave_params_data={param:[] for param in wave_params}
 
