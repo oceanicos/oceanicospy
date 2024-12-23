@@ -14,19 +14,30 @@ class WeatherStation():
         """
         Initializes the WeatherStation object with the given directory path.
 
-        Args:
-            directory_path (str): The path to the directory where weather station data is stored.
+        Parameters
+        ----------
+        directory_path : str
+            Path to the directory where weather station data is stored.
+
         """
         self.directory_path = directory_path
     
     def read_records(self, file_name):
         """
         Reads weather station records from a specified file and processes the data into a pandas DataFrame.
-        Args:
-            file_name (str): The name of the file containing the weather station records.
-        Returns:
-            pandas.DataFrame: A DataFrame containing the processed weather station data
-        Notes:
+
+        Parameters
+        ----------
+        file_name : str
+            The name of the file containing the weather station records.
+
+        Returns
+        -------
+        df : pandas.DataFrame
+            A DataFrame containing the processed weather station data
+
+        Notes
+        -----
             - The function assumes that the first two lines of the file are headers or metadata and skips them.
             - The 'AM/PM' column values are replaced with 'AM' and 'PM' for consistency.
         """
@@ -46,15 +57,14 @@ class WeatherStation():
         
         return df
 
-    def get_clean_reecords(self):
+    def get_clean_records(self):
         """
         Cleans and processes weather station records.
-        This method reads weather station data from a file, replaces missing values,
-        drops columns with all missing values, combines date and time columns into a 
-        single datetime index, and drops the original date and time columns.
         
-        Returns:
-            pd.DataFrame: A DataFrame with cleaned weather station records, indexed by datetime.
+        Returns
+        -------
+        self.clean_records: pd.DataFrame
+            A DataFrame with cleaned weather station records, indexed by datetime.
         """
         self.records=self.read_records('weather_station_data.txt')
 
@@ -79,7 +89,6 @@ class WeatherStation():
         self.clean_records['Direction'] = self.clean_records['Dir1'].map(maps_to_degrees)
 
         return self.clean_records
-
 
 
     

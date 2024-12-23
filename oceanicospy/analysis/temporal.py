@@ -1,7 +1,8 @@
-from scipy.signal import resample,detrend
+import numpy as np
 import pandas as pd
 
-import numpy as np
+from scipy.signal import resample,detrend
+
 from ..utils import wave_props
 
 def params_from_zero_crossing(clean_records,sampling_data):
