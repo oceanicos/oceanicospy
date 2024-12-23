@@ -1,6 +1,8 @@
 import numpy as np
 from . import constants
 
+np.seterr(divide = 'ignore') 
+
 def wavelength(T,h):
     """
     Computes the wavelength for intermediate waters

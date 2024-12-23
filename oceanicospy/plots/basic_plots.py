@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from windrose import WindroseAxes
 
-def plot_wave_parameters(wave_parameters,output_dir,metadata_text, parameters=['Hm0', 'Hrms', 'Hmean'], figsize=(12, 3), ylabel='Wave Height [m]', xlabel='Time',
-                         fig_comparison=None,label_comparison=''):
+def plot_wave_parameters(wave_parameters,output_dir,metadata_text, parameters=['Hm0', 'Hrms', 'Hmean'], figsize=(12, 3), 
+                        ylabel='Wave Height [m]', xlabel='Time',
+                        fig_comparison=None,label_comparison=''):
     """
     Function to plot wave parameters (e.g., Hm0, Hrms, Hmean) over time.
 
@@ -15,10 +16,10 @@ def plot_wave_parameters(wave_parameters,output_dir,metadata_text, parameters=['
     - xlabel: Label for the x-axis (default: 'Time').
     """
     
-    if fig_comparison==None:
-        fig,ax=plt.subplots(1,1,figsize=figsize)
+    if fig_comparison == None:
+        fig,ax = plt.subplots(1,1,figsize=figsize)
     else:
-        fig,ax=fig_comparison
+        fig,ax = fig_comparison
 
     for param in parameters:
         ax.plot(wave_parameters.index, wave_parameters[param], label=f'{param}_{label_comparison}')
