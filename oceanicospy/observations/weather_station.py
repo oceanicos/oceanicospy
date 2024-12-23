@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+pd.set_option('future.no_silent_downcasting', True)
+
 class WeatherStation():
     """
     A class to handle reading and processing the data files recorded by the weather station (DAVIS). 
@@ -66,8 +68,7 @@ class WeatherStation():
         self.clean_records: pd.DataFrame
             A DataFrame with cleaned weather station records, indexed by datetime.
         """
-        self.records=self.read_records('weather_station_data.txt')
-
+        self.records = self.read_records('weather_station_data.txt')
         self.records.replace('---', np.nan, inplace=True)
         self.records.dropna(axis=1, how='all', inplace=True)
         

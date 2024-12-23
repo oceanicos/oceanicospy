@@ -5,6 +5,8 @@ from scipy.signal import detrend
 
 from ..utils import wave_props,constants
 
+np.seterr(divide = 'ignore') 
+
 def spectra_from_puv(clean_records,sampling_data):
     """
     Compute wave spectra and wave parameters from pressure, u, and v components.

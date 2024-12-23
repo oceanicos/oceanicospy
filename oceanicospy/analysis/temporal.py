@@ -3,6 +3,8 @@ import pandas as pd
 
 from scipy.signal import resample,detrend
 
+np.seterr(all = 'ignore') 
+
 from ..utils import wave_props
 
 def params_from_zero_crossing(clean_records,sampling_data):
@@ -98,8 +100,8 @@ def zero_crossing(burst,fs,h,zp):
     T = np.array(T)
 
     # Determine the wavenumber based on the dispersion relation
-    L=np.array([wave_props.wavelength(t,h) for t in T])
-    k = 2*np.pi/L
+    L=np.array([wave_props.wavelength(t,h) for t in T],dtype=np.float64)
+    k = 2.*np.pi/L
 
     # Transference factor Kp
     Kp=np.cosh(k*zp)/np.cosh(k*h)

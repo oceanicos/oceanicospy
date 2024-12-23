@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import pandas as pd
 
+pd.options.mode.chained_assignment = None
+
 from ..utils import wave_props
 
 class Awac():
@@ -86,7 +88,7 @@ class Awac():
         self.burst_id = 1
 
         for i in self.data:
-            self.e = pd.read_csv(i,header=0,delim_whitespace=True,names=self.columns_)
+            self.e = pd.read_csv(i,header=0,sep=r"\s+",names=self.columns_)
             self.e['burstId'] = (np.ones(len(self.e))*self.burst_id).astype(int)
             self.burst_id += 1
             self.wads.append(self.e.dropna())
@@ -113,7 +115,7 @@ class Awac():
         self.raw_data = self.wads.iloc[:,[0,1,2,3,4,5,6,11,12,17]]
 
         self.raw_data['date'] = pd.to_datetime(self.raw_data.iloc[:,[2,0,1,3,4,5]].astype(str).agg('-'.join, axis=1),
-                                format='%Y-%m-%d-%H-%M-%S.%f',errors='ignore')
+                                format='%Y-%m-%d-%H-%M-%S.%f')
         self.raw_data = self.raw_data.set_index('date')
         self.clean_data = self.raw_data[self.columns_[[6,11,12,17]].tolist()]
         self.clean_data.columns = ['pressure','u','v','burstId']
@@ -172,8 +174,8 @@ class Awac():
         self.x_component_file = sorted(glob.glob(self.directory_path+'*.v1'))[0]
         self.y_component_file = sorted(glob.glob(self.directory_path+'*.v2'))[0]
         
-        self.x_component = pd.read_csv(self.x_component_file,delim_whitespace=True,header=None)
-        self.y_component = pd.read_csv(self.y_component_file,delim_whitespace=True,header=None)
+        self.x_component = pd.read_csv(self.x_component_file,sep=r'\s+',header=None)
+        self.y_component = pd.read_csv(self.y_component_file,sep=r'\s+',header=None)
 
         self.date_range = pd.date_range(self.current_header['start_time'],periods=self.x_component.shape[0],
                                         freq=f"{self.current_header['Profile interval sec']}s")
