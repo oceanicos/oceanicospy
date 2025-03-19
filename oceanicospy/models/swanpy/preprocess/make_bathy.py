@@ -97,10 +97,8 @@ class MakeBathy(InitialSetup):
         return dict_asc
     
     def asc_from_user(self):
-        if self.dict_ini_data["nested_domains"]>0:
-            bathy_file_path = glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.bot')[0]
-        else:
-            bathy_file_path = glob.glob(f'{self.dict_folders["input"]}*.bot')[0]
+        bathy_file_path = glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.bot')[0]
+
         bathy_filename=bathy_file_path.split('/')[-1]
 
         if not utils.verify_link(bathy_filename,f'{self.dict_folders["run"]}domain_0{self.domain_number}/'):
@@ -115,13 +113,7 @@ class MakeBathy(InitialSetup):
             return self.bathy_info
 
     def fill_bathy_section(self,dict_bathy_data):
+        print (f'\n*** Adding/Editing bathymetry information for domain {self.domain_number} in configuration file ***\n')
+        utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_bathy_data)
 
-
-
-        if self.dict_ini_data["nested_domains"]>0:
-            print (f'\n*** Adding/Editing bathymetry information for domain {self.domain_number} in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_bathy_data)
-        else:
-            print ('\n*** Adding/Editing bathymetry information in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}run.swn',dict_bathy_data)
 

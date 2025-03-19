@@ -33,28 +33,16 @@ class WaterLevelForcing(InitialSetup):
         self.input_filename=input_filename
   
     def waterlevels_from_user(self):
-        if self.dict_ini_data["nested_domains"]>0:
-            wl_file_path = glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.wl')[0]
-        else:
-            wl_file_path = glob.glob(f'{self.dict_folders["input"]}*.wl')[0]
+        wl_file_path = glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.wl')[0]
         wl_filename=wl_file_path.split('/')[-1]
 
-        if not utils.verify_link(wl_filename,f'{self.dict_folders["run"]}domain_0{self.domain_number}/'):
-            utils.create_link(wl_filename,f'{self.dict_folders["input"]}domain_0{self.domain_number}/',
-                                f'{self.dict_folders["run"]}domain_0{self.domain_number}/')
-
-        # os.system(f'cp {self.dict_folders["input"]}domain_0{self.domain_number}/{wl_filename}\
-        #                         {self.dict_folders["run"]}domain_0{self.domain_number}/')
+        os.system(f'cp {self.dict_folders["input"]}domain_0{self.domain_number}/{wl_filename}\
+                                 {self.dict_folders["run"]}domain_0{self.domain_number}/')
 
         if self.wl_info!=None:
             self.wl_info.update({"water_levels.wl":wl_filename})
             return self.wl_info
 
     def fill_wl_section(self,dict_wl_data):
-
-        if self.dict_ini_data["nested_domains"]>0:
-            print (f'\n*** Adding/Editing water level information for domain {self.domain_number} in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_wl_data)
-        else:
-            print ('\n*** Adding/Editing water level information in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}run.swn',dict_wl_data)
+        print (f'\n*** Adding/Editing water level information for domain {self.domain_number} in configuration file ***\n')
+        utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_wl_data)

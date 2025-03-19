@@ -362,7 +362,7 @@ def spectra_from_fft(clean_records,sampling_data):
         burst_series = clean_data[clean_data['burstId'] == i]
 
         # Compute the spectrum
-        power, power_kp, freqs, T, kpmin, fmax_kp = spectrum_from_surflevel(burst_series['n'][::2], sampling_data['sampling_freq']/2,
+        power, power_kp, freqs, T, kpmin, fmax_kp = spectrum_from_surflevel(burst_series['n'], sampling_data['sampling_freq'],
                                                                                 sampling_data['anchoring_depth'], 
                                                                                 sampling_data['sensor_height'])
         wave_spectra_data["S"].append(power_kp)

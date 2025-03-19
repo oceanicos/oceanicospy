@@ -14,7 +14,9 @@
 unset  SINGULARITY_BINDPATH
 export SINGULARITY_BINDPATH="/scratchsan/medellin/:/scratchsan/medellin/"
 
-cd $SCRATCH_DIR  
+cd $SCRATCH_DIR
+
+parent_domains
 
 for domain in {1..number_domains}
 do
@@ -23,10 +25,10 @@ cd "domain_0$domain"
 echo "INICIO," $HOSTNAME `date`  2>&1 >>path_caseoutput/log_dom_0$domain.txt
 
 if [ "$domain" -gt 1 ]; then
-    prev_domain=$((domain - 1))
-    mv "../domain_0$prev_domain/child_0$prev_domain.NEST" "child_0$prev_domain.NEST" 
+    parent_domain=${bash_dict[$domain]}
+    mv "../domain_0$parent_domain/child_0$prev_domain.NEST" "child_0$parent_domain.NEST" 
 fi
-singularity run /localapps/swan_41.51.sif  swanrun -input run.swn -omp $SLURM_NTASKS   2>&1 >>path_caseoutput/log_dom_0$domain.txt
+singularity run /localapps/swan_41.51_test.sif  swanrun -input run.swn -omp $SLURM_NTASKS   2>&1 >>path_caseoutput/log_dom_0$domain.txt
 echo "FIN," $HOSTNAME `date`  2>&1 >>path_caseoutput/log_dom_0$domain.txt
 cd ..
 done

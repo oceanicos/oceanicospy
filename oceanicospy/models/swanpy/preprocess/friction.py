@@ -33,10 +33,7 @@ class Friction(InitialSetup):
         self.input_filename=input_filename
   
     def friction_from_user(self):
-        if self.dict_ini_data["nested_domains"]>0:
-            friction_file_path = glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.fric')[0]
-        else:
-            friction_file_path = glob.glob(f'{self.dict_folders["input"]}*.fric')[0]
+        friction_file_path = glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.fric')[0]
         friction_filename=friction_file_path.split('/')[-1]
 
         if not utils.verify_link(friction_filename,f'{self.dict_folders["run"]}domain_0{self.domain_number}/'):
@@ -51,10 +48,5 @@ class Friction(InitialSetup):
             return self.friction_info
 
     def fill_friction_section(self,dict_fric_data):
-
-        if self.dict_ini_data["nested_domains"]>0:
-            print (f'\n*** Adding/Editing friction information for domain {self.domain_number} in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_fric_data)
-        else:
-            print ('\n*** Adding/Editing friction information in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}run.swn',dict_fric_data)
+        print (f'\n*** Adding/Editing friction information for domain {self.domain_number} in configuration file ***\n')
+        utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_fric_data)

@@ -173,11 +173,5 @@ class BoundaryConditions(InitialSetup):
 
         self.dict_boundaries={'values_bounds':values_bounds}
 
-        if self.dict_ini_data["nested_domains"]>0:
-            print (f'\n*** Adding/Editing boundary information for domain {self.domain_number} in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_boundaries)
-        else:
-            print ('\n*** Adding/Editing boundary information in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}run.swn',self.dict_boundaries)
-
-
+        print (f'\n*** Adding/Editing boundary information for domain {self.domain_number} in configuration file ***\n')
+        utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_boundaries)

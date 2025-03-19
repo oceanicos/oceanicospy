@@ -1,5 +1,6 @@
 import numpy as np
 import glob as glob
+import os
 from .. import utils
 from ..init_setup import InitialSetup
 
@@ -61,9 +62,6 @@ class MakeGrid(InitialSetup):
             return self.grid_info
 
     def fill_grid_section(self,dict_grid_data):
-        if self.dict_ini_data["nested_domains"]>0:
-            print (f'\n*** Adding/Editing grid information for domain {self.domain_number} in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_grid_data)
-        else:
-            print ('\n*** Adding/Editing grid information in configuration file ***\n')
-            utils.fill_files(f'{self.dict_folders["run"]}run.swn',dict_grid_data)
+        print (f'\n*** Adding/Editing grid information for domain {self.domain_number} in configuration file ***\n')
+        utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_grid_data)
+

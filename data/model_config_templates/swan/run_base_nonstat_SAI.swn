@@ -6,7 +6,7 @@ $ Malla computacional -----------------------------------
 SET NAUT
 MODE stat_label TWOD
 COORD SPHE CCM
-CGRID REG  lon_ll_corner lat_ll_corner 0 x_extent y_extent nx ny CIRCLE 72 0.04 1
+CGRID REG  lon_ll_corner lat_ll_corner 0 x_extent y_extent nx ny CIRCLE 36 0.04 1
 $
 $ Batimetria --------------------------------------------
 INP BOT REG lon_ll_bat_corner lat_ll_bat_corner 0 x_bot y_bot spacing_x spacing_y EXC -9999.
