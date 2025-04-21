@@ -1,5 +1,6 @@
 import numpy as np
 import glob as glob
+import pandas as pd
 from .. import utils
 import shapefile
 import os
@@ -68,6 +69,36 @@ class MakeGrid(InitialSetup):
 
         x=np.arange(xmin-xmin,xmin-xmax+2,2)  # Caution
         y=np.arange(ymin-ymin,ymax-ymin+2,2)
+
+        X,Y=np.meshgrid(x,y)
+
+        np.savetxt(f'{self.dict_folders["run"]}x_profile.grd',X,fmt='%f')
+        np.savetxt(f'{self.dict_folders["run"]}y_profile.grd',Y,fmt='%f')
+
+        grid_dict={'xfilepath':'x_profile.grd','yfilepath':'y_profile.grd','meshes_x':len(x)-1,'meshes_y':len(y)-1}
+        for key,value in grid_dict.items():
+            grid_dict[key]=str(value)
+        return grid_dict        
+
+    def params_2D_from_xyz(self):
+        bathy_file_path = glob.glob(f'{self.dict_folders["input"]}*.csv')[0]
+
+        bathy_data = pd.read_csv(bathy_file_path)
+        print(bathy_data)
+        min_lon = np.min(bathy_data.X)
+        max_lon = np.max(bathy_data.X)
+        min_lat = np.min(bathy_data.Y)
+        max_lat = np.max(bathy_data.Y)
+
+        ymax=max_lon
+        ymin=min_lon
+        xmin=max_lat
+        xmax=min_lat
+
+        print(xmin-xmin,xmin-xmax)
+
+        x=np.arange(xmin-xmin,xmin-xmax+(10/110000),10/110000)  # Caution
+        y=np.arange(ymin-ymin,ymax-ymin+(10/110000),10/110000)
 
         X,Y=np.meshgrid(x,y)
 

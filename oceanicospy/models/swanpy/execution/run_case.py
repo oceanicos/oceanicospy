@@ -20,17 +20,20 @@ class RunCase(InitialSetup):
         # ds['id']=ds['id'].apply(lambda x:f'! {x}')
         ds.to_csv(f'{self.dict_folders["run"]}domain_0{self.domain_number}/points.loc',index=False, header=False, na_rep=0, float_format='%7.7f',sep=' ')
     
-    def write_nest_section(self,child_grid_info=None):
-        if child_grid_info==None:
+    def write_nest_section(self,nested_doms=[],nested_doms_info=[]):
+        if len(nested_doms)!=0:
+            if self.domain_number==2:
+                utils.duplicate_lines(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn', 56)
+            for nested_dom_id,nested_dom_info in zip(nested_doms,nested_doms_info):
+                nested_dom_info_=dict()
+                for key in nested_dom_info.copy().keys():
+                    nested_dom_info_[f'child_{key}']= nested_dom_info[key]
+                nested_dom_info_.update(nest_id=f'n0{self.domain_number}_0{nested_dom_id}',nest_grid_file=f'child0{self.domain_number}_0{nested_dom_id}.NEST')
+                utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',nested_dom_info_)
+        else:
             utils.delete_line(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn','NGRID')
             utils.delete_line(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn','NESTOUT')
-        else:
-            child_grid_info_=dict()
-            for key in child_grid_info.copy().keys():
-                child_grid_info_[f'child_{key}']=child_grid_info[key]
-            child_grid_info_.update(nest_id=f'nest0{self.domain_number}',nest_grid_file=f'child_0{self.domain_number}.NEST')
-            utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',child_grid_info_)
-
+               
     def fill_computation_section(self):
         self.script_dir = Path(__file__).resolve().parent.parent
         self.data_dir = self.script_dir.parent.parent.parent / 'data'
@@ -39,7 +42,7 @@ class RunCase(InitialSetup):
                     f'{self.dict_folders["run"]}launcher_swan.slurm')
         shutil.copy(f'{self.data_dir}/model_config_templates/swan/swaninit',
                     f'{self.dict_folders["run"]}domain_0{self.domain_number}/swaninit')
-        bash_code = "declare -A bash_dict\n"
+        bash_code = "declare -a bash_dict\n"
         for key, value in self.dict_ini_data["parent_domains"].items():
             bash_value = "" if value is None else value
             bash_code += f'bash_dict[{key}]={bash_value}\n'

@@ -71,13 +71,13 @@ def fill_files(file_name,dict_,strict=True):
         dict_to_use[key_]=str(value_)
     
     if strict == True:
-        for key,value in dict_to_use.items():  
+        for key,value in dict_to_use.items():
             with fileinput.FileInput(file_name,inplace=True,backup='') as file:
                     for line in file:
                         line_splitted=[string.replace("'","") for string in line.split()]
                         if key in line_splitted:
-                            line=line.replace(key,value)
-                            print(line,end='')
+                                line=line.replace(key,value)
+                                print(line,end='')
                         else:
                             print(line,end='')
     else:
@@ -94,3 +94,27 @@ def delete_line(file_name,string_to_find):
         for line in lines:
             if string_to_find not in line.split():
                 f.write(line)
+
+def duplicate_lines(file_name, start_line_number):
+    with open(file_name, "r") as f:
+        lines = f.readlines()
+
+    # Adjust because Python lists are 0-based
+    idx = start_line_number - 1
+
+    # Get the lines to duplicate
+    if idx < 0 or idx + 1 >= len(lines):
+        raise IndexError("Invalid start_line_number")
+
+    lines_to_duplicate = lines[idx:idx + 2]
+
+    # Insert the duplicated lines after the original two
+    lines = lines[:idx + 2] + lines_to_duplicate + lines[idx + 2:]
+
+    # Write back to the file
+    with open(file_name, "w") as f:
+        f.writelines(lines)
+
+def count_lines(file_name):
+    with open(file_name, "r") as f:
+        return sum(1 for _ in f)
