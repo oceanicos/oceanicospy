@@ -85,7 +85,30 @@ def fill_files(file_name,dict_,strict=True):
             with fileinput.FileInput(file_name,inplace=True,backup='') as file:
                     for line in file:
                         print(line.replace(key,value),end="")
+def fill_files_only_once(file_name, dict_):
 
+    dict_to_use=dict_.copy()
+    for key_,value_ in dict_.items():
+        if (type(value_)==float) or (type(value_)==int):
+            dict_to_use[key_]=str(value_)
+        dict_to_use[key_]=str(value_)
+
+    for key,value in dict_to_use.items():
+        count = 0
+        with fileinput.FileInput(file_name,inplace=True,backup='') as file:
+                for line in file:
+                    line_splitted=[string.replace("'","") for string in line.split()]
+                    if key in line_splitted:
+                        if count ==0:
+                            line = line.replace(key,value)                        
+                            count += 1
+                        elif count ==1:
+                            if key == 'nest_id':
+                                line = line.replace(key,value)
+                                count += 1
+                        print(line,end='')
+                    else:
+                        print(line,end='')
 
 def delete_line(file_name,string_to_find):
     with open(file_name, "r") as f:

@@ -1,3 +1,4 @@
+from wavespectra import read_swan
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -145,6 +146,65 @@ class BoundaryConditions(InitialSetup):
                 self.dict_boundaries=dict(hsig_value=df_point['Hsig'].values[0],tp_value=df_point['TPsmoo'].values[0],dir_value=df_point['Dir'].values[0])
         return self.dict_boundaries
     
+    def spectra_from_swan(self,input_filename):
+        self.dataset = read_swan(f'{self.dict_folders["input"]}{input_filename}.out')
+        print(self.dataset)
+        print(self.dataset.lon.ndim)
+        self.data_spectra = self.dataset.efth
+        self.lon = self.dataset.lon.values
+        self.lat = self.dataset.lat.values
+        self.number_spectrum_locs = self.lon.size * self.lat.size
+        if self.number_spectrum_locs == 1:
+            print('delete the loclist section and the nspectrumloc command')
+        else:
+            self.dict_boundaries={'w_bc_version': 3,'n_spectrum_loc': self.number_spectrum_locs,'bcfilepath':'loclist.txt'}
+
+        print()
+
+        self.points = []
+        self.point = 0
+        for idx_lat,lati in enumerate(self.lat):
+            for idx_lon,long in enumerate(self.lon):
+                with open(f"{self.dict_folders['run']}filelist_{self.point}.txt", "w") as filelist:
+                    filelist.write('FILELIST'+'\n')
+                    for idx_time,time in enumerate(self.dataset.time):
+                        self.spec_to_save = np.matrix(self.data_spectra[idx_time,idx_lat,idx_lon,:,:])/0.1e-5
+                        time_specific = pd.to_datetime(self.dataset.time.values[idx_time])
+                        time_to_write = time_specific.strftime('%Y%m%d.%H%M%S')
+                        with open(f"{self.dict_folders['input']}SpecSWAN.out") as forigin:
+                                with open(f"{self.dict_folders['run']}spec_{idx_time}_{idx_lat}_{idx_lon}.sp2", "w") as fdest:
+                                    while True:
+                                        line = forigin.readline()
+                                        if 'date and time' not in line:
+                                            if 'number of locations' in line:
+                                                line = re.sub(r'\d+',"1", line)
+                                                for _ in range(self.number_spectrum_locs):
+                                                    next_line = forigin.readline()
+                                                    if ((f"{long}" in next_line) and (f"{lati:.5f}" in next_line)):
+                                                        line = line + next_line
+                                            fdest.write(line)                 
+                                        else:
+                                            break
+
+                                    fdest.write(time_to_write + '\n')
+                                    fdest.write('FACTOR' + '\n')
+                                    fdest.write('0.1E-05' + '\n')
+                                    for line in self.spec_to_save:
+                                        np.savetxt(fdest, line, fmt='%5.0f')
+                                fdest.close()
+                        filelist.write(f'3600 0.2 spec_{idx_time}_{idx_lat}_{idx_lon}.sp2 \n')
+                filelist.close()
+                self.points.append(self.point)
+                self.point += 1
+
+        # with open(f"{self.dict_folders['run']}loclist.txt", "w") as floc:
+        #     floc.write('LOCLIST'+'\n')
+        #     for point in self.points:
+        #         floc.write(f'0 0 filelist_{point}.txt' + '\n')
+        # floc.close()
+
+        return self.dict_boundaries
+
     def fill_boundaries_section(self,dict_boundaries):
         """
         Fill the boundaries section of the simulation.

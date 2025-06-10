@@ -44,7 +44,7 @@ def create_link(file_name,source_path,target_path):
     Returns:
         None: If the file already exists in the target path.
     """
-    if verify_file(file_name,target_path):
+    if verify_file(f'{target_path}{file_name}'):
         return None
     else:
         os.symlink(f'{source_path}{file_name}',f'{target_path}{file_name}')

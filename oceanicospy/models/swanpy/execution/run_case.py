@@ -29,7 +29,8 @@ class RunCase(InitialSetup):
                 for key in nested_dom_info.copy().keys():
                     nested_dom_info_[f'child_{key}']= nested_dom_info[key]
                 nested_dom_info_.update(nest_id=f'n0{self.domain_number}_0{nested_dom_id}',nest_grid_file=f'child0{self.domain_number}_0{nested_dom_id}.NEST')
-                utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',nested_dom_info_)
+                print(nested_dom_info_)
+                utils.fill_files_only_once(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',nested_dom_info_)
         else:
             utils.delete_line(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn','NGRID')
             utils.delete_line(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn','NESTOUT')

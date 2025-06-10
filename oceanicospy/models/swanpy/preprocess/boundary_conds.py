@@ -6,6 +6,7 @@ import os
 
 from .. import utils
 from ..init_setup import InitialSetup
+from ....retrievals import *
 
 class BoundaryConditions(InitialSetup):
     """
@@ -94,6 +95,56 @@ class BoundaryConditions(InitialSetup):
 
         with open(output_file_path, 'a') as f:
             f.write(formatted_data)
+
+    def single_tpar_from_era5(self,filename,lati,long,wave_file='waves_era5'):
+        ds = xr.open_dataset(f'{self.dict_folders["input"]}domain_0{self.domain_number}/{wave_file}.nc')
+        time = ds.valid_time.values
+        time_UTC_offset = pd.Timedelta(hours=5)  # Adjusting for UTC-5
+        tiempo = pd.to_datetime(time) - time_UTC_offset
+        tiempo = tiempo[(tiempo >= self.ini_date) & (tiempo <= self.end_date)]
+        strtime = [tiempo[i].strftime("%Y%m%d.%H%M") for i in range(len(tiempo))]
+        lat_idx = np.where(np.isclose(ds.latitude.values, lati, atol=1e-4))[0]
+        lon_idx = np.where(np.isclose(ds.longitude.values, long, atol=1e-4))[0]
+        swh = np.zeros(len(tiempo))
+        pp = np.zeros(len(tiempo))
+        mwd = np.zeros(len(tiempo))
+        for i in range(len(tiempo)):
+            datai = ds.isel(latitude=lat_idx,longitude=lon_idx,valid_time=np.where(ds.valid_time.values==np.datetime64(tiempo[i]))[0][0])
+            swh[i] = datai.swh.values[0][0]
+            pp[i] = datai.pp1d.values[0][0]
+            mwd[i] = datai.mwd.values[0][0]
+        df=pd.DataFrame({'Tiempo':strtime,'Altura':swh,'Periodo':pp,'Direccion':mwd,'dd':40})
+        with open (filename+'.bnd', "w") as f:
+                f.write("TPAR \n")
+                np.savetxt(f,df,fmt =('%s  %7.9f  %8.9f  %9.9f  %5.1f'))
+        return df
+    
+    def waves_from_era5(self,wind_info,data_path='waves_era5'):
+        """
+        Downloads ERA5 wave data and writes it to an ASCII file.
+        Args:
+            data_path (str): Path to save the ERA5 wave data.
+        Returns:
+            None
+        """
+        
+        if not utils.verify_file(f'{self.dict_folders["input"]}domain_0{self.domain_number}/{data_path}.nc'):
+            getting_wave_data(wind_info['lat_ll_wind'], wind_info['lon_ll_wind'],
+                        wind_info['meshes_x_wind'], wind_info['meshes_y_wind'],
+                        wind_info['dx_wind'], wind_info['dy_wind'],
+                        f'{self.dict_folders["input"]}domain_0{self.domain_number}/{data_path}')
+        return None
+
+    def tpar_from_ERA5_wave_data_2(self,points_lat,points_lon):
+
+        for i in range(len(points_lon)):
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPARNorte{i+1}',max(points_lat),points_lon[i])
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPARSur{i+1}',min(points_lat),points_lon[i])
+
+        for j in range(len(points_lat)):
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPAREste{j+1}',points_lat[j],max(points_lon))
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPAROeste{j+1}',points_lat[j],min(points_lon))
+        return None
 
     def tpar_from_user(self):
         self.tpar_method_invoked=True

@@ -31,7 +31,7 @@ class InitialSetup():
         self.data_dir = self.script_dir.parent.parent.parent / 'data'
 
         shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/params_base_{self.stat_label.lower()}.txt', f'{self.dict_folders["run"]}/params.txt')
-        #shutil.copy(f'/home/fayalacruz/runs/modelling/inp_templates/params_base_{self.stat_label.lower()}_2.txt', f'{self.dict_folders["run"]}/params.txt')
+        #shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/params_base_{self.stat_label.lower()}_2.txt', f'{self.dict_folders["run"]}/params.txt')
         print ('\n*** Copying base swan configuration file into run folder ***\n')
 
         for key,value in self.dic_ini_data.items():

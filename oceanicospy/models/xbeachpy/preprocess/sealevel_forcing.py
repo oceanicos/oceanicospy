@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import glob as glob
 
 from .. import utils
 from ..init_setup import InitialSetup
@@ -51,14 +52,25 @@ class SeaLevelForcing(InitialSetup):
         self.dict_sealevel={'sealevelvalue':round(data_cecoldo['Nivel_mar [m]'].values[0],3)}
         return self.dict_sealevel
 
+    def txt_from_user(self):
+        """
+        Reads sea level parameters from a user-defined file and returns them as a dictionary.
+        """
+        sealevel_file_path = glob.glob(f'{self.dict_folders["input"]}*.wl')[0]
+        sealevel_filename=sealevel_file_path.split('/')[-1]
 
-    def fill_sealevel_section(self):
+        if not utils.verify_link(sealevel_filename,f'{self.dict_folders["run"]}/'):
+            utils.create_link(sealevel_filename,f'{self.dict_folders["input"]}/',
+                                f'{self.dict_folders["run"]}/')
+
+        self.sealevel_info = {"sealevelfilepath":sealevel_filename}
+        return self.sealevel_info
+
+    def fill_sealevel_section(self,dict_sealevel_data):
         """
         Fill the sealevel section of the simulation.
         Returns:
             None
         """
-        for param in self.dict_sealevel:
-            self.dict_sealevel[param]=str(self.dict_sealevel[param])
-
-        utils.fill_files(f'{self.dict_folders["run"]}params.txt',self.dict_sealevel)        
+        print (f'\n*** Adding/Editing winds information for domain in configuration file ***\n')
+        utils.fill_files(f'{self.dict_folders["run"]}params.txt',dict_sealevel_data)        

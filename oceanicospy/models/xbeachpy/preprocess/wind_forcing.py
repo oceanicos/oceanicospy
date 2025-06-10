@@ -1,6 +1,7 @@
 import xarray as xr
 import pandas as pd
 from pyproj import Proj, transform
+import glob as glob
 import numpy as np
 
 from .. import utils
@@ -97,8 +98,20 @@ class WindForcing(InitialSetup):
     #                           dt_wind_hours=1,end_wind_date=ds_to_save.index[-1])
     #     return self.wind_params
 
-    def fill_wind_section(self):
+    def txt_from_user(self):
+        """
+        Reads wind parameters from a user-defined file and returns them as a dictionary.
+        """
+        wind_file_path = glob.glob(f'{self.dict_folders["input"]}*.wnd')[0]
+        wind_filename = wind_file_path.split('/')[-1]
 
-        for param in self.wind_params:
-            self.wind_params[param]=str(self.wind_params[param])
-        utils.fill_files(f'{self.dict_folders["run"]}params.txt',self.wind_params)
+        if not utils.verify_link(wind_filename,f'{self.dict_folders["run"]}/'):
+            utils.create_link(wind_filename,f'{self.dict_folders["input"]}/',
+                                f'{self.dict_folders["run"]}/')
+
+        self.wind_info = {"windfilepath":wind_filename}
+        return self.wind_info
+
+    def fill_wind_section(self,dict_wind_data):
+        print (f'\n*** Adding/Editing winds information for domain in configuration file ***\n')
+        utils.fill_files(f'{self.dict_folders["run"]}params.txt',dict_wind_data)
