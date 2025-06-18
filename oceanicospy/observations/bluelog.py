@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 
-class BlueLogDataLoader:
+class BlueLog:
     """
     Class to load BlueLog CSV data starting from the configured start time.
     """
