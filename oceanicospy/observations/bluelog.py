@@ -1,17 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[4]:
-
-
-import pandas as pd
-from datetime import datetime
-from io import StringIO
-
-
-# In[7]:
-
-
 import pandas as pd
 from datetime import datetime
 from io import StringIO
@@ -81,20 +67,3 @@ class BlueLogDataLoader:
         if self.df is None:
             self.load_filtered_data()
         return self.df
-
-
-# In[8]:
-
-
-file_path = r'G:\Mi unidad\2025-I\Bluelog_RBR\DATOS\bluelog_data_20250604.csv'
-loader = BlueLogDataLoader(file_path)
-df_bluelog = loader.get_dataframe()
-
-print(df_bluelog.head())
-
-
-# In[ ]:
-
-
-
-
