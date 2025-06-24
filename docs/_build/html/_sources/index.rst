@@ -17,9 +17,4 @@ documentation for details.
    :caption: Contents:
 
    analysis
-   models/swanpy
-   models/xbeachpy
    observations
-   plots
-   retrievals
-
