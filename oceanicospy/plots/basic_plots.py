@@ -36,7 +36,7 @@ def plot_wave_parameters(wave_parameters,output_dir,metadata_text, parameters=['
     return fig,ax
 
 
-def plot_1d_wave_spectra(wave_spectra,output_dir,metadata_text, figsize=(12, 3), ylabel='f [Hz]', xlabel='Time', label_comparison=''):
+def plot_1d_wave_spectra(wave_spectra,ax,metadata_text=None,output_dir=None,figsize=(12, 3), ylabel='f [Hz]', xlabel='Time', label_comparison=''):
     """
     Function to plot the 1d wave spectra over time.
 
@@ -46,15 +46,25 @@ def plot_1d_wave_spectra(wave_spectra,output_dir,metadata_text, figsize=(12, 3),
     - ylabel: Label for the y-axis (default: 'f [Hz]').
     - xlabel: Label for the x-axis (default: 'Time').
     """
-    plt.figure(figsize=figsize)
 
-    plt.pcolormesh(wave_spectra['time'], wave_spectra['freq'][0],np.transpose(wave_spectra['S']),cmap='turbo')
-
-    plt.ylabel(ylabel)
-    plt.xlabel(xlabel)
-    plt.axhline(y=0.04,color='red',ls='--')
-    plt.colorbar(label='S [m^2/Hz]')
-    plt.savefig(f'{output_dir}/1d_spectra_series_{metadata_text}_{label_comparison}.png',dpi=500,bbox_inches='tight',pad_inches=0.1)
+    if output_dir == None:
+        cax = ax.contourf(
+            wave_spectra['time'],
+            wave_spectra['freq'],
+            np.transpose(wave_spectra['S']),
+            levels=np.linspace(0, 0.3, 31),
+            cmap='magma_r',
+            extend='max'
+        )
+        # ax.colorbar(label='S [m^2/Hz]')  
+        return ax,cax
+    else:
+        fig,ax = plt.subplots(1,1,figsize=figsize)
+        ax.pcolormesh(wave_spectra['time'], wave_spectra['freq'][0],np.transpose(wave_spectra['S']),cmap='plasma')
+        ax.set(ylabel=ylabel,xlabel=xlabel)
+        ax.axhline(y=0.04,color='red',ls='--')
+        ax.colorbar(label='S [m^2/Hz]')
+        plt.savefig(f'{output_dir}/1d_spectra_series_{metadata_text}_{label_comparison}.png',dpi=500,bbox_inches='tight',pad_inches=0.1)
 
 def plot_wind_rose(wind_data, output_dir, metadata_text, figsize=(8, 8), bins=None):
     """

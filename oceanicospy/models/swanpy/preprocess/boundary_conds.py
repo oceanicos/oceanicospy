@@ -126,7 +126,7 @@ class BoundaryConditions(InitialSetup):
             data_path (str): Path to save the ERA5 wave data.
         Returns:
             None
-        """
+-        """
         
         if not utils.verify_file(f'{self.dict_folders["input"]}domain_0{self.domain_number}/{data_path}.nc'):
             getting_wave_data(wind_info['lat_ll_wind'], wind_info['lon_ll_wind'],

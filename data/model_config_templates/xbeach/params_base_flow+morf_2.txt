@@ -39,7 +39,7 @@ tideloc      = 0
 zs0          = sealevelvalue
 
 %%% Bed composition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-D50          = D50_value
+D50          = 0.005
 
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0

@@ -1,18 +1,20 @@
-import pandas as pd
 import glob
-
+import pandas as pd
+import os
 from datetime import  timedelta
+
+from oceanicospy.utils import constants
 
 class AQUAlogger():
     """
     A class to handle reading and processing the data files recorded by AQUAlogger. 
 
-    Notes
+    Notes 
     -----
     10-Dec-2024 : Origination - Franklin Ayala
 
     """
-    def __init__(self,directory_path,sampling_data):
+    def __init__(self,directory_path: str,sampling_data: dict) -> None:
         """
         Initializes the AQUAlogger class with the given directory path, sampling data.
 
@@ -25,51 +27,88 @@ class AQUAlogger():
         """
         self.directory_path = directory_path
         self.sampling_data = sampling_data
-        
-    def read_records(self):
+
+    @property
+    def first_record_time(self) -> pd.Timestamp:
+        df = self._read_csv()
+        return df.index.min()
+
+    @property
+    def last_record_time(self) -> pd.Timestamp:
+        df = self._read_csv()
+        return df.index.max()
+    
+    def get_raw_records(self) -> pd.DataFrame:
         """
         Reads the .csv file from the device to create a DataFrame containing data.
 
         Returns
         -------
         pandas.DataFrame
-            A DataFrame containing the concatenated data from all the .wad files with an added 'burstId' column.
+            A DataFrame containing the raw data indexed by timestamp.
         """
 
-        # Write a conditional to know whether or not the depth series has already been calculated with the device software
+        filepath = self._get_csv_file()
+        df = self._read_csv(filepath)
+        df = self._parse_dates_and_trim(df)
+        df = self._compute_depth_from_pressure(df)
+        return df
 
-        self.filepath = glob.glob(self.directory_path+'*.csv')[0]
-        self.raw_data = pd.read_csv(self.filepath,names=['UNITS','date','Raw1','temperature','Raw2','pressure','Raw3','depth','nan'],
-                                    header=21,encoding='latin-1')
-      
-        self.raw_data['date'] = pd.to_datetime(self.raw_data['date'])
-        self.raw_data = self.raw_data.drop(['Raw1','Raw2','Raw3','nan'],axis=1)
-        self.raw_data = self.raw_data.set_index('date')
-        self.raw_data = self.raw_data[self.sampling_data['start_time']:self.sampling_data['end_time']]
-
-        # self.raw_data['depth']=((self.raw_data['P[bar]']-constants.ATM_PRESSURE_BAR)*10000)/(constants.WATER_DENSITY*constants.GRAVITY)
-        return self.raw_data
-
-    def get_clean_records(self):
+    def get_clean_records(self, detrend: bool = False)-> pd.DataFrame:
         """
         Processes the raw data by grouping the series per each burst
 
         Returns
         -------
         pandas.DataFrame
-            A cleaned DataFrame containing the columns '....', filtered by the specified time range.
+            A cleaned DataFrame with bursts identified by a 'burstId' column.
         """
 
-        self.clean_data = self.read_records()
-        self.clean_data['burstId'] = 0
-
-        self.burst_count = 0
-        for index, row in self.clean_data.iterrows():
-            if row['UNITS'] == 'BURSTSTART':
-                self.burst_count += 1
-            self.clean_data.loc[index:index+timedelta(seconds=1024), 'burstId'] = self.burst_count
-
+        self.clean_data = self.get_raw_records()
+        self.clean_data['burstId'] = (self.clean_data['UNITS'] == 'BURSTSTART').cumsum()
         self.clean_data = self.clean_data.drop(['UNITS'],axis=1)   
-        self.clean_data[self.clean_data.columns[:-1]] = self.clean_data.groupby('burstId')[self.clean_data.columns[:-1]].transform(lambda x: x - x.mean())
-        self.clean_data_detrended = self.clean_data
+
+        if detrend:
+            pass
+        #self.clean_data[self.clean_data.columns[:-1]] = self.clean_data.groupby('burstId')[self.clean_data.columns[:-1]].transform(lambda x: x - x.mean())
+        #self.clean_data_detrended = self.clean_data
         return self.clean_data
+
+    def _get_csv_file(self) -> str:
+        """Returns the first .csv file found in the directory. Raises if none are found."""
+
+        files = glob.glob(os.path.join(self.directory_path, '*.csv'))
+        if not files:
+            raise FileNotFoundError("No .csv file found in the specified directory.")
+        return files[0]
+
+    def _read_csv(self, filepath: str) -> pd.DataFrame:
+        if self.sampling_data.get('temperature', False):
+            columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
+            drop_cols = ['Raw1', 'Raw2', 'Raw3', 'nan']
+        else:
+            columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
+            drop_cols = ['Raw1', 'Raw2', 'nan']
+
+        df = pd.read_csv(filepath, names=columns, header=21, encoding='latin-1')
+        df = df.drop(columns=drop_cols)
+        return df
+
+    def _parse_dates_and_trim(self, df: pd.DataFrame) -> pd.DataFrame:
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df = df.set_index('date')
+
+        try:
+            start = pd.to_datetime(self.sampling_data['start_time'])
+            end = pd.to_datetime(self.sampling_data['end_time'])
+        except KeyError:
+            raise KeyError("Missing 'start_time' or 'end_time' in sampling_data.")
+        except Exception as e:
+            raise ValueError(f"Invalid time format in 'sampling_data': {e}")
+
+        return df[start:end]
+
+    def _compute_depth_from_pressure(self, df: pd.DataFrame) -> pd.DataFrame:
+        df['depth2'] = ((df['pressure[bar]'] - constants.ATM_PRESSURE_BAR) * 1e5) / (constants.WATER_DENSITY * constants.GRAVITY)
+        return df
+

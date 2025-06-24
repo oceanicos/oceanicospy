@@ -32,6 +32,8 @@ thetanaut = 1
 
 wbctype    = swan
 bcfile     = bcfilepath
+wbcversion = w_bc_version
+nspectrumloc = n_spectrum_loc
 
 %%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 windfile     = windfilepath
@@ -41,12 +43,12 @@ tideloc      = 1
 zs0file      = sealevelfilepath
 
 %%% Bed composition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-D50          = D50_value
+%D50          = D50_value
 
 %%% Veggetation parameteras %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-nveg         = number_species
-veggiefile   = vegetation_file
-veggiemapfile = vegetation_map_file
+%nveg         = number_species
+%veggiefile   = vegetation_file
+%veggiemapfile = vegetation_map_file
 
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0

@@ -9,6 +9,11 @@ from oceanicospy.plots import *
 
 out_dir = f'../tests/{Path(__file__).stem}'
 
+# Constants just for testing for prof. Freddy Bolaños
+GRAVITY = 9.81
+WATER_DENSITY = 1027
+ATM_PRESSURE_BAR = 1.01325
+
 # Create output directory if it doesn't exist
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
@@ -26,11 +31,24 @@ sampling_data_awac_2024=dict(anchoring_depth=11.6,sensor_height=1.20,sampling_fr
 sampling_data_list=[sampling_data_awac_2018,sampling_data_awac_2023,sampling_data_awac_2024]
 metadata_list=['awac_1000_2018','awac_1000_2023','awac_1000_2024']
 
-for idx,path_folder in enumerate(campaigns_directories[:1]):
+for idx,path_folder in enumerate(campaigns_directories[:2]):
     print(metadata_list[idx])
     AWAC_measurements = Awac(path_folder,sampling_data_list[idx])
     wave_records = AWAC_measurements.get_clean_wave_records()
 
+    # ------------------------It is just a test to export data for prof. Freddy Bolaños -----------------
+    wave_records['depth']=((wave_records['pressure']-ATM_PRESSURE_BAR)*10000)/(WATER_DENSITY*GRAVITY)
+
+    # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.       
+    columns_with_variables = [col for col in wave_records.columns if col != 'burstId']
+    wave_records[columns_with_variables] = wave_records.groupby('burstId')[columns_with_variables].transform(lambda x: x - x.mean())
+
+    # Subtracting the mean depth in each burst
+    wave_records['n']=wave_records['depth']
+    print(wave_records['n'])
+    wave_records['n'].to_csv(f'{out_dir}/{metadata_list[idx]}.csv')
+
+    # --------------------------end of testing --------------------
     fig,ax = plt.subplots(figsize=(12,4))
     ax.plot(wave_records.index,wave_records['pressure'])
 

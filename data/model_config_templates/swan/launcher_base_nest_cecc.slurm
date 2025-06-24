@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name="simulation_name"
-#SBATCH --cluster=fisica,cecc # puede ser cecc
+#SBATCH --cluster=fisica
 #SBATCH --output=path_caseoutput/simulation_name_swan_%j.out
 #SBATCH --error=path_caseoutput/simulation_name_swan_%j.err
 #SBATCH --partition=cpu.cecc
@@ -14,8 +14,6 @@
 unset  SINGULARITY_BINDPATH
 export SINGULARITY_BINDPATH="/scratchsan/medellin/:/scratchsan/medellin/"
 
-cd $SCRATCH_DIR
-
 parent_domains
 
 for domain in {1..number_domains}
@@ -26,7 +24,7 @@ echo "INICIO," $HOSTNAME `date`  2>&1 >>path_caseoutput/log_dom_0$domain.txt
 
 if [ "$domain" -gt 1 ]; then
     parent_domain=${bash_dict[$domain]}
-    mv "../domain_0$parent_domain/child_0$prev_domain.NEST" "child_0$parent_domain.NEST" 
+    mv "../domain_0${parent_domain}/child0${parent_domain}_0${domain}.NEST" "child0${parent_domain}_0${domain}.NEST" 
 fi
 singularity run /localapps/swan_41.51_test.sif  swanrun -input run.swn -omp $SLURM_NTASKS   2>&1 >>path_caseoutput/log_dom_0$domain.txt
 echo "FIN," $HOSTNAME `date`  2>&1 >>path_caseoutput/log_dom_0$domain.txt
