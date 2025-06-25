@@ -30,12 +30,18 @@ class AQUAlogger():
 
     @property
     def first_record_time(self) -> pd.Timestamp:
-        df = self._read_csv()
+        filepath = self._get_csv_file()
+        df = self._read_csv(filepath)
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df = df.set_index('date')
         return df.index.min()
 
     @property
     def last_record_time(self) -> pd.Timestamp:
-        df = self._read_csv()
+        filepath = self._get_csv_file()
+        df = self._read_csv(filepath)
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df = df.set_index('date')
         return df.index.max()
     
     def get_raw_records(self) -> pd.DataFrame:
@@ -82,7 +88,7 @@ class AQUAlogger():
             raise FileNotFoundError("No .csv file found in the specified directory.")
         return files[0]
 
-    def _read_csv(self, filepath: str) -> pd.DataFrame:
+    def _read_csv(self,filepath:str) -> pd.DataFrame:
         if self.sampling_data.get('temperature', False):
             columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
             drop_cols = ['Raw1', 'Raw2', 'Raw3', 'nan']
@@ -109,6 +115,6 @@ class AQUAlogger():
         return df[start:end]
 
     def _compute_depth_from_pressure(self, df: pd.DataFrame) -> pd.DataFrame:
-        df['depth2'] = ((df['pressure[bar]'] - constants.ATM_PRESSURE_BAR) * 1e5) / (constants.WATER_DENSITY * constants.GRAVITY)
+        df['depth_aux[m]'] = ((df['pressure[bar]'] - constants.ATM_PRESSURE_BAR) * 1e5) / (constants.WATER_DENSITY * constants.GRAVITY)
         return df
 
