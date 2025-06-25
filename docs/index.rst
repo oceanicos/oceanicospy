@@ -6,21 +6,21 @@
 oceanicospy documentation
 =========================
 
-This is the documentation for oceanicospy, a Python package for handling most of the programming tasks related with analysis of in-situ data,
-reading observations from a set of differentes sensors, automatize the modelling worfkflow and plotting some common and practical figures.
+This is the documentation for oceanicospy, a Python package for handling
+most of the programming tasks related with analysis of in-situ data,
+reading observations from a set of differentes sensors, automatize
+the modelling worfkflow and plotting some common and practical figures.
 
 Add your content using ``reStructuredText`` syntax. See the
 `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
 documentation for details.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
-
-   analysis
-   models
+   analysis/index
+   models/index
+   observations/index
    plots
    retrievals
-   observations
-   observations/AQUAlogger
