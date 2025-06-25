@@ -8,7 +8,7 @@ oceanicospy documentation
 
 This is the documentation for oceanicospy, a Python package for handling
 most of the programming tasks related with analysis of in-situ data,
-reading observations from a set of differentes sensors,automatize
+reading observations from a set of differentes sensors, automatize
 the modelling worfkflow and plotting some common and practical figures.
 
 Add your content using ``reStructuredText`` syntax. See the
@@ -18,7 +18,6 @@ documentation for details.
 .. toctree::
    :maxdepth: 3
    :caption: Contents:
-
 
    analysis/index
    models/index

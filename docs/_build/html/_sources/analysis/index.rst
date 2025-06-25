@@ -8,4 +8,3 @@ This is the analysis page.
    :caption: Contents:
 
    spectral
-   
