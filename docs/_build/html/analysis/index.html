@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -40,10 +40,11 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'analysis/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Spectral" href="spectral.html" />
+    <link rel="next" title="Signal conditioning" href="conditioning.html" />
     <link rel="prev" title="oceanicospy documentation" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -151,7 +152,7 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Analysis</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conditioning.html">Signal conditioning</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -317,11 +318,15 @@ document.write(`
                   
   <section id="analysis">
 <h1>Analysis<a class="headerlink" href="#analysis" title="Link to this heading">#</a></h1>
-<p>This is the analysis page.</p>
+<p>Most of the time series recorded with the available devices need to be analyzed using signal processing techniques.
+This section provides a set of tools to perform different types of methods such as Fourier analysis,
+Hilbert and wavelet transforms, and Empirical Mode Decomposiction (EMD). These methods are useful not only for wind-wave analysis,
+but also for other types of waves like infragravity waves (IG).</p>
+<p>This section also includes tools for spectral analysis like filtering, windowing and spectral density estimation.</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conditioning.html">Signal conditioning</a></li>
 </ul>
 </div>
 </section>
@@ -347,11 +352,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="spectral.html"
+       href="conditioning.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Spectral</p>
+        <p class="prev-next-title">Signal conditioning</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

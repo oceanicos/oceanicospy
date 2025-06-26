@@ -12,8 +12,4 @@ This section also includes tools for spectral analysis like filtering, windowing
    :maxdepth: 1
    :caption: Contents:
 
-<<<<<<< HEAD
-   spectral
-=======
    conditioning
->>>>>>> ffa57ed5af731bdbfed4eb543794ae954a069d5a
