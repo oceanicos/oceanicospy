@@ -138,12 +138,12 @@ class BoundaryConditions(InitialSetup):
     def tpar_from_ERA5_wave_data_2(self,points_lat,points_lon):
 
         for i in range(len(points_lon)):
-            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPARNorte{i+1}',max(points_lat),points_lon[i])
-            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPARSur{i+1}',min(points_lat),points_lon[i])
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TparN2025_{i+1}',max(points_lat),points_lon[i])
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TparS2025_{i+1}',min(points_lat),points_lon[i])
 
         for j in range(len(points_lat)):
-            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPAREste{j+1}',points_lat[j],max(points_lon))
-            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TPAROeste{j+1}',points_lat[j],min(points_lon))
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TparE2025_{j+1}',points_lat[j],max(points_lon))
+            self.single_tpar_from_era5(f'{self.dict_folders["input"]}domain_0{self.domain_number}/TparO2025_{j+1}',points_lat[j],min(points_lon))
         return None
 
     def tpar_from_user(self):

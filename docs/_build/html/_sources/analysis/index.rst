@@ -13,3 +13,4 @@ This section also includes tools for spectral analysis like filtering, windowing
    :caption: Contents:
 
    conditioning
+   spectral

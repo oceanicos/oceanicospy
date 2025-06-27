@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -43,6 +43,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'analysis/spectral';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Models" href="../models/index.html" />
+    <link rel="prev" title="Signal conditioning" href="conditioning.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -105,8 +107,6 @@
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -149,9 +149,10 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Analysis</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Spectral</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -315,8 +316,43 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="spectral">
-<h1>Spectral<a class="headerlink" href="#spectral" title="Link to this heading">#</a></h1>
+  <section id="module-oceanicospy.analysis.spectral.get_spectra_for_bursts">
+<span id="spectral"></span><h1>Spectral<a class="headerlink" href="#module-oceanicospy.analysis.spectral.get_spectra_for_bursts" title="Link to this heading">#</a></h1>
+<p>Get wave spectra for each burst in the cleaned records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param clean_records<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame containing cleaned records with columns for ‘pressure’, ‘u’, ‘v’, and ‘burstId’.</p>
+</dd>
+<dt class="field-even">type clean_records<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-odd">param sampling_data<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing sampling information with keys:
+- ‘sampling_freq’: Sampling frequency of the data.
+- ‘anchoring_depth’: Depth at which the sensor is anchored.
+- ‘sensor_height’: Height of the sensor above the seabed.</p>
+</dd>
+<dt class="field-even">type sampling_data<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wave_spectra_data</strong> (<em>dict</em>) – Dictionary containing wave spectra data with keys:
+- ‘S’: List of power spectral densities for each burst.
+- ‘dir’: List of directions (currently not computed, placeholder).
+- ‘freq’: List of frequency arrays for each burst.
+- ‘time’: List of timestamps corresponding to each burst.</p></li>
+<li><p><strong>wave_params_data</strong> (<em>pandas.DataFrame</em>) – DataFrame containing wave parameters with columns:
+- ‘Hm0’: Zero-moment wave height.
+- ‘Hrms’: Root mean square wave height.
+- ‘Hmean’: Mean wave height.
+- ‘Tp’: Peak period.
+- ‘Tm01’: Mean period (first moment).
+- ‘Tm02’: Mean period (second moment).
+- Index is the timestamp corresponding to each burst.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 
 
@@ -330,6 +366,24 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="conditioning.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Signal conditioning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../models/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

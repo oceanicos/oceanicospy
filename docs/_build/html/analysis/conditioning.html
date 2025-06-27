@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -44,7 +44,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'analysis/conditioning';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Models" href="../models/index.html" />
+    <link rel="next" title="Spectral" href="spectral.html" />
     <link rel="prev" title="Analysis" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -153,6 +153,7 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Analysis</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral.html">Spectral</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -319,6 +320,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windowing">Windowing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sliding-windowing">Sliding windowing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welch-method">Welch method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing">Smoothing</a></li>
 </ul>
             </nav>
         </div>
@@ -363,10 +365,23 @@ maximum frequency that can be processed. Usually a sampling rate of 1Hz is enoug
 leading to distortion in the reconstructed signal. This happens when the sampling frequency is less than twice
 the highest frequency present in the signal (the Nyquist frequency).</p>
 <p>Let’s have a look at the following example:</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/aliased_signal_example.png"><img alt="Aliased" src="../_images/aliased_signal_example.png" style="width: 90%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Illustration of aliasing. The original signal is sampled at a rate that is too low, causing high-frequency components to be misrepresented as lower frequencies.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The sampling frequency is clearly below the Nyquist frequency. The PSD of the aliased signal is also computed.</p>
 <figure class="align-center">
-<a class="reference internal image-reference" href="../_images/aliased_signal_example.png"><img alt="Example of Nyquist frequency" src="../_images/aliased_signal_example.png" style="width: 90%;" />
+<a class="reference internal image-reference" href="../_images/psd_aliased_signal_example.png"><img alt="PSD" src="../_images/psd_aliased_signal_example.png" style="width: 90%;" />
 </a>
 </figure>
+<p>When a continuous signal with frequency components above the Nyquist frequency is sampled,
+those high frequencies are misrepresented in the sampled signal. They “fold” back into the frequency range
+<span class="math notranslate nohighlight">\([0, f_{s}/2]\)</span>, creating aliased frequencies. In this case, the original signal has a frequency of <span class="math notranslate nohighlight">\(2\,\mathrm{Hz}\)</span>, but the sampling frequency
+is 0.5Hz, which is below the Nyquist frequency (1Hz). This means the sampled signal will appear to have a frequency of 0.5Hz, which is incorrect.
+It’s like mirroring the frequency around the Nyquist frequency</p>
 </section>
 <section id="windowing">
 <h2>Windowing<a class="headerlink" href="#windowing" title="Link to this heading">#</a></h2>
@@ -375,42 +390,74 @@ This means that the signal is repeated indefinitely in both directions.
 However, in practice, we only have a finite segment of the signal, so the signal will not likely
 start and end at the same phase/amplitude values. To avoid introducing artifacts in the frequency domain,
 we apply a windowing function to the time-domain signal before performing the FFT.</p>
-<p>Assuming that we have the following time series:</p>
-<p>INSERT PLOT HERE</p>
+<p>Assuming that we have the following non fully perodic time series:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/non_full_periodic_signal.png"><img alt="Non fully periodic signal" src="../_images/non_full_periodic_signal.png" style="width: 90%;" />
+</a>
+</figure>
 <p>Notice that the end part of the time series does not match the beginning part. Those discontinuities at
 the beginning and end of the time series will generate spurious amplitudes in the adjacent frequencies. We can compute
 the Power Spectral Density (PSD) as follows:</p>
-<p>INSERT FUNCTIONS HERE</p>
+<p>INSERT EQUATION HERE</p>
 <p>A quick way to visualize this effect is then plotted in the following figure:</p>
-<p>INSERT PLOT HERE</p>
-<p>A technical way to avoid this effect is to apply a windowing function to the time series before computing the FFT.
-The windowing function is a mathematical function that tapers the signal to zero at the edges, reducing the discontinuities.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_non_periodic_signal.png"><img alt="PSD for non fully periodic signal" src="../_images/psd_non_periodic_signal.png" style="width: 90%;" />
+</a>
+</figure>
+<p>Fourier Transform can introduce “spectral leakage”, spreading the energy across multiple frequency bins
+rather than concentrating it at the correct frequency. A technical way to avoid this effect is to apply a windowing function
+to the time series before computing the FFT.  The windowing function is a mathematical function that tapers the signal to zero at the edges,
+reducing the discontinuities.</p>
 <p>So let’s say you have a discrete-time signal:</p>
 <div class="math notranslate nohighlight">
 \[x[n], \quad n = 0, 1, 2, ..., N-1\]</div>
-<p>We can define a window function ( w[n] ) that is also of length ( N ):</p>
+<p>We can define a window function ( w[n] ), such as the hamming window, that is also of length ( N ):</p>
 <div class="math notranslate nohighlight">
 \[w[n] = 0.54 - 0.46 \cos\left( \frac{2\pi n}{N-1} \right), \quad n = 0, 1, 2, ..., N-1\]</div>
-<p>This gives us set of weights the same length as our signal.</p>
-<p>INSERT PLOT HERE</p>
-<p>If we apply this window function to our signal, we get a new signal:</p>
+<p>This gives us set of weights the same length as our signal. Other windowing functions can be used, such as Hanning, Blackman, etc.
+Each has its own characteristics and is chosen based on the specific requirements of the analysis.:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/window_types.png"><img alt="Types of windowing functions" src="../_images/window_types.png" style="width: 90%;" />
+</a>
+</figure>
+<p>If we apply this hanning window to our signal, we get a new signal in the time domain:</p>
 <div class="math notranslate nohighlight">
 \[x_w[n] = x[n] \cdot w[n]\]</div>
 <p>This tapers the signal so that it smoothly goes to zero at the edges, reducing the sudden jumps that cause spectral leakage.</p>
-<p>Other windowing functions can be used, such as Hanning, Blackman, etc. Each has its own characteristics
-and is chosen based on the specific requirements of the analysis.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/windowed_signals.png"><img alt="Windowed signals under different windowing functions" src="../_images/windowed_signals.png" style="width: 90%;" />
+</a>
+</figure>
+<p>Now, when we compute the FFT of this windowed signal, we’ll get a cleaner frequency spectrum with less spectral leakage. It
+has to be mentioned that the windowing functions does change the spectral peak and, ultimately, the energy content of the signal.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_windowed_signal.png"><img alt="PSD for windowed signal" src="../_images/psd_windowed_signal.png" style="width: 90%;" />
+</a>
+</figure>
 </section>
 <section id="sliding-windowing">
 <h2>Sliding windowing<a class="headerlink" href="#sliding-windowing" title="Link to this heading">#</a></h2>
 <p>Another important requirement to use FFT Is that the signal needs to be stationary (i.e its statistical properties do not change over time).
 Oceanographic time series, particularly pressure or surface level series, are not stationary hence can not be directly used in FFT.</p>
+<p>Each window is certain percentage overlapped with the next one as is shown:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/non_stationary_signal.png"><img alt="Sliding window example" src="../_images/non_stationary_signal.png" style="width: 90%;" />
+</a>
+</figure>
+<p>If we directly compute the PSD of the whole signal,…</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_non_stationary_signal.png"><img alt="PSD for non stationary signal" src="../_images/psd_non_stationary_signal.png" style="width: 90%;" />
+</a>
+</figure>
 <p>To overcome this limitation, a technique is used to analyze a portion of a signal at a time, by moving
 the previously defined window across the signal. By breaking the signal into short time segments (windows),
 we can assume local stationarity — that the signal is approximately stationary within each small window.</p>
-<p>Each window is certain percentage overlapped with the next one as is shown:</p>
-<p>INSERT PLOT HERE.</p>
 <p>The PSD can be computed for each overlapping segment. The purpose of the overlapping is having a lower variance
 in the final PSD estimate because the amount of segments is higher than not overlapping.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_segments_mean.png"><img alt="PSD for each segment and their mean" src="../_images/psd_segments_mean.png" style="width: 90%;" />
+</a>
+</figure>
 <p>Also, this technique avoids wasting data near the segment boundaries, which is especially important
 because windowing reduces the weight of data at the edges.</p>
 </section>
@@ -427,6 +474,19 @@ because windowing reduces the weight of data at the edges.</p>
 <li><p><span class="math notranslate nohighlight">\(K\)</span>: number of segments</p></li>
 </ul>
 <p>The PSD estimate is the average of all the individual PSD computed for each segments</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/welch_and_fft.png"><img alt="Comparison of Welch method and the direct FFT" src="../_images/welch_and_fft.png" style="width: 90%;" />
+</a>
+</figure>
+<p>The frequency resolution of the PSD estimate is determined by the length of the segment and the sampling frequency.</p>
+<div class="math notranslate nohighlight">
+\[\Delta f = \frac{f_s}{N}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(N\)</span> is the length of the segment. Based on that, the frequency resolution is expected to be lower when the Welch method is used,
+as the segments are shorter than the whole signal, which is the case when the FFT is computed directly.</p>
+</section>
+<section id="smoothing">
+<h2>Smoothing<a class="headerlink" href="#smoothing" title="Link to this heading">#</a></h2>
+<p>The final PSD estimate can be further smoothed to reduce noise and enhance the visibility of significant peaks.</p>
 </section>
 </section>
 
@@ -451,11 +511,11 @@ because windowing reduces the weight of data at the edges.</p>
       </div>
     </a>
     <a class="right-next"
-       href="../models/index.html"
+       href="spectral.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Models</p>
+        <p class="prev-next-title">Spectral</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -480,6 +540,7 @@ because windowing reduces the weight of data at the edges.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windowing">Windowing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sliding-windowing">Sliding windowing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welch-method">Welch method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing">Smoothing</a></li>
 </ul>
   </nav></div>
 

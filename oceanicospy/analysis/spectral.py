@@ -6,173 +6,9 @@ from scipy.signal import detrend
 from scipy.signal import welch, windows
 from PyEMD import CEEMDAN,EMD
 
-from ..utils import wave_props,constants
+from ..utils import wave_props,constants,extras
 
 np.seterr(divide = 'ignore') 
-
-def spectra_from_puv(clean_records,sampling_data):
-    """
-    Compute wave spectra and wave parameters from pressure, u, and v components.
-
-    Parameters
-    ----------
-    clean_records : pandas.DataFrame
-        DataFrame containing cleaned records with columns for 'pressure', 'u', 'v', and 'burstId'.
-    sampling_data : dict
-        Dictionary containing sampling information with keys:
-        - 'sampling_freq': Sampling frequency of the data.
-        - 'anchoring_depth': Depth at which the sensor is anchored.
-        - 'sensor_height': Height of the sensor above the seabed.
-
-    Returns
-    -------
-    wave_spectra_data : dict
-        Dictionary containing wave spectra data with keys:
-        - 'S': List of power spectra for each burst.
-        - 'dir': List of direction spectra for each burst.
-        - 'freq': List of frequency arrays for each burst.
-        - 'time': List of timestamps corresponding to each burst.
-    wave_params_data : pandas.DataFrame
-        DataFrame containing wave parameters with columns:
-        - 'time': Timestamps corresponding to each burst.
-        - 'Hm0': Zero-moment wave height.
-        - 'Hrms': Root mean square wave height.
-        - 'Hmean': Mean wave height.
-        - 'Tp': Peak period.
-        - 'Tm01': Mean period (first moment).
-        - 'Tm02': Mean period (second moment).
-    """
-    wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
-    wave_params_data={param:[] for param in wave_params}
-
-    wave_spectra_vars=["S","dir","freq","time"]
-    wave_spectra_data={var:[] for var in wave_spectra_vars}
-
-    clean_data=clean_records
-
-    for i in clean_data['burstId'].unique():
-
-        burst_series = clean_data[clean_data['burstId'] == i]
-
-        burst_series_detrended = burst_series.iloc[:,:-1].apply(lambda x: detrend(x, type='constant'), axis=0)
-        burst_series_detrended[clean_records.columns[-1]] = burst_series.iloc[:, -1]
-
-        # Compute the spectrum
-        power, direction, freqs, Su, Sv = spectrum_puv_method(burst_series_detrended['pressure'],burst_series_detrended['u'],
-                                                                        burst_series_detrended['v'],sampling_data['sampling_freq'], 
-                                                                        sampling_data['anchoring_depth'], sampling_data['sensor_height'])                                                     
-        wave_spectra_data["S"].append(power)
-        wave_spectra_data["dir"].append(direction)
-        wave_spectra_data["freq"].append(freqs)
-        wave_spectra_data["time"].append(burst_series_detrended.index[0])
-
-        # Compute wave parameters from the spectrum
-        Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
-
-        # Store wave parameters
-        wave_params_data['time'].append(burst_series_detrended.index[0])
-        wave_params_data['Hm0'].append(Hm0)
-        wave_params_data['Hrms'].append(Hrms)
-        wave_params_data['Hmean'].append(Hmean)
-        wave_params_data['Tp'].append(Tp)
-        wave_params_data['Tm01'].append(Tm01)
-        wave_params_data['Tm02'].append(Tm02)
-
-    wave_params_data = pd.DataFrame(wave_params_data).set_index('time')
-    return wave_spectra_data,wave_params_data
-
-def spectrum_puv_method(p,u,v,sampling_freq,anchoring_depth,sensor_height):
-    """
-    This function uses the PUV method to obtain the frequency spectrum of the waves measured
-    with a pressure sensor at a specified depth
-    
-    The scalar spectrum is estimated using the Fast Fourier Transform by windows to reduce
-    the lekaege. 
-    
-    Parameters
-    ----------
-    p : list or ndarray
-        An array of the detrended presure records per burst
-    u : list or ndarray
-        An array of the detrended x-component of velocity records per burst
-    v : list or ndarray
-        An array of the detrended y-component of velocity presure records per burst   
-    sampling_freq : float
-        Sampling frequency for the records
-    anchoring_depth : float
-        Depth at where the device was settled on the bottom.
-    sensor_height: float
-        Distance from the sensor to the bottom.        
-    
-    Returns
-    -------
-    S : ndarray
-        Density variance spectrum
-    Dir : ndarray
-        Direction array    
-    f: ndarray
-        Frequency of the spectrum    
-    Su: ndarray
-        x-component of velocity
-    Sv: ndarray
-        y-component of velocity
-
-    Notes
-    -----
-    The SWASH (Simulating WAves till SHore) model script: crosgk.m is used to estimate the cross-spectrum
-    between pressure velocity u and velocity v.
-
-    18-Jan-2014 : First Matlab function - Daniel Peláez
-
-    """
-
-    # Variable definition
-    nfft = 128
-    f = (sampling_freq / nfft) * np.arange(0, nfft / 2)
-    f = f.reshape(-1, 1)
-
-    # Low frequencies cutoff
-    cutoff = 0.03
-    ix = np.where(f >= cutoff)[0]
-    f = f[ix]
-
-    # Dispersion relation
-    w = 2 * np.pi * f
-    k0 = (w**2) / constants.GRAVITY
-    for cnt in range(100):
-        k = (w**2) / (constants.GRAVITY * np.tanh(k0 * anchoring_depth))
-        k0 = k
-
-    # Transference function
-    Kp = np.cosh(k * anchoring_depth) / np.cosh(k * sensor_height)
-    Kp[Kp > 10] = 10
-
-    # Cross-spectrum
-    Pp, _, _ = crosgk(p, p, nfft, 1, 1/sampling_freq, 1, 0)
-    Pu, _, _ = crosgk(p, u, nfft, 1, 1/sampling_freq, 1, 0)
-    Pv, _, _ = crosgk(p, v, nfft, 1, 1/sampling_freq, 1, 0)
-
-    # Normalization factor
-    fac = 1
-
-    # Pressure
-    Sp = Pp[:, 0]
-    Sp = Sp / fac
-
-    # Velocity
-    Su = Pu[:, 2]
-    Su = Su[ix] / fac
-    Sv = Pv[:, 2]
-    Sv = Sv[ix] / fac
-
-    Kp=Kp.flatten()
-    S = Sp[ix] * (Kp**2)
-
-    # Direction
-    Dir = (180 / np.pi) * np.arctan2(Sv, Su)
-    Dir[Dir < 0] += 180
-
-    return S, Dir, f, Su, Sv
 
 def crosgk(X, Y, N, M, DT=1, DW=1, stats=0):
     """
@@ -305,185 +141,8 @@ def crosgk(X, Y, N, M, DT=1, DW=1, stats=0):
 
     return P, F, dof
 
-def wave_spectra_and_params_fft(clean_records,sampling_data):
-    """
-    Compute wave spectra and wave parameters from FFT.
-
-    Parameters
-    ----------
-    clean_records : pandas.DataFrame
-        DataFrame containing the cleaned records with columns such as 'pressure', 'burstId', etc.
-    sampling_data : dict
-        Dictionary containing sampling information with keys:
-        - 'sampling_freq': Sampling frequency of the data.
-        - 'anchoring_depth': Depth at which the sensor is anchored.
-        - 'sensor_height': Height of the sensor from the seabed.
-
-    Returns
-    -------
-    wave_spectra_data : dict
-        Dictionary containing wave spectra data with keys:
-        - 'S': List of power spectral densities for each burst.
-        - 'dir': List of directions (currently not computed, placeholder).
-        - 'freq': List of frequency arrays for each burst.
-        - 'time': List of timestamps corresponding to each burst.
-    wave_params_data : pandas.DataFrame
-        DataFrame containing wave parameters with columns:
-        - 'Hm0': Zero-moment wave height.
-        - 'Hrms': Root mean square wave height.
-        - 'Hmean': Mean wave height.
-        - 'Tp': Peak period.
-        - 'Tm01': Mean period (first moment).
-        - 'Tm02': Mean period (second moment).
-        - Index is the timestamp corresponding to each burst.
-    """
-
-    # The depth is computed dividing the pressure by the density and gravity. 
-    # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
-    clean_data=clean_records.copy()
-    if np.all(['depth[m]' not in column.lower() for column in clean_data.columns]):
-        clean_data['depth[m]']=((clean_data['pressure[bar]']-constants.ATM_PRESSURE_BAR)*100000)/(constants.WATER_DENSITY*constants.GRAVITY)
-
-    # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.       
-    columns_with_variables = [col for col in clean_data.columns if col != 'burstId']
-    # Subtracting the mean depth in each burst
-    clean_data[columns_with_variables] = clean_data.groupby('burstId')[columns_with_variables].transform(lambda x: x - x.mean())
-
-    clean_data['n']=clean_data['depth[m]']
-    hourly_timeindex = clean_data.index.floor('h').unique().sort_values()
-    wave_params=["Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
-    wave_params_data={param:np.zeros((hourly_timeindex.shape)) for param in wave_params}
-
-    wave_spectra_vars=["S","dir","freq","time"]
-    wave_spectra_data={var:[] for var in wave_spectra_vars}
-
-    wave_spectra_data['time'] = hourly_timeindex
-    wave_params_data['time'] = hourly_timeindex
-
-    if 'burstId' in clean_data.columns:
-        #results = clean_data.groupby("burstId").apply(lambda burst: spectrum_fft(burst['n'],sampling_data['sampling_freq'],
-        #                                                                        sampling_data['anchoring_depth'], 
-        #                                                                        sampling_data['sensor_height']))  
-        for idx,burst in enumerate(clean_data["burstId"].unique()):
-            burst_series = clean_data[clean_data['burstId'] == burst]
-            # Create a time index for each expected burst based on the sampling frequency and burst length
-            # burst_start_time = burst_series.index[0]
-            # burst_end_time = burst_series.index[-1]
-            # expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, freq=pd.Timedelta(seconds=1/sampling_data['sampling_freq']))
-
-            # # Find which expected times are missing in the burst
-            # missing_times = expected_times.difference(burst_series.index)
-            # if not missing_times.empty:
-            #     print(f"Missing timestamps in burst {hourly_timeindex[idx]}: {missing_times}")
-            
-            print(burst_series.index[0])
-            #Compute the spectrum
-            power, power_kp, freqs, T, kpmin, fmax_kp = spectrum_fft(burst_series['n'], sampling_data['sampling_freq'],
-                                                                                   sampling_data['anchoring_depth'], 
-                                                                                   sampling_data['sensor_height'])
-            wave_spectra_data["S"].append(power_kp)
-
-            # Compute wave parameters from the spectrum
-            Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
-
-            # Store wave parameters
-            wave_params_data['Hm0'][idx] = Hm0
-            wave_params_data['Hrms'][idx] = Hrms
-            wave_params_data['Hmean'][idx] = Hmean
-            wave_params_data['Tp'][idx] = Tp
-            wave_params_data['Tm01'][idx] = Tm01
-            wave_params_data['Tm02'][idx] = Tm02
-        
-        wave_spectra_data['freq'] = freqs
-        wave_spectra_data['S']=np.array(wave_spectra_data['S'])
-
-        wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
-    return wave_spectra_data,wave_params_data
-
-def wave_spectra_and_params_smoothed(clean_records,sampling_data):
-    """
-    Compute wave spectra and wave parameters from FFT.
-
-    Parameters
-    ----------
-    clean_records : pandas.DataFrame
-        DataFrame containing the cleaned records with columns such as 'pressure', 'burstId', etc.
-    sampling_data : dict
-        Dictionary containing sampling information with keys:
-        - 'sampling_freq': Sampling frequency of the data.
-        - 'anchoring_depth': Depth at which the sensor is anchored.
-        - 'sensor_height': Height of the sensor from the seabed.
-
-    Returns
-    -------
-    wave_spectra_data : dict
-        Dictionary containing wave spectra data with keys:
-        - 'S': List of power spectral densities for each burst.
-        - 'dir': List of directions (currently not computed, placeholder).
-        - 'freq': List of frequency arrays for each burst.
-        - 'time': List of timestamps corresponding to each burst.
-    wave_params_data : pandas.DataFrame
-        DataFrame containing wave parameters with columns:
-        - 'Hm0': Zero-moment wave height.
-        - 'Hrms': Root mean square wave height.
-        - 'Hmean': Mean wave height.
-        - 'Tp': Peak period.
-        - 'Tm01': Mean period (first moment).
-        - 'Tm02': Mean period (second moment).
-        - Index is the timestamp corresponding to each burst.
-    """
-
-    # The depth is computed dividing the pressure by the density and gravity. 
-    # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
-    clean_data=clean_records.copy()
-    if np.all(['depth[m]' not in column.lower() for column in clean_data.columns]):
-        clean_data['depth[m]']=((clean_data['pressure[bar]']-constants.ATM_PRESSURE_BAR)*100000)/(constants.WATER_DENSITY*constants.GRAVITY)
-
-    # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.       
-    columns_with_variables = [col for col in clean_data.columns if col != 'burstId']
-    # Subtracting the mean depth in each burst
-    clean_data[columns_with_variables] = clean_data.groupby('burstId')[columns_with_variables].transform(lambda x: x - x.mean())
-
-    clean_data['n']=clean_data['depth[m]']
-    hourly_timeindex = clean_data.index.floor('h').unique().sort_values()
-    wave_params=["Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
-    wave_params_data={param:np.zeros((hourly_timeindex.shape)) for param in wave_params}
-
-    wave_spectra_vars=["S","dir","freq","time"]
-    wave_spectra_data={var:[] for var in wave_spectra_vars}
-
-    wave_spectra_data['time'] = hourly_timeindex
-    wave_params_data['time'] = hourly_timeindex
-
-    if 'burstId' in clean_data.columns:
-        #results = clean_data.groupby("burstId").apply(lambda burst: spectrum_fft(burst['n'],sampling_data['sampling_freq'],
-        #                                                                        sampling_data['anchoring_depth'], 
-        #                                                                        sampling_data['sensor_height']))  
-        for idx,burst in enumerate(clean_data["burstId"].unique()):
-            burst_series = clean_data[clean_data['burstId'] == burst]
-            len_burst_series = len(burst_series)
-            #Compute the spectrum
-            freqs,power,dof = compute_smoothed_psd(burst_series['n'], sampling_data['sampling_freq'],1024,2)
-            wave_spectra_data["S"].append(power)
-
-            # Compute wave parameters from the spectrum
-            Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
-
-            # Store wave parameters
-            wave_params_data['Hm0'][idx] = Hm0
-            wave_params_data['Hrms'][idx] = Hrms
-            wave_params_data['Hmean'][idx] = Hmean
-            wave_params_data['Tp'][idx] = Tp
-            wave_params_data['Tm01'][idx] = Tm01
-            wave_params_data['Tm02'][idx] = Tm02
-        
-        wave_spectra_data['freq'] = freqs
-        wave_spectra_data['S']=np.array(wave_spectra_data['S'])
-
-        wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
-    return wave_spectra_data,wave_params_data
-
-def spectrum_fft(burst_serie,sampling_freq,anchoring_depth,sensor_height):
+@extras.timing_decorator
+def compute_spectrum_from_direct_fft(burst_serie,sampling_freq,anchoring_depth,sensor_height):
     """
     Computes the density variance spectrum based on the Fast Fourier transform. 
     
@@ -514,15 +173,12 @@ def spectrum_fft(burst_serie,sampling_freq,anchoring_depth,sensor_height):
     01-Sep-2023 : Origination - Juan Diego Toro
 
     """
-    start_time = time.time()
-
     freq = np.fft.fftfreq(len(burst_serie),1/sampling_freq)
-    print(np.max(freq))
     T = 1/freq
     fourier = np.fft.fft(burst_serie)
 
     # Filtering frequencies 
-    target_freqs = np.where((np.abs(freq>=0.003))&((np.abs(freq<=1))))[0]
+    target_freqs = np.where((np.abs(freq>=0.0009))&((np.abs(freq<=1))))[0]
     freq = freq[target_freqs]
     fourier= fourier[target_freqs]
 
@@ -539,29 +195,33 @@ def spectrum_fft(burst_serie,sampling_freq,anchoring_depth,sensor_height):
     Kp[Kp>10] = 10
     fmax_kp = 1/(2*np.pi)*np.sqrt(9.8*np.pi/(anchoring_depth-sensor_height)*np.tanh(np.pi/(anchoring_depth-sensor_height)*anchoring_depth))
     power_kp = np.array(power)/(np.array(Kp)**2)
-    #print(power)
-    end_time = time.time()
-    print(f"Function took {end_time - start_time:.4f} seconds")
     return power,power_kp,freq,T,Kpmin,fmax_kp
 
-def compute_smoothed_psd(burst_serie, sampling_freq, window_length, smoothing_bins):
+@extras.timing_decorator
+def compute_spectrum_from_welch(burst_serie,sampling_freq,window_length,smoothing_bins):
     """
     Compute PSD using Welch method and smooth across frequency bins.
-    
-    Parameters:
-    - signal: 1D numpy array
-    - fs: sampling frequency in Hz
-    - window_length: length of Hamming window in samples
-    - smoothing_bins: number of adjacent frequency bins to smooth over
 
-    Returns:
-    - freqs: frequency array
-    - psd_smoothed: PSD after smoothing
-    - dof: estimated degrees of freedom
+    Parameters
+    ----------
+    burst_serie : ndarray
+        1D numpy array containing the signal.
+    sampling_freq : float
+        Sampling frequency in Hz.
+    window_length : int
+        Length of the Hamming window in samples.
+    smoothing_bins : int
+        Number of adjacent frequency bins to smooth over.
+
+    Returns
+    -------
+    freqs : ndarray
+        Frequency array.
+    psd_smoothed : ndarray
+        PSD after smoothing.
+    dof : float
+        Estimated degrees of freedom.
     """
-
-    start_time = time.time()
-
     window = windows.hamming(window_length)
     overlap = window_length // 2
 
@@ -583,10 +243,172 @@ def compute_smoothed_psd(burst_serie, sampling_freq, window_length, smoothing_bi
     # DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)
     n_segments = 1 + (len(burst_serie) - window_length) // (window_length - overlap)
     dof = 2 * n_segments * (1 / smoothing_bins)
-    end_time = time.time()
-    print(f"Function took {end_time - start_time:.4f} seconds")
-
     return freqs, psd_smoothed, dof
+
+@extras.timing_decorator
+def compute_spectrum_from_puv(p,u,v,sampling_freq,anchoring_depth,sensor_height):
+    """
+    This function uses the PUV method to obtain the frequency spectrum of the waves measured
+    with a pressure sensor at a specified depth
+    
+    The scalar spectrum is estimated using the Fast Fourier Transform by windows to reduce
+    the lekaege. 
+    
+    Parameters
+    ----------
+    p : list or ndarray
+        An array of the detrended presure records per burst
+    u : list or ndarray
+        An array of the detrended x-component of velocity records per burst
+    v : list or ndarray
+        An array of the detrended y-component of velocity presure records per burst   
+    sampling_freq : float
+        Sampling frequency for the records
+    anchoring_depth : float
+        Depth at where the device was settled on the bottom.
+    sensor_height: float
+        Distance from the sensor to the bottom.        
+    
+    Returns
+    -------
+    S : ndarray
+        Density variance spectrum
+    Dir : ndarray
+        Direction array    
+    f: ndarray
+        Frequency of the spectrum    
+    Su: ndarray
+        x-component of velocity
+    Sv: ndarray
+        y-component of velocity
+
+    Notes
+    -----
+    The SWASH (Simulating WAves till SHore) model script: crosgk.m is used to estimate the cross-spectrum
+    between pressure velocity u and velocity v.
+
+    18-Jan-2014 : First Matlab function - Daniel Peláez
+
+    """
+
+    # Variable definition
+    nfft = 128
+    f = (sampling_freq / nfft) * np.arange(0, nfft / 2)
+    f = f.reshape(-1, 1)
+
+    # Low frequencies cutoff
+    cutoff = 0.03
+    ix = np.where(f >= cutoff)[0]
+    f = f[ix]
+
+    # Dispersion relation
+    w = 2 * np.pi * f
+    k0 = (w**2) / constants.GRAVITY
+    for cnt in range(100):
+        k = (w**2) / (constants.GRAVITY * np.tanh(k0 * anchoring_depth))
+        k0 = k
+
+    # Transference function
+    Kp = np.cosh(k * anchoring_depth) / np.cosh(k * sensor_height)
+    Kp[Kp > 10] = 10
+
+    # Cross-spectrum
+    Pp, _, _ = crosgk(p, p, nfft, 1, 1/sampling_freq, 1, 0)
+    Pu, _, _ = crosgk(p, u, nfft, 1, 1/sampling_freq, 1, 0)
+    Pv, _, _ = crosgk(p, v, nfft, 1, 1/sampling_freq, 1, 0)
+
+    # Normalization factor
+    fac = 1
+
+    # Pressure
+    Sp = Pp[:, 0]
+    Sp = Sp / fac
+
+    # Velocity
+    Su = Pu[:, 2]
+    Su = Su[ix] / fac
+    Sv = Pv[:, 2]
+    Sv = Sv[ix] / fac
+
+    Kp=Kp.flatten()
+    S = Sp[ix] * (Kp**2)
+
+    # Direction
+    Dir = (180 / np.pi) * np.arctan2(Sv, Su)
+    Dir[Dir < 0] += 180
+
+    return S, Dir, f, Su, Sv
+
+def spectra_from_puv(clean_records,sampling_data):
+    """
+    Compute wave spectra and wave parameters from pressure, u, and v components.
+
+    Parameters
+    ----------
+    clean_records : pandas.DataFrame
+        DataFrame containing cleaned records with columns for 'pressure', 'u', 'v', and 'burstId'.
+    sampling_data : dict
+        Dictionary containing sampling information with keys:
+        - 'sampling_freq': Sampling frequency of the data.
+        - 'anchoring_depth': Depth at which the sensor is anchored.
+        - 'sensor_height': Height of the sensor above the seabed.
+
+    Returns
+    -------
+    wave_spectra_data : dict
+        Dictionary containing wave spectra data with keys:
+        - 'S': List of power spectra for each burst.
+        - 'dir': List of direction spectra for each burst.
+        - 'freq': List of frequency arrays for each burst.
+        - 'time': List of timestamps corresponding to each burst.
+    wave_params_data : pandas.DataFrame
+        DataFrame containing wave parameters with columns:
+        - 'time': Timestamps corresponding to each burst.
+        - 'Hm0': Zero-moment wave height.
+        - 'Hrms': Root mean square wave height.
+        - 'Hmean': Mean wave height.
+        - 'Tp': Peak period.
+        - 'Tm01': Mean period (first moment).
+        - 'Tm02': Mean period (second moment).
+    """
+    wave_params=["time","Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
+    wave_params_data={param:[] for param in wave_params}
+
+    wave_spectra_vars=["S","dir","freq","time"]
+    wave_spectra_data={var:[] for var in wave_spectra_vars}
+
+    clean_data=clean_records
+
+    for i in clean_data['burstId'].unique():
+
+        burst_series = clean_data[clean_data['burstId'] == i]
+
+        burst_series_detrended = burst_series.iloc[:,:-1].apply(lambda x: detrend(x, type='constant'), axis=0)
+        burst_series_detrended[clean_records.columns[-1]] = burst_series.iloc[:, -1]
+
+        # Compute the spectrum
+        power, direction, freqs, Su, Sv = spectrum_puv_method(burst_series_detrended['pressure'],burst_series_detrended['u'],
+                                                                        burst_series_detrended['v'],sampling_data['sampling_freq'], 
+                                                                        sampling_data['anchoring_depth'], sampling_data['sensor_height'])                                                     
+        wave_spectra_data["S"].append(power)
+        wave_spectra_data["dir"].append(direction)
+        wave_spectra_data["freq"].append(freqs)
+        wave_spectra_data["time"].append(burst_series_detrended.index[0])
+
+        # Compute wave parameters from the spectrum
+        Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
+
+        # Store wave parameters
+        wave_params_data['time'].append(burst_series_detrended.index[0])
+        wave_params_data['Hm0'].append(Hm0)
+        wave_params_data['Hrms'].append(Hrms)
+        wave_params_data['Hmean'].append(Hmean)
+        wave_params_data['Tp'].append(Tp)
+        wave_params_data['Tm01'].append(Tm01)
+        wave_params_data['Tm02'].append(Tm02)
+
+    wave_params_data = pd.DataFrame(wave_params_data).set_index('time')
+    return wave_spectra_data,wave_params_data
 
 def IMF_from_series(clean_records,number_ensembles,sampling_freq):
     clean_data=clean_records.copy()
@@ -673,6 +495,7 @@ def wave_params_from_spectrum_v1(spectral_density,freqs):
     return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
 def wave_params_from_spectrum_v2(spectral_density,freq,fs,bL):
+
     """
     This function computes different wave integral parameters from the spectrum
     
@@ -724,3 +547,104 @@ def wave_params_from_spectrum_v2(spectral_density,freq,fs,bL):
     Tm02 = np.sqrt(Mo/M2)
 
     return Hs,Hrms,Hmean,Tp,Tm01,Tm02
+
+def get_spectra_for_bursts(clean_records, sampling_data, method, window_length=None, overlap=None, smoothing_bins=None):
+    """
+    Get wave spectra for each burst in the cleaned records.
+
+    Parameters
+    ----------
+    clean_records : pandas.DataFrame
+        DataFrame containing cleaned records with columns for 'pressure', 'u', 'v', and 'burstId'.
+    sampling_data : dict
+        Dictionary containing sampling information with keys:
+        - 'sampling_freq': Sampling frequency of the data.
+        - 'anchoring_depth': Depth at which the sensor is anchored.
+        - 'sensor_height': Height of the sensor above the seabed.
+
+    Returns
+    -------
+    wave_spectra_data : dict
+        Dictionary containing wave spectra data with keys:
+        - 'S': List of power spectral densities for each burst.
+        - 'dir': List of directions (currently not computed, placeholder).
+        - 'freq': List of frequency arrays for each burst.
+        - 'time': List of timestamps corresponding to each burst.
+    wave_params_data : pandas.DataFrame
+        DataFrame containing wave parameters with columns:
+        - 'Hm0': Zero-moment wave height.
+        - 'Hrms': Root mean square wave height.
+        - 'Hmean': Mean wave height.
+        - 'Tp': Peak period.
+        - 'Tm01': Mean period (first moment).
+        - 'Tm02': Mean period (second moment).
+        - Index is the timestamp corresponding to each burst.
+    """
+
+    # The depth is computed dividing the pressure by the density and gravity. 
+    # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
+    clean_data=clean_records.copy()
+    if np.all(['depth[m]' not in column.lower() for column in clean_data.columns]):
+        clean_data['depth[m]']=((clean_data['pressure[bar]']-constants.ATM_PRESSURE_BAR)*100000)/(constants.WATER_DENSITY*constants.GRAVITY)
+
+    # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.       
+    columns_with_variables = [col for col in clean_data.columns if col != 'burstId']
+    # Subtracting the mean depth in each burst
+    clean_data[columns_with_variables] = clean_data.groupby('burstId')[columns_with_variables].transform(lambda x: x - x.mean())
+
+    clean_data['n']=clean_data['depth[m]']
+    hourly_timeindex = clean_data.index.floor('h').unique().sort_values()
+    wave_params=["Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
+    wave_params_data={param:np.zeros((hourly_timeindex.shape)) for param in wave_params}
+
+    wave_spectra_vars=["S","dir","freq","time"]
+    wave_spectra_data={var:[] for var in wave_spectra_vars}
+
+    wave_spectra_data['time'] = hourly_timeindex
+    wave_params_data['time'] = hourly_timeindex
+
+    if 'burstId' in clean_data.columns:
+        for idx,burst in enumerate(clean_data["burstId"].unique()):
+            burst_series = clean_data[clean_data['burstId'] == burst]
+            len_burst_series = len(burst_series)
+
+            # Create a time index for each expected burst based on the sampling frequency and burst length
+            # burst_start_time = burst_series.index[0]
+            # burst_end_time = burst_series.index[-1]
+            # expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, freq=pd.Timedelta(seconds=1/sampling_data['sampling_freq']))
+
+            # # Find which expected times are missing in the burst
+            # missing_times = expected_times.difference(burst_series.index)
+            # if not missing_times.empty:
+            #     print(f"Missing timestamps in burst {hourly_timeindex[idx]}: {missing_times}")
+
+            if method == 'fft':
+                # Compute the spectrum using FFT
+                power, power_kp, freqs, T, kpmin, fmax_kp = compute_spectrum_from_direct_fft(burst_series['n'], sampling_data['sampling_freq'],
+                                                                                   sampling_data['anchoring_depth'], 
+                                                                                   sampling_data['sensor_height'])
+                wave_spectra_data["S"].append(power_kp)
+
+            elif method == 'welch':
+                # Compute the spectrum using Welch method
+                power, freqs, dof = compute_spectrum_from_welch(burst_series['n'], sampling_data['sampling_freq'], window_length, smoothing_bins)
+                wave_spectra_data["S"].append(power)
+            else:
+                pass
+
+            # Compute wave parameters from the spectrum
+            Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
+
+            # Store wave parameters
+            wave_params_data['Hm0'][idx] = Hm0
+            wave_params_data['Hrms'][idx] = Hrms
+            wave_params_data['Hmean'][idx] = Hmean
+            wave_params_data['Tp'][idx] = Tp
+            wave_params_data['Tm01'][idx] = Tm01
+            wave_params_data['Tm02'][idx] = Tm02
+        
+        wave_spectra_data['freq'] = freqs
+        wave_spectra_data['S']=np.array(wave_spectra_data['S'])
+
+        wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
+    return wave_spectra_data,wave_params_data

@@ -17,7 +17,8 @@ class RunCase(InitialSetup):
         ds=pd.read_csv(f'{self.dict_folders["input"]}domain_0{self.domain_number}/{filename}',delimiter=',')
 
         ds=ds[['X','Y']]
-        # ds['id']=ds['id'].apply(lambda x:f'! {x}')
+        if (ds['X'] < 0).any():
+            ds.loc[ds['X'] < 0, 'X'] += 360
         ds.to_csv(f'{self.dict_folders["run"]}domain_0{self.domain_number}/points.loc',index=False, header=False, na_rep=0, float_format='%7.7f',sep=' ')
     
     def write_nest_section(self,nested_doms=[],nested_doms_info=[]):

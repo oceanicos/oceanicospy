@@ -88,7 +88,7 @@ INSERT EQUATION HERE
 
 A quick way to visualize this effect is then plotted in the following figure:
 
-.. figure:: ../images/psd_non_full_periodic_signal.png
+.. figure:: ../images/psd_non_periodic_signal.png
     :alt: PSD for non fully periodic signal
     :align: center
     :width: 90%
