@@ -1,10 +1,11 @@
-
+import numpy as np
 
 from ..utils import wave_props,constants,extras
 
 class WaveSpectralAnalyzer():
-    def __init__(self,sampling_data):
-        self.sampling_data = self.sampling_data
+    def __init__(self,measurement_signal,sampling_data):
+        self.measuremente_signal = measurement_signal
+        self.sampling_data = sampling_data
         self.sampling_freq = self.sampling_data['sampling_freq']
         self.anchoring_depth = self.sampling_data['anchoring_depth']
         self.sensor_height = self.sampling_data['sensor_height']
@@ -62,6 +63,8 @@ class WaveSpectralAnalyzer():
 
         # Correction by Kp
         Kp, Kpmin = self._compute_kp(freq, self.anchoring_depth, self.sensor_height)
+        fmax_kp = 1/(2*np.pi)*np.sqrt(9.8*np.pi/(self.anchoring_depth - self.sensor_height)*np.tanh(np.pi/(self.anchoring_depth-self.sensor_height)*self.anchoring_depth))
+
         power_kp = power / (Kp**2)
 
         return power,power_kp,freq,T,Kpmin,fmax_kp
@@ -157,19 +160,12 @@ class WaveSpectralAnalyzer():
 
         return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
-    def analyze_bursts(clean_records, method, window_length=None, overlap=None, smoothing_bins=None):
+    def analyze_bursts(self, method, window_length=None, overlap=None, smoothing_bins=None):
         """
         Get wave spectra for each burst in the cleaned records.
 
         Parameters
         ----------
-        clean_records : pandas.DataFrame
-            DataFrame containing cleaned records with columns for 'pressure', 'u', 'v', and 'burstId'.
-        sampling_data : dict
-            Dictionary containing sampling information with keys:
-            - 'sampling_freq': Sampling frequency of the data.
-            - 'anchoring_depth': Depth at which the sensor is anchored.
-            - 'sensor_height': Height of the sensor above the seabed.
 
         Returns
         -------
@@ -190,19 +186,7 @@ class WaveSpectralAnalyzer():
             - Index is the timestamp corresponding to each burst.
         """
 
-        # The depth is computed dividing the pressure by the density and gravity. 
-        # The atmospheric pressure is also subtracted and it is converted from bars to pascals.
-        clean_data=clean_records.copy()
-        if np.all(['depth[m]' not in column.lower() for column in clean_data.columns]):
-            clean_data['depth[m]']=((clean_data['pressure[bar]']-constants.ATM_PRESSURE_BAR)*100000)/(constants.WATER_DENSITY*constants.GRAVITY)
-
-        # To eliminate the trend of the series, it is grouped by burst and the average prof of each burst is found.       
-        columns_with_variables = [col for col in clean_data.columns if col != 'burstId']
-        # Subtracting the mean depth in each burst
-        clean_data[columns_with_variables] = clean_data.groupby('burstId')[columns_with_variables].transform(lambda x: x - x.mean())
-
-        clean_data['n']=clean_data['depth[m]']
-        hourly_timeindex = clean_data.index.floor('h').unique().sort_values()
+        hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
         wave_params=["Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
         wave_params_data={param:np.zeros((hourly_timeindex.shape)) for param in wave_params}
 
@@ -212,9 +196,9 @@ class WaveSpectralAnalyzer():
         wave_spectra_data['time'] = hourly_timeindex
         wave_params_data['time'] = hourly_timeindex
 
-        if 'burstId' in clean_data.columns:
-            for idx,burst in enumerate(clean_data["burstId"].unique()):
-                burst_series = clean_data[clean_data['burstId'] == burst]
+        if 'burstId' in self.measurement_signal.columns:
+            for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
+                burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
                 len_burst_series = len(burst_series)
 
                 # Create a time index for each expected burst based on the sampling frequency and burst length
