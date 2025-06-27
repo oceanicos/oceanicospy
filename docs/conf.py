@@ -22,7 +22,11 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # Optional: for Google or NumPy-style docstrings
+    'sphinx.ext.viewcode',  # Optional, for source code links
 ]
+
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
