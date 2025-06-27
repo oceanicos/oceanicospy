@@ -1,10 +1,13 @@
 import numpy as np
+import pandas as pd
 
 from ..utils import wave_props,constants,extras
+from scipy.signal import welch
+
 
 class WaveSpectralAnalyzer():
     def __init__(self,measurement_signal,sampling_data):
-        self.measuremente_signal = measurement_signal
+        self.measurement_signal = measurement_signal
         self.sampling_data = sampling_data
         self.sampling_freq = self.sampling_data['sampling_freq']
         self.anchoring_depth = self.sampling_data['anchoring_depth']
@@ -70,7 +73,7 @@ class WaveSpectralAnalyzer():
         return power,power_kp,freq,T,Kpmin,fmax_kp
 
     @extras.timing_decorator
-    def compute_spectrum_from_welch(signal,window_type,window_length,overlap=None):
+    def compute_spectrum_from_welch(self,signal,window_type,window_length,overlap=None):
         """
         Compute PSD using Welch method and smooth across frequency bins.
 
@@ -98,17 +101,16 @@ class WaveSpectralAnalyzer():
         """
 
         # Welch PSD
-        freqs, psd = welch(signal,fs=sampling_freq,
-                            window=window_type,
+        freqs, psd = welch(x=signal,fs=self.sampling_freq,window=window_type,
                             nperseg=window_length,
                             noverlap=overlap,
                             scaling='density')
 
         # Estimate degrees of freedom:
         # DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)
-        n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)
-        dof = 2 * n_segments * (1 / smoothing_bins)
-        return freqs, psd_smoothed, dof
+        # n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)
+        # dof = 2 * n_segments * (1 / smoothing_bins)
+        return freqs, psd
 
     def get_wave_params_from_spectrum_v1(self,psd,freqs):
         """
@@ -160,7 +162,7 @@ class WaveSpectralAnalyzer():
 
         return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
-    def analyze_bursts(self, method, window_length=None, overlap=None, smoothing_bins=None):
+    def get_spectra_and_params_for_bursts(self, method, window_type=None, window_length=None, overlap=None, smoothing_bins=None):
         """
         Get wave spectra for each burst in the cleaned records.
 
@@ -213,20 +215,19 @@ class WaveSpectralAnalyzer():
 
                 if method == 'fft':
                     # Compute the spectrum using FFT
-                    power, power_kp, freqs, T, kpmin, fmax_kp = compute_spectrum_from_direct_fft(burst_series['n'], sampling_data['sampling_freq'],
-                                                                                    sampling_data['anchoring_depth'], 
-                                                                                    sampling_data['sensor_height'])
+                    power, power_kp, freqs, T, kpmin, fmax_kp = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'])
                     wave_spectra_data["S"].append(power_kp)
 
                 elif method == 'welch':
                     # Compute the spectrum using Welch method
-                    power, freqs, dof = compute_spectrum_from_welch(burst_series['n'], sampling_data['sampling_freq'], window_length, smoothing_bins)
+                    power, freqs = self.compute_spectrum_from_welch(burst_series['eta[m]'], window_type, window_length)
+                    power = self.smooth_psd_spectrum(power,smoothing_bins)
                     wave_spectra_data["S"].append(power)
                 else:
                     pass
 
                 # Compute wave parameters from the spectrum
-                Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = wave_params_from_spectrum_v1(power, freqs)
+                Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = self.get_wave_params_from_spectrum_v1(power, freqs)
 
                 # Store wave parameters
                 wave_params_data['Hm0'][idx] = Hm0

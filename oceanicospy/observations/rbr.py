@@ -3,6 +3,9 @@ import glob
 
 from datetime import  timedelta
 
+from oceanicospy.utils import constants
+
+
 class RBR():
   def __init__(self,directory_path,sampling_data):
     """
@@ -18,7 +21,7 @@ class RBR():
     self.directory_path = directory_path
     self.sampling_data = sampling_data
 
-  def read_records(self):
+  def get_raw_records(self):
     """
     Reads the .txt file from the device to create a DataFrame containing data.
 
@@ -47,11 +50,13 @@ class RBR():
         A cleaned DataFrame containing the columns '....', filtered by the specified time range.
     """
 
-    self.clean_data = self.read_records()
+    self.clean_data = self.get_raw_records()
     
     self.clean_data = self.clean_data.drop(['Sea pressure'],axis=1)   
     self.clean_data = self.clean_data.rename(columns={'Pressure': 'pressure[bar]', 'Depth': 'depth[m]'})
     self.clean_data['pressure[bar]'] = self.clean_data['pressure[bar]']/10
+    self.clean_data['depth_aux[m]'] = ((self.clean_data['pressure[bar]'] - constants.ATM_PRESSURE_BAR) * 1e5) / (constants.WATER_DENSITY * constants.GRAVITY)
+
     self.hours = self.clean_data.index.floor('h')  # Or use df.index.hour if just hour values
 
     # Factorize to get a unique integer ID per hour
