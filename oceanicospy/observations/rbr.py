@@ -1,7 +1,7 @@
 import pandas as pd
 import glob
 
-from datetime import  timedelta
+from scipy.signal import detrend
 
 from oceanicospy.utils import constants
 
@@ -40,7 +40,7 @@ class RBR():
     self.raw_data = self.raw_data[self.sampling_data['start_time']:self.sampling_data['end_time']]
     return self.raw_data
 
-  def get_clean_records(self):
+  def get_clean_records(self,detrended: bool=True):
     """
     Processes the raw data by grouping the series per each burst
 
@@ -64,7 +64,8 @@ class RBR():
     
     # self.clean_data['burstId'] = (self.clean_data.index.floor('H') != self.clean_data.index.floor('H').shift()).cumsum()
     # self.clean_data['burstId'] = (self.clean_data['UNITS'] == 'BURSTSTART').cumsum()
+    self.clean_data['eta[m]'] = self.clean_data.groupby('burstId')['depth[m]'].transform(lambda x: x - x.mean())
 
-    #self.clean_data[self.clean_data.columns[:-1]] = self.clean_data.groupby('burstId')[self.clean_data.columns[:-1]].transform(lambda x: x - x.mean())
-    #self.clean_data_detrended = self.clean_data
+    if detrended:
+      self.clean_data['eta[m]'] = self.clean_data.groupby('burstId')['eta[m]'].transform(lambda x: detrend(x.values, type='linear'))
     return self.clean_data

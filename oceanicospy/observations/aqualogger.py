@@ -60,7 +60,7 @@ class AQUAlogger():
         df = self._parse_dates_and_trim(df)
         return df
 
-    def get_clean_records(self, detrend: bool =False)-> pd.DataFrame:
+    def get_clean_records(self, detrended: bool=True)-> pd.DataFrame:
         """
         Processes the raw data by grouping the series per each burst
 
@@ -79,7 +79,7 @@ class AQUAlogger():
         # Compute the surface level
         self.clean_data['eta[m]'] = self.clean_data.groupby('burstId')['depth[m]'].transform(lambda x: x - x.mean())
 
-        if detrend:
+        if detrended:
             self.clean_data['eta[m]'] = self.clean_data.groupby('burstId')['eta[m]'].transform(lambda x: detrend(x.values, type='linear'))
         return self.clean_data
 

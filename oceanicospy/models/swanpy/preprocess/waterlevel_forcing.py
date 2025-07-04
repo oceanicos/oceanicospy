@@ -64,13 +64,20 @@ class WaterLevelForcing(InitialSetup):
         """
         self.dataset = pd.read_csv(f'{self.dict_folders["input"]}domain_0{self.domain_number}/{wl_filepath}',header=None,
                                             names=["year","month","day","hour","water_level"],sep=',')
-        print(self.dataset)
                                     
         self.dataset.index = pd.to_datetime(self.dataset[['year', 'month', 'day', 'hour']])
         self.dataset = self.dataset.drop(columns=['year', 'month', 'day', 'hour'])
         self.dataset.index = self.dataset.index- pd.DateOffset(hours=5)  # Adjusting for UTC-5
         self.dataset_filtered = self.dataset[(self.dataset.index >= self.ini_date) & (self.dataset.index <= self.end_date)]
         self.dataset_filtered['water_level']=(self.dataset_filtered['water_level']-np.mean(self.dataset_filtered['water_level']))/1000
+
+        # Replace values in 'water_level' more negative than -2 with linear interpolation between neighbors
+        wl = self.dataset_filtered['water_level'].values
+        mask = wl < -2
+        for idx in np.where(mask)[0]:
+            if 0 < idx < len(wl) - 1:
+                wl[idx] = (wl[idx - 1] + wl[idx + 1]) / 2
+        self.dataset_filtered['water_level'] = wl
 
         bathymetry_grid = np.genfromtxt(glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.bot')[0])
 
@@ -79,7 +86,7 @@ class WaterLevelForcing(InitialSetup):
         for date in self.dataset_filtered.index:
             file.write("%s\n" % date.strftime("%Y%m%d %H%M%S"))
             water_level=np.full(np.shape(bathymetry_grid),-9999).astype(float)
-            water_level[bathymetry_grid>=0]=float(self.dataset_filtered['depth'][date])
+            water_level[bathymetry_grid>=0]=float(self.dataset_filtered['water_level'][date])
             np.savetxt(file,water_level,fmt='%12.4f')
         file.close()
 
@@ -87,7 +94,10 @@ class WaterLevelForcing(InitialSetup):
             utils.create_link(ascii_filepath,f'{self.dict_folders["input"]}domain_0{self.domain_number}/',
                                 f'{self.dict_folders["run"]}domain_0{self.domain_number}/')
 
-        return {'water_levels.wl':ascii_filepath}
+
+        if self.wl_info!=None:
+            self.wl_info.update({"water_levels.wl":ascii_filepath})
+            return self.wl_info
 
     def fill_wl_section(self,dict_wl_data):
         print (f'\n*** Adding/Editing water level information for domain {self.domain_number} in configuration file ***\n')

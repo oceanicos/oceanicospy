@@ -3,7 +3,8 @@ import pandas as pd
 
 from ..utils import wave_props,constants,extras
 from scipy.signal import welch
-
+from PyEMD import EMD,EEMD,CEEMDAN
+import pywt
 
 class WaveSpectralAnalyzer():
     def __init__(self,measurement_signal,sampling_data):
@@ -12,6 +13,7 @@ class WaveSpectralAnalyzer():
         self.sampling_freq = self.sampling_data['sampling_freq']
         self.anchoring_depth = self.sampling_data['anchoring_depth']
         self.sensor_height = self.sampling_data['sensor_height']
+        self.burst_length_s = self.sampling_data['burst_length_s']
 
     def smooth_psd_spectrum(self,psd,smoothing_bins):
         kernel = np.ones(smoothing_bins) / smoothing_bins
@@ -105,7 +107,6 @@ class WaveSpectralAnalyzer():
                             nperseg=window_length,
                             noverlap=overlap,
                             scaling='density')
-
         # Estimate degrees of freedom:
         # DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)
         # n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)
@@ -162,7 +163,7 @@ class WaveSpectralAnalyzer():
 
         return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
-    def get_spectra_and_params_for_bursts(self, method, window_type=None, window_length=None, overlap=None, smoothing_bins=None):
+    def get_spectra_and_params_for_bursts(self,method,window_type=None,window_length=None,overlap=None,smoothing_bins=None):
         """
         Get wave spectra for each burst in the cleaned records.
 
@@ -215,12 +216,12 @@ class WaveSpectralAnalyzer():
 
                 if method == 'fft':
                     # Compute the spectrum using FFT
-                    power, power_kp, freqs, T, kpmin, fmax_kp = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'])
+                    power, power_kp, freqs, T, kpmin, fmax_kp = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'].values)
                     wave_spectra_data["S"].append(power_kp)
 
                 elif method == 'welch':
                     # Compute the spectrum using Welch method
-                    power, freqs = self.compute_spectrum_from_welch(burst_series['eta[m]'], window_type, window_length)
+                    freqs,power = self.compute_spectrum_from_welch(burst_series['eta[m]'].values, window_type, window_length)
                     power = self.smooth_psd_spectrum(power,smoothing_bins)
                     wave_spectra_data["S"].append(power)
                 else:
@@ -242,6 +243,68 @@ class WaveSpectralAnalyzer():
 
             wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
         return wave_spectra_data,wave_params_data
+
+    def decompose_into_IMFs_for_bursts(self,emd_type,maximum_IMFs,number_ensembles=None,amplitude_noise_std=None):
+        hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
+        time_seconds = np.arange(0,self.burst_length_s,1)
+
+        IMFs_all = np.zeros((len(hourly_timeindex),maximum_IMFs,self.burst_length_s))
+
+        if 'burstId' in self.measurement_signal.columns:
+            for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
+                burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
+                if emd_type == 'EMD':
+                    emd = EMD()
+                    IMFs = emd(burst_series['eta[m]'].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
+                elif emd_type == 'EEMD':
+                    eemd = EEMD(trials=number_ensembles, epsilon=amplitude_noise_std)
+                    IMFs = eemd(burst_series['eta[m]'].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
+                else:
+                    ceemd = CEEMDAN(DTYPE=np.float16,trials=number_ensembles,epsilon=amplitude_noise_std,parallel=True,processes=48)
+                    IMFs = ceemd(burst_series['eta[m]'].values,time_seconds,max_imf=maximum_IMFs)[:maximum_IMFs,:]
+                IMFs_all[idx,:,:] = IMFs
+        return IMFs_all
+
+    def compute_wavelet_scalogram(self,signal,mother_wavelet,maximum_scale):
+        coefficients, frequencies = pywt.cwt(signal, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
+        return coefficients,frequencies
+
+    def compute_wavelet_scalogram_windowed(self,signal,window_length,overlap,mother_wavelet,maximum_scale):
+        step = int(window_length * (1 - overlap))
+        if len(signal)==window_length:
+            n_segments =1
+        else:
+            n_segments = (len(signal) - window_length) // step + 1
+        window = np.hanning(window_length)
+
+        scales = np.arange(1, maximum_scale, 20)
+        stitched = np.zeros((len(scales), len(signal)))
+        weight = np.zeros(len(signal))
+
+        for idx_seg in range(n_segments):
+            start = idx_seg * step
+            end = start + window_length
+            segment = signal[start:end]
+            coef, freqs = pywt.cwt(segment, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
+            coef_mag = np.abs(coef) * window  # Apply window to smooth overlap
+            stitched[:, start:end] += coef_mag
+            weight[start:end] += window
+
+        stitched /= np.maximum(weight, 1e-8)
+        return stitched,freqs
+
+    def compute_all_wavelet_scalograms(self,window_length,overlap,mother_wavelet,maximum_scale):
+        hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
+        scale = np.arange(1,maximum_scale,20)
+        coefs_all = np.zeros((len(hourly_timeindex),len(scale),self.burst_length_s))
+
+        if 'burstId' in self.measurement_signal.columns:
+            for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
+                burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
+                coefs,freqs = self.compute_wavelet_scalogram_windowed(burst_series['eta[m]'].values,window_length,overlap,
+                                                                            mother_wavelet,maximum_scale)
+                coefs_all[idx,:,:] = coefs
+        return coefs_all,freqs
 
     @staticmethod
     def _compute_kp(freqs, anchoring_depth, sensor_height):

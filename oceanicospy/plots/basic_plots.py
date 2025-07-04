@@ -48,13 +48,14 @@ def plot_1d_wave_spectra(wave_spectra,ax,metadata_text=None,output_dir=None,figs
     """
 
     if output_dir == None:
-        cax = ax.contourf(
+        cax = ax.pcolormesh(
             wave_spectra['time'],
             wave_spectra['freq'],
             np.transpose(wave_spectra['S']),
-            levels=np.linspace(0, 0.3, 31),
             cmap='magma_r',
-            extend='max'
+            vmin=0,
+            vmax=0.3,
+            shading='auto'
         )
         # ax.colorbar(label='S [m^2/Hz]')  
         return ax,cax
