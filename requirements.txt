@@ -55,7 +55,6 @@ frozenlist==1.5.0
 fsspec==2025.2.0
 geopandas==1.0.1
 greenlet==3.1.1
--e git+https://github.com/ffayalac/gridgenpy.git@8370760d83455bb084b0514eaf7f3edc31bedbba#egg=gridgenpy
 h11==0.14.0
 h5netcdf==1.6.1
 h5py==3.13.0
