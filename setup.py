@@ -9,7 +9,7 @@ setup(
        # the name must match the folder name 'verysimplemodule'
         name="oceanicospy", 
         version=VERSION,
-        author="Oceanicos developer team",
+        author="OCEANICOS developer team",
         author_email="<oceanicos_med@unal.edu.co>",
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
