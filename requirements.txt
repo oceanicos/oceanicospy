@@ -124,7 +124,6 @@ pbr==6.1.1
 pexpect==4.9.0
 pillow==10.4.0
 platformdirs==4.3.6
-playwright==1.50.0
 pox==0.3.6
 ppft==1.7.7
 pqdm==0.2.0
