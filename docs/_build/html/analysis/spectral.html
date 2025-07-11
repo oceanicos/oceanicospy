@@ -316,43 +316,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-oceanicospy.analysis.spectral.get_spectra_for_bursts">
-<span id="spectral"></span><h1>Spectral<a class="headerlink" href="#module-oceanicospy.analysis.spectral.get_spectra_for_bursts" title="Link to this heading">#</a></h1>
-<p>Get wave spectra for each burst in the cleaned records.</p>
-<dl class="field-list simple">
-<dt class="field-odd">param clean_records<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DataFrame containing cleaned records with columns for ‘pressure’, ‘u’, ‘v’, and ‘burstId’.</p>
-</dd>
-<dt class="field-even">type clean_records<span class="colon">:</span></dt>
-<dd class="field-even"><p>pandas.DataFrame</p>
-</dd>
-<dt class="field-odd">param sampling_data<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dictionary containing sampling information with keys:
-- ‘sampling_freq’: Sampling frequency of the data.
-- ‘anchoring_depth’: Depth at which the sensor is anchored.
-- ‘sensor_height’: Height of the sensor above the seabed.</p>
-</dd>
-<dt class="field-even">type sampling_data<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-<dt class="field-odd">returns<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>wave_spectra_data</strong> (<em>dict</em>) – Dictionary containing wave spectra data with keys:
-- ‘S’: List of power spectral densities for each burst.
-- ‘dir’: List of directions (currently not computed, placeholder).
-- ‘freq’: List of frequency arrays for each burst.
-- ‘time’: List of timestamps corresponding to each burst.</p></li>
-<li><p><strong>wave_params_data</strong> (<em>pandas.DataFrame</em>) – DataFrame containing wave parameters with columns:
-- ‘Hm0’: Zero-moment wave height.
-- ‘Hrms’: Root mean square wave height.
-- ‘Hmean’: Mean wave height.
-- ‘Tp’: Peak period.
-- ‘Tm01’: Mean period (first moment).
-- ‘Tm02’: Mean period (second moment).
-- Index is the timestamp corresponding to each burst.</p></li>
-</ul>
-</dd>
-</dl>
+  <section id="spectral">
+<h1>Spectral<a class="headerlink" href="#spectral" title="Link to this heading">#</a></h1>
 </section>
 
 
