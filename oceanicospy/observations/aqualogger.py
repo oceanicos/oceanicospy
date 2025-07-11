@@ -5,6 +5,14 @@ import os
 from .pressure_sensor_base import BaseLogger
 
 class AQUAlogger(BaseLogger):
+    """
+    A sensor-specific reader for AQUAlogger CSV files.
+
+    Inherits from
+    -------------
+    BaseLogger
+        Includes core methods like `first_record_time`, `get_raw_records`, etc.
+    """
     def _get_records_file(self):
         files = glob.glob(os.path.join(self.directory_path, '*.csv'))
         if not files:

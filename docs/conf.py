@@ -6,6 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
+import sys
+
 project = 'oceanicospy'
 copyright = '2025, oceanicos'
 author = 'oceanicos'
@@ -13,8 +16,6 @@ release = '0.0.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-extensions = []
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -25,6 +26,8 @@ extensions = [
     'sphinx.ext.viewcode',  # Optional, for source code links
 ]
 
+autodoc_member_order = 'bysource'
+autodoc_typehints = 'description'
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 

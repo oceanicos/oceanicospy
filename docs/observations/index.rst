@@ -7,5 +7,6 @@ Introduction to Observations
    :maxdepth: 1
    :caption: Contents:
 
+   BaseLogger
    AQUAlogger
    RBR
