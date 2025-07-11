@@ -24,7 +24,7 @@ MarkupSafe==3.0.2
 matplotlib-inline==0.1.7
 nest-asyncio==1.6.0
 numpy==2.2.6
--e git+ssh://git@github.com/ffayalac/oceanicospy.git@281f4e0856c2937d4c886f794298f1008eb48361#egg=oceanicospy
+-e git+ssh://git@github.com/ffayalac/oceanicospy.git@86c97ced39eff4d1bb4081bbc832d1434861a495#egg=oceanicospy
 packaging==25.0
 pandas==2.3.1
 parso==0.8.4
