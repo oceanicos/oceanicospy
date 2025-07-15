@@ -1,5 +1,4 @@
 /oceanicospy.egg-info/
 /data/observations/AQ
 /data/observations/RBR
-/oceanicospy/__pycache__/*
-
+__pycache__/
