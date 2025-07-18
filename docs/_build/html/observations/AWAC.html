@@ -40,11 +40,11 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'observations/AQUAlogger';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'observations/AWAC';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="RBR" href="RBR.html" />
-    <link rel="prev" title="BaseLogger" href="BaseLogger.html" />
+    <link rel="next" title="Plots" href="../plots.html" />
+    <link rel="prev" title="RBR" href="RBR.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -161,9 +161,9 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="AWAC.html">AQUAlogger</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">AQUAlogger</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
@@ -222,7 +222,7 @@
       
       
       
-      <li><a href="../_sources/observations/AQUAlogger.rst" target="_blank"
+      <li><a href="../_sources/observations/AWAC.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -316,11 +316,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger"><code class="docutils literal notranslate"><span class="pre">AQUAlogger</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.first_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.first_record_time</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.get_clean_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_clean_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.get_raw_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_raw_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.last_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.last_record_time</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC"><code class="docutils literal notranslate"><span class="pre">AWAC</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_raw_wave_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_raw_wave_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_clean_wave_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_clean_wave_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_raw_currents_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_raw_currents_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_clean_currents_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_clean_currents_records()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -337,45 +337,22 @@ document.write(`
   <section id="aqualogger">
 <h1>AQUAlogger<a class="headerlink" href="#aqualogger" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="oceanicospy.observations.aqualogger.AQUAlogger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.aqualogger.</span></span><span class="sig-name descname"><span class="pre">AQUAlogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/aqualogger.html#AQUAlogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.aqualogger.AQUAlogger" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger" title="oceanicospy.observations.pressure_sensor_base.BaseLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code></a></p>
-<p>A sensor-specific reader for AQUAlogger CSV files.</p>
-<section id="inherits-from">
-<h2>Inherits from<a class="headerlink" href="#inherits-from" title="Link to this heading">#</a></h2>
-<dl class="simple">
-<dt>BaseLogger</dt><dd><p>Includes core methods like <cite>first_record_time</cite>, <cite>get_raw_records</cite>, etc.</p>
-</dd>
-</dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="oceanicospy.observations.aqualogger.AQUAlogger.first_record_time">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_record_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Timestamp</span></em><a class="headerlink" href="#oceanicospy.observations.aqualogger.AQUAlogger.first_record_time" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
+<dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.awac.</span></span><span class="sig-name descname"><span class="pre">AWAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A).</p>
+<p class="rubric">Notes</p>
+<p>04-Jan-2018 : Origination - Daniel Peláez
+01-Sep-2023 : Migration to Python - Alejandro Henao
+10-Dec-2024 : Class implementation - Franklin Ayala</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.observations.aqualogger.AQUAlogger.get_clean_records">
-<span class="sig-name descname"><span class="pre">get_clean_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detrended</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.aqualogger.AQUAlogger.get_clean_records" title="Link to this definition">#</a></dt>
-<dd><p>Processes the raw data by grouping the series per each burst</p>
+<dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC.get_raw_wave_records">
+<span class="sig-name descname"><span class="pre">get_raw_wave_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_single_wad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC.get_raw_wave_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC.get_raw_wave_records" title="Link to this definition">#</a></dt>
+<dd><p>Reads and processes the .wad files to create a DataFrame containing the burst data.</p>
+<p>For each .wad file, the function reads the data, adds a ‘burstId’ column, and combines all the data into a single DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A cleaned DataFrame with bursts identified by a ‘burstId’ column.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>pandas.DataFrame</p>
-</dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>detrended</strong> (<em>bool</em>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.observations.aqualogger.AQUAlogger.get_raw_records">
-<span class="sig-name descname"><span class="pre">get_raw_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.aqualogger.AQUAlogger.get_raw_records" title="Link to this definition">#</a></dt>
-<dd><p>Reads the records file from the device to create a DataFrame containing data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A DataFrame containing the raw data indexed by timestamp.</p>
+<dd class="field-odd"><p>A DataFrame containing the concatenated data from all the .wad files with an added ‘burstId’ column.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>pandas.DataFrame</p>
@@ -383,20 +360,41 @@ document.write(`
 </dl>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="oceanicospy.observations.aqualogger.AQUAlogger.last_record_time">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_record_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Timestamp</span></em><a class="headerlink" href="#oceanicospy.observations.aqualogger.AQUAlogger.last_record_time" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</section>
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC.get_clean_wave_records">
+<span class="sig-name descname"><span class="pre">get_clean_wave_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_single_wad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC.get_clean_wave_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC.get_clean_wave_records" title="Link to this definition">#</a></dt>
+<dd><p>Processes the raw data by converting certain columns to numeric types, adding a timestamp, and filtering the data
+by the specified time range.</p>
+<p>The function also renames columns and returns a cleaned DataFrame that includes only relevant data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>directory_path</strong> (<em>str</em>)</p></li>
-<li><p><strong>sampling_data</strong> (<em>dict</em>)</p></li>
-</ul>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A cleaned DataFrame containing ‘pressure’, ‘u’, ‘v’, and ‘burstId’ columns, filtered by the specified time range.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC.get_raw_currents_records">
+<span class="sig-name descname"><span class="pre">get_raw_currents_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC.get_raw_currents_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC.get_raw_currents_records" title="Link to this definition">#</a></dt>
+<dd><p>Reads and processes the .v1 and .v2 files to create a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing the current magnitude and direction.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC.get_clean_currents_records">
+<span class="sig-name descname"><span class="pre">get_clean_currents_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compute_speed_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC.get_clean_currents_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC.get_clean_currents_records" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -413,20 +411,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="BaseLogger.html"
+       href="RBR.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">BaseLogger</p>
+        <p class="prev-next-title">RBR</p>
       </div>
     </a>
     <a class="right-next"
-       href="RBR.html"
+       href="../plots.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">RBR</p>
+        <p class="prev-next-title">Plots</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -446,11 +444,11 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger"><code class="docutils literal notranslate"><span class="pre">AQUAlogger</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.first_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.first_record_time</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.get_clean_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_clean_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.get_raw_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_raw_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.aqualogger.AQUAlogger.last_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.last_record_time</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC"><code class="docutils literal notranslate"><span class="pre">AWAC</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_raw_wave_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_raw_wave_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_clean_wave_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_clean_wave_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_raw_currents_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_raw_currents_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.awac.AWAC.get_clean_currents_records"><code class="docutils literal notranslate"><span class="pre">AWAC.get_clean_currents_records()</span></code></a></li>
 </ul>
 </li>
 </ul>

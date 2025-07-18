@@ -10,3 +10,4 @@ Introduction to Observations
    BaseLogger
    AQUAlogger
    RBR
+   AWAC

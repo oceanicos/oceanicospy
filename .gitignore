@@ -1,4 +1,14 @@
-/oceanicospy.egg-info/
 /data/observations/AQ
 /data/observations/RBR
+/data/observations/AWAC
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Build system / packaging
+build/
+dist/
+*.egg-info/
+

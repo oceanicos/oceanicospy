@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oceanicospy"
+version = "0.0.1"
+description = "A handle package for most of the programming tools in the research group OCEANICOS"
+readme = "README.md"
+authors = [
+  { name = "OCEANICOS developer team", email = "oceanicos_med@unal.edu.co" }
+]
+keywords = ["python", "first package"]
+license = {text = "MIT"}
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Education",
+  "Programming Language :: Python :: 3",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows"
+]
+requires-python = ">=3.7"
+dependencies = []  # Add packages here, like ["numpy", "requests"]
+
+[tool.setuptools.packages.find]
+where = ["."]

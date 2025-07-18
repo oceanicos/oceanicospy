@@ -6,8 +6,9 @@ import pandas as pd
 pd.options.mode.chained_assignment = None
 
 from ..utils import wave_props
+import re
 
-class Awac():
+class AWAC():
     """
     A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A). 
 
@@ -31,46 +32,8 @@ class Awac():
         """
         self.directory_path = directory_path
         self.sampling_data = sampling_data
-        
-    def read_wave_header(self):
-        """
-        Reads and parses the header file (.hdr) to extract the column names.
 
-        The function filters and processes the header information to generate a list of column names.
-
-        Returns
-        -------
-        numpy.ndarray
-            An array of column names extracted from the .hdr file.
-        """
-    
-        self.header = glob.glob(self.directory_path+'*.hdr') # File with headers
-        self.headers = open(self.header[0],'r')
-        self.headers = self.headers.read().split('\n')
-
-        # Replacing the title with a mask
-        self.tf = []
-        self.control = False
-        for i in self.headers:
-            if self.control == True:
-                if i.endswith('-') == True:
-                    self.control = False
-                    self.tf.append(False)
-                else:
-                    self.tf.append(True)
-            else:
-                self.tf.append(False)
-                
-            if i.endswith('.wad]') == True:
-                self.control = True
-
-        self.headers = list(np.array(self.headers)[self.tf])
-        self.columns = np.array([' '.join(i.split()) for i in self.headers])
-        if self.columns[-1] == '':
-            self.columns = self.columns[:-1]
-        return self.columns
-
-    def read_wave_records(self):
+    def get_raw_wave_records(self,from_single_wad):
         """
         Reads and processes the .wad files to create a DataFrame containing the burst data.
 
@@ -82,22 +45,26 @@ class Awac():
             A DataFrame containing the concatenated data from all the .wad files with an added 'burstId' column.
         """
 
-        self.columns_ = self.read_wave_header()
-        self.data = sorted(glob.glob(self.directory_path+'*.wad')) #Each .wad file represents one burst
-        self.wads = []
-        self.burst_id = 1
+        column_names = self._read_wave_header()
+        wad_files = sorted(glob.glob(self.directory_path+'*.wad')) #Each .wad file represents one burst
 
-        for i in self.data:
-            self.e = pd.read_csv(i,header=0,sep=r"\s+",names=self.columns_)
-            self.e['burstId'] = (np.ones(len(self.e))*self.burst_id).astype(int)
-            self.burst_id += 1
-            self.wads.append(self.e.dropna())
+        if from_single_wad:
+            wad_filepath = wad_files[0]
+            date_columns = ['month', 'day', 'year', 'hour', 'minute', 'second']
+            df = pd.read_csv(wad_filepath,sep=r"\s+",names=date_columns+list(column_names[2:]))
+            df = df.dropna()          
+        else:
+            burst_list = []
 
-        self.wads = pd.concat(self.wads)
-        self.columns_ = np.append(self.columns_,['burstId'])
-        return self.wads
+            for wad_filepath in wad_files[1:]: #What's the differenc with reading the main .wad file?
+                burst_df = pd.read_csv(wad_filepath,sep=r"\s+",names=column_names)
+                burst_df.rename(columns={column_names[0]:'burstId'},inplace=True)
+                burst_list.append(burst_df)
+
+            df = pd.concat(burst_list, ignore_index=True)
+        return df
     
-    def get_clean_wave_records(self):
+    def get_clean_wave_records(self,from_single_wad=True):
         """
         Processes the raw data by converting certain columns to numeric types, adding a timestamp, and filtering the data 
         by the specified time range.
@@ -109,58 +76,32 @@ class Awac():
         pandas.DataFrame
             A cleaned DataFrame containing 'pressure', 'u', 'v', and 'burstId' columns, filtered by the specified time range.
         """
+        df_raw = self.get_raw_wave_records(from_single_wad)
 
-        self.wads = self.read_wave_records()
-        self.wads.iloc[:,[11,12]] = self.wads.iloc[:,[11,12]].astype(float)
-        self.raw_data = self.wads.iloc[:,[0,1,2,3,4,5,6,11,12,17]]
+        if from_single_wad:
+            df_clean = self._parse_dates_and_trim(df_raw)
+            df_clean = self._rename_columns(df_clean)
+        else:
+            burst_start_times = pd.date_range(
+                start=self.sampling_data['start_time'],
+                end=self.sampling_data['end_time'],
+                freq='1h')
 
-        self.raw_data['date'] = pd.to_datetime(self.raw_data.iloc[:,[2,0,1,3,4,5]].astype(str).agg('-'.join, axis=1),
-                                format='%Y-%m-%d-%H-%M-%S.%f')
-        self.raw_data = self.raw_data.set_index('date')
-        self.clean_data = self.raw_data[self.columns_[[6,11,12,17]].tolist()]
-        self.clean_data.columns = ['pressure','u','v','burstId']
-        self.clean_data['pressure'] = self.clean_data['pressure'].astype(float)
-        self.clean_data = self.clean_data[self.sampling_data['start_time']:self.sampling_data['end_time']]
-        return self.clean_data
-    
-    def read_currents_header(self):
-        """
-        Reads the section of profile setup from the header file (.hdr) .
+            # For each burst, create a date range of 2Hz samples
+            date_range = []
+            for start_time in burst_start_times:
+                burst_range = pd.date_range(start=start_time,periods=2048,freq='500ms')
+                date_range.append(burst_range)
 
-        Returns
-        -------
-        dict
-            A dictionary with the most important data for the current records.
-        """        
-        self.header = glob.glob(self.directory_path+'*.hdr') # File with headers
-        self.headers = open(self.header[0],'r')
-        self.headers = self.headers.read().split('\n')
+            # Concatenate all individual burst date ranges into a single DatetimeIndex
+            full_index = pd.DatetimeIndex(np.concatenate([rng.values for rng in date_range]))
+            df_clean = df_raw.set_index(full_index)
+            df_clean = self._parse_dates_and_trim(df_clean)
+            df_clean = self._rename_columns(df_clean)
 
-        self.filtered_lines = []
-        for line in self.headers:
-            if any(keyword in line for keyword in ['first measurement', 'Profile interval', 'Number of cells', 'Cell size', 'Blanking distance']):
-                self.filtered_lines.append(line)
-        
-        self.current_header = {}
-        for line in self.filtered_lines:
-            key = []
-            value = []
-            for element in line.split():
-                if element.isalpha() == True:
-                    key.append(element)
-                else:
-                    value.append(element)
-            key = ' '.join(key)
-            value = ' '.join(value)
+        return df_clean
 
-            if 'first measurement' in key:
-                key = 'start_time'
-            else:
-                value = float(value)
-            self.current_header[key] = value
-        return self.current_header
-
-    def read_currents_records(self):
+    def get_raw_currents_records(self):
         """
         Reads and processes the .v1 and .v2 files to create a DataFrame.
 
@@ -169,24 +110,184 @@ class Awac():
         pandas.DataFrame
             A DataFrame containing the current magnitude and direction.
         """
-        self.curent_header = self.read_currents_header()
-
-        self.x_component_file = sorted(glob.glob(self.directory_path+'*.v1'))[0]
-        self.y_component_file = sorted(glob.glob(self.directory_path+'*.v2'))[0]
+        self.currents_header = self._read_currents_header()
+        x_component_filepath = sorted(glob.glob(self.directory_path+'*.v1'))[0]
+        y_component_filepath = sorted(glob.glob(self.directory_path+'*.v2'))[0]
         
-        self.x_component = pd.read_csv(self.x_component_file,sep=r'\s+',header=None)
-        self.y_component = pd.read_csv(self.y_component_file,sep=r'\s+',header=None)
+        column_names = [f'{i}' for i in range(1, int(self.currents_header['Number of cells']) + 1)]
+        x_component_df = pd.read_csv(x_component_filepath,sep=r'\s+',names=column_names)
+        y_component_df = pd.read_csv(y_component_filepath,sep=r'\s+',header=None,names=column_names)
 
-        self.date_range = pd.date_range(self.current_header['start_time'],periods=self.x_component.shape[0],
-                                        freq=f"{self.current_header['Profile interval sec']}s")
+        return x_component_df, y_component_df
 
-        self.x_component = self.x_component.set_index(self.date_range)
-        self.x_component.columns = map(str,np.arange(1,self.current_header['Number of cells']+1,dtype=int))
+    def get_clean_currents_records(self,compute_speed_dir=True):
+        
+        x_component_raw, y_component_raw = self.get_raw_currents_records()
+        date_range = pd.date_range(self.currents_header['start_time'],periods=x_component_raw.shape[0],
+                                        freq=f"{self.currents_header['Profile interval']}s")
 
-        self.y_component = self.y_component.set_index(self.date_range)
-        self.y_component.columns = map(str,np.arange(1,self.current_header['Number of cells']+1,dtype=int))
+        x_component_clean = x_component_raw.set_index(date_range)
+        y_component_clean = y_component_raw.set_index(date_range)
+        x_component_clean = self._parse_dates_and_trim(x_component_clean)
+        y_component_clean = self._parse_dates_and_trim(y_component_clean)
 
-        self.current_magnitude = np.sqrt((self.x_component**2)+(self.y_component**2))
-        self.current_dir = np.array([list(map(wave_props.angulo_norte,row_x,row_y)) for row_x,row_y in zip(self.x_component.values,self.y_component.values)])
-        self.current_dir = pd.DataFrame(data=self.current_dir,index=self.date_range,columns=self.current_magnitude.columns)
-        return self.current_magnitude,self.current_dir
+        if compute_speed_dir:
+            current_speed = np.sqrt((x_component_clean**2)+(y_component_clean**2))
+            current_dir = np.array([list(map(wave_props.angulo_norte,row_x,row_y)) for row_x,row_y in zip(self.x_component_raw.values,self.y_component_raw.values)])
+            current_dir = pd.DataFrame(data=current_dir,index=date_range,columns=current_speed.columns)
+            return x_component_clean,y_component_clean,current_speed,current_dir
+        else:
+            return x_component_clean,y_component_clean
+
+    def _read_wave_header(self):
+        """
+        Reads and parses the header file (.hdr) to extract the column names.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of column names extracted from the .hdr file.
+        """
+        lines = self._load_hdr_lines()
+        data_lines = self._extract_column_lines(lines)
+        column_names = self._format_column_names(data_lines)
+        return column_names
+
+    def _read_currents_header(self):
+        """
+        Reads the header file (.hdr) to extract the column names for current data.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of column names extracted from the .hdr file.
+        """
+        lines = self._load_hdr_lines()
+        filtered_lines = []
+        for line in lines:
+            if any(keyword in line for keyword in ['first measurement', 'Profile interval', 'Number of cells', 'Cell size', 'Blanking distance']):
+                filtered_lines.append(line)
+        
+        dict_current_header = {}
+        for line in filtered_lines[:-2]:
+            # Split each line into key and value by the first occurrence of two or more spaces
+            match = re.split(r'\s{2,}', line.strip(), maxsplit=1)
+
+            if match and len(match) == 2:
+                key = match[0]
+                value = match[1]
+                if 'first measurement' in key:
+                    key = 'start_time'
+                    value = pd.to_datetime(value, format='%m/%d/%Y %I:%M:%S %p')
+                else:
+                    numeric_value = re.findall(r"[-+]?\d*\.\d+|\d+", value)
+                    value=float(numeric_value[0])
+                dict_current_header[key] = value
+
+        return dict_current_header
+
+    def _load_hdr_lines(self) -> list:
+        """Load lines from the .hdr file."""
+        hdr_files = glob.glob(f"{self.directory_path}*.hdr")
+        if not hdr_files:
+            raise FileNotFoundError("No .hdr file found in the directory.")
+
+        with open(hdr_files[0], 'r') as file:
+            return file.read().splitlines()
+
+    def _extract_column_lines(self, lines: list) -> list:
+        """
+        Extract relevant lines between '.wad]' and the next line ending in '-'.
+        """
+        is_reading = False
+        mask = []
+
+        for line in lines:
+            if is_reading:
+                if line.endswith('-'):
+                    is_reading = False
+                    mask.append(False)
+                else:
+                    mask.append(True)
+            else:
+                mask.append(False)
+
+            if line.endswith('.wad]'):
+                is_reading = True
+
+        return list(np.array(lines)[mask])
+
+    def _format_column_names(self, lines: list) -> np.ndarray:
+        """Format the header lines into clean column names."""
+        names = [' '.join(line.split()) for line in lines]
+        if len(names) > 0 and names[-1] == '':
+            names = names[:-1]
+        return names
+
+    def _parse_dates_and_trim(self, df: pd.DataFrame) -> pd.Series:
+        """
+        Helper function to parse date and time from separate columns.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            DataFrame with time columns as named columns (year, month, day, hour, minute, second).
+
+        Returns
+        -------
+        pandas.Series
+            Series of parsed datetime objects.
+        """
+
+        # Check if the DataFrame index is already a DatetimeIndex
+        if isinstance(df.index, pd.DatetimeIndex):
+            pass
+        else:
+            date_columns = ['year', 'month', 'day', 'hour', 'minute', 'second']   
+            df['date'] = pd.to_datetime(df[date_columns])   
+            df.drop(columns=date_columns, inplace=True, errors='ignore')
+            df = df.set_index('date')
+
+        try:
+            start = pd.to_datetime(self.sampling_data['start_time'])
+            end = pd.to_datetime(self.sampling_data['end_time'])
+        except KeyError:
+            raise KeyError("Missing 'start_time' or 'end_time' in sampling_data.")
+        except Exception as e:
+            raise ValueError(f"Invalid time format in 'sampling_data': {e}")
+
+        return df[start:end]
+    
+    def _rename_columns(self, df: pd.DataFrame,) -> pd.DataFrame:
+        """
+        Renames columns in the DataFrame to a more readable format.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            DataFrame with columns to be renamed.
+
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with renamed columns.
+        """
+
+        relevant_columns = [column for column in df.columns if 'Pressure' in column or 'Velocity' in column or 'burst' in column]
+        df = df[relevant_columns]
+
+        renamed_columns = []
+        for column in relevant_columns:
+            if column.startswith('burst'):
+                final_column = column
+            else:
+                column = column.lower().split(' ')[1:] 
+                column[-1] = column[-1].replace('(','[').replace(')',']')
+                final_column = ''.join(column).replace('(','_').replace(')','_')
+            renamed_columns.append(final_column)
+        df.columns = renamed_columns
+            
+        df["pressure[bar]"] = df["pressure[dbar]"] / 10.0
+        cols = ["pressure[bar]"] + [col for col in df.columns if "pressure" not in col]
+        
+        return df[cols]
