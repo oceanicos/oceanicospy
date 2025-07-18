@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from oceanicospy.observations import Awac,AQUAlogger,WeatherStation,ResistiveSensor
-from oceanicospy.analysis import spectral,temporal
+from oceanicospy.analysis import spectral_old,temporal
 from oceanicospy.plots import *
 
 out_dir = f'../tests/{Path(__file__).stem}'

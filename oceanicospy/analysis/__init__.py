@@ -1,3 +1,3 @@
-from .spectral2 import *
-from . import spectral
+from .spectral import *
+from . import spectral_old
 from . import temporal
