@@ -1,4 +1,4 @@
-AQUAlogger
+AWAC
 ==========
 
 .. autoclass:: oceanicospy.observations.awac.AWAC
