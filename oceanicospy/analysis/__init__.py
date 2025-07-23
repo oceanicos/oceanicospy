@@ -1,3 +1,2 @@
-from .spectral import *
-from . import spectral_old
-from . import temporal
+from .spectral import WaveSpectralAnalyzer
+from .temporal import WaveTemporalAnalyzer

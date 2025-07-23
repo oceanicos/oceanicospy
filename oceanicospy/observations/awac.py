@@ -30,7 +30,7 @@ class AWAC():
         sampling_data : dict
             Dictionary containing the information about the device installation
         """
-        self.directory_path = directory_path
+        self.directory_pathz = directory_path
         self.sampling_data = sampling_data
 
     def get_raw_wave_records(self,from_single_wad):

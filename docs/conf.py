@@ -20,6 +20,8 @@ release = '0.0.1'
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+suppress_warnings = ["myst.header"]  # (si usas MyST)
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # Optional: for Google or NumPy-style docstrings
