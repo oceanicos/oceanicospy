@@ -1,8 +1,6 @@
 AQUAlogger
 ==========
 
-.. autoclass:: oceanicospy.observations.aqualogger.AQUAlogger
+.. automodule:: oceanicospy.observations.aqualogger
    :inherited-members:
-   :members:
-   :undoc-members:
    :show-inheritance:

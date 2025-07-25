@@ -9,6 +9,8 @@
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath('..'))
+
 project = 'oceanicospy'
 copyright = '2025, oceanicos'
 author = 'oceanicos'
@@ -32,6 +34,7 @@ autodoc_member_order = 'bysource'
 autodoc_typehints = 'description'
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = True
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

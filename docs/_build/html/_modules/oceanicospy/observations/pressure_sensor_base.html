@@ -149,20 +149,21 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../models/swanpy.html">swanpy</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/AQUAlogger.html">AQUAlogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../models/swanpy.html">swanpy</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../plots.html">Plots</a></li>
@@ -280,33 +281,52 @@ document.write(`
 <a class="viewcode-back" href="../../../observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseLogger</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class to handle reading and processing the data files recorded by any pressure sensor. </span>
+<span class="sd">    Initializes the BaseLogger class with the given directory path, sampling data.</span>
 
-<span class="sd">    Notes </span>
-<span class="sd">    -----</span>
-<span class="sd">    10-Dec-2024 : Origination - Franklin Ayala</span>
-
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory_path : str</span>
+<span class="sd">        Path to the directory containing the sensor pressure files.</span>
+<span class="sd">    sampling_data : dict</span>
+<span class="sd">        Dictionary containing information on device installation, including:</span>
+<span class="sd">        </span>
+<span class="sd">        - ``start_time``: The start time of the sampling period.</span>
+<span class="sd">        - ``end_time``: The end time of the sampling period.</span>
+<span class="sd">        - ``sampling_rate``: The sampling rate of the device (Hz)</span>
+<span class="sd">        - ``burst_duration``: The duration of each burst (seconds)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sampling_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the BaseLogger class with the given directory path, sampling data.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        directory_path : str</span>
-<span class="sd">            Path to the directory containing the .hdr and .wad files.</span>
-<span class="sd">        sampling_data : dict</span>
-<span class="sd">            Dictionary containing the information about the device installation</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span> <span class="o">=</span> <span class="n">directory_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span> <span class="o">=</span> <span class="n">sampling_data</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">first_record_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_records</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the timestamp of the first record in the dataset.</span>
 
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.Timestamp</span>
+<span class="sd">            The timestamp of the first available record.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_raw_dataframe</span><span class="p">()[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_raw_dataframe</span><span class="p">()[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">last_record_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the timestamp of the last record in the dataset.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.Timestamp</span>
+<span class="sd">            The timestamp of the first available record.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_raw_dataframe</span><span class="p">()[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
         <span class="k">except</span><span class="p">:</span>
@@ -336,6 +356,11 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">get_clean_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detrended</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the raw data by grouping the series per each burst</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        detrended : bool, optional</span>
+<span class="sd">            If True, applies a linear detrending to the depth data within each burst. Default is ``True``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

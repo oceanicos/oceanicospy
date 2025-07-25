@@ -1,0 +1,706 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>oceanicospy.analysis.spectral &#8212; oceanicospy 0.0.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/analysis/spectral';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">oceanicospy 0.0.1 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../models/swanpy.html">swanpy</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/RBR.html">RBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plots.html">Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../retrievals.html">Retrievals</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for oceanicospy.analysis.spectral</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">wave_props</span><span class="p">,</span><span class="n">constants</span><span class="p">,</span><span class="n">extras</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">welch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PyEMD</span><span class="w"> </span><span class="kn">import</span> <span class="n">EMD</span><span class="p">,</span><span class="n">EEMD</span><span class="p">,</span><span class="n">CEEMDAN</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pywt</span>
+
+<div class="viewcode-block" id="WaveSpectralAnalyzer">
+<a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WaveSpectralAnalyzer</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">measurement_signal</span><span class="p">,</span><span class="n">sampling_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the analysis object with measurement signal and sampling data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        measurement_signal : array-like</span>
+<span class="sd">            The input signal data to be analyzed.</span>
+<span class="sd">        sampling_data : dict</span>
+<span class="sd">            Dictionary containing sampling parameters with the following keys:</span>
+<span class="sd">                - &#39;sampling_freq&#39; (float): Sampling frequency of the signal.</span>
+<span class="sd">                - &#39;anchoring_depth&#39; (float): Depth at which the sensor is anchored.</span>
+<span class="sd">                - &#39;sensor_height&#39; (float): Height of the sensor above the bottom.</span>
+<span class="sd">                - &#39;burst_length_s&#39; (float): Duration of each burst in seconds.</span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        measurement_signal : array-like</span>
+<span class="sd">            Stores the input measurement signal.</span>
+<span class="sd">        sampling_data : dict</span>
+<span class="sd">            Stores the sampling parameters.</span>
+<span class="sd">        sampling_freq : float</span>
+<span class="sd">            Sampling frequency extracted from sampling_data.</span>
+<span class="sd">        anchoring_depth : float</span>
+<span class="sd">            Anchoring depth extracted from sampling_data.</span>
+<span class="sd">        sensor_height : float</span>
+<span class="sd">            Sensor height extracted from sampling_data.</span>
+<span class="sd">        burst_length_s : float</span>
+<span class="sd">            Burst length in seconds extracted from sampling_data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measurement_signal</span> <span class="o">=</span> <span class="n">measurement_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span> <span class="o">=</span> <span class="n">sampling_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;sampling_freq&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anchoring_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;anchoring_depth&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;sensor_height&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burst_length_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;burst_length_s&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="WaveSpectralAnalyzer.smooth_psd_spectrum">
+<a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">smooth_psd_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">psd</span><span class="p">,</span><span class="n">smoothing_bins</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Smooth the power spectral density (PSD) spectrum using a moving average filter.&quot;&quot;&quot;</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">smoothing_bins</span><span class="p">)</span> <span class="o">/</span> <span class="n">smoothing_bins</span>
+        <span class="n">psd_smoothed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">psd_smoothed</span></div>
+
+
+<div class="viewcode-block" id="WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1">
+<a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wave_params_from_spectrum_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">psd</span><span class="p">,</span><span class="n">freqs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function computes different wave integral parameters from the spectrum</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        psd : list or ndarray</span>
+<span class="sd">            Density variance spectrum</span>
+<span class="sd">        freq : list or ndarray</span>
+<span class="sd">            Frequencies of the spectrum</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Hs : float</span>
+<span class="sd">            Significant wave heigth [m]</span>
+<span class="sd">        Hrms : float</span>
+<span class="sd">            Root-mean squared wave heigth [m]</span>
+<span class="sd">        Hmean : float</span>
+<span class="sd">            Mean wave heigth [m]</span>
+<span class="sd">        Tp : float</span>
+<span class="sd">            Peak period [s]</span>
+<span class="sd">        Tm01 : float</span>
+<span class="sd">            Mean period - fisrt order [s]</span>
+<span class="sd">        Tm02 : float</span>
+<span class="sd">            Mean period - second order [s]</span>
+<span class="sd">        </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        10-Dec-2024 : Origination - Franklin Ayala</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">m0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">*</span><span class="n">psd</span><span class="p">,</span> <span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">((</span><span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">psd</span><span class="p">,</span> <span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+        <span class="n">i0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="p">,</span> <span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">i1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="p">,</span> <span class="n">freqs</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+        <span class="n">Hs</span> <span class="o">=</span> <span class="mf">4.004</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m0</span><span class="p">)</span>
+        <span class="n">Hrms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">m0</span><span class="p">)</span>
+        <span class="n">Hmean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">m0</span><span class="p">)</span>
+
+        <span class="c1"># Tp = i0/i1</span>
+        <span class="n">Tp</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">freqs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">psd</span><span class="p">)]</span>
+        <span class="n">Tm01</span> <span class="o">=</span> <span class="n">m0</span><span class="o">/</span><span class="n">m1</span>
+        <span class="n">Tm02</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m0</span><span class="o">/</span><span class="n">m2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Hs</span><span class="p">,</span><span class="n">Hrms</span><span class="p">,</span><span class="n">Hmean</span><span class="p">,</span><span class="n">Tp</span><span class="p">,</span><span class="n">Tm01</span><span class="p">,</span><span class="n">Tm02</span></div>
+
+
+<div class="viewcode-block" id="WaveSpectralAnalyzer.compute_spectrum_from_direct_fft">
+<a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft">[docs]</a>
+    <span class="nd">@extras</span><span class="o">.</span><span class="n">timing_decorator</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_spectrum_from_direct_fft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">signal</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the density variance spectrum based on the Fast Fourier transform. </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal : list or ndarray</span>
+<span class="sd">            An array of the signal</span>
+<span class="sd">        sampling_freq : float</span>
+<span class="sd">            Sampling frequency for the records    </span>
+<span class="sd">        anchoring_depth : float</span>
+<span class="sd">            Depth at where the device was settled on the bottom.</span>
+<span class="sd">        sensor_height: float</span>
+<span class="sd">            Distance from the sensor to the bottom.        </span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        power : ndarray</span>
+<span class="sd">            Density variance spectrum    </span>
+<span class="sd">        power_kp : ndarray</span>
+<span class="sd">            Density variance spectrum corrected by Kp    </span>
+<span class="sd">        freq: ndarray</span>
+<span class="sd">            Frequency of the spectrum</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Based on https://currents.soest.hawaii.edu/ocn_data_analysis/_static/Spectrum.html</span>
+
+<span class="sd">        01-Sep-2023 : Origination - Juan Diego Toro</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">),</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span><span class="p">)</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">freq</span>
+        <span class="n">fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+        <span class="c1"># Filtering frequencies </span>
+        <span class="n">target_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">freq</span><span class="o">&gt;=</span><span class="mf">0.0009</span><span class="p">))</span><span class="o">&amp;</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">freq</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">))))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">freq</span><span class="p">[</span><span class="n">target_freqs</span><span class="p">]</span>
+        <span class="n">fourier</span><span class="o">=</span> <span class="n">fourier</span><span class="p">[</span><span class="n">target_freqs</span><span class="p">]</span>
+
+        <span class="c1"># Density variance spectrum</span>
+        <span class="n">amplitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fourier</span><span class="p">)</span>
+        <span class="n">power</span> <span class="o">=</span> <span class="p">(</span><span class="n">amplitude</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span><span class="p">)</span>
+
+        <span class="c1"># Correction by Kp</span>
+        <span class="n">Kp</span><span class="p">,</span> <span class="n">Kpmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_kp</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">anchoring_depth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_height</span><span class="p">)</span>
+        <span class="n">fmax_kp</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">9.8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anchoring_depth</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_height</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anchoring_depth</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_height</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">anchoring_depth</span><span class="p">))</span>
+
+        <span class="n">power_kp</span> <span class="o">=</span> <span class="n">power</span> <span class="o">/</span> <span class="p">(</span><span class="n">Kp</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">power</span><span class="p">,</span><span class="n">power_kp</span><span class="p">,</span><span class="n">freq</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">Kpmin</span><span class="p">,</span><span class="n">fmax_kp</span></div>
+
+
+<div class="viewcode-block" id="WaveSpectralAnalyzer.compute_spectrum_from_welch">
+<a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch">[docs]</a>
+    <span class="nd">@extras</span><span class="o">.</span><span class="n">timing_decorator</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_spectrum_from_welch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">signal</span><span class="p">,</span><span class="n">window_type</span><span class="p">,</span><span class="n">window_length</span><span class="p">,</span><span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute PSD using Welch method and smooth across frequency bins.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal : ndarray</span>
+<span class="sd">            1D numpy array containing the signal.</span>
+<span class="sd">        window_type : str, optional</span>
+<span class="sd">            Type of window to use (default is &#39;hamming&#39;).</span>
+<span class="sd">            Can be any window name supported by scipy.signal.windows, e.g., </span>
+<span class="sd">            &#39;hann&#39;, &#39;blackman&#39;, &#39;boxcar&#39;, etc.</span>
+<span class="sd">        window_length : int</span>
+<span class="sd">            Length of the Hamming window in samples.</span>
+<span class="sd">        smoothing_bins : int</span>
+<span class="sd">            Number of adjacent frequency bins to smooth over.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        freqs : ndarray</span>
+<span class="sd">            Frequency array.</span>
+<span class="sd">        psd_smoothed : ndarray</span>
+<span class="sd">            PSD after smoothing.</span>
+<span class="sd">        dof : float</span>
+<span class="sd">            Estimated degrees of freedom.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Welch PSD</span>
+        <span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span> <span class="o">=</span> <span class="n">welch</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">signal</span><span class="p">,</span><span class="n">fs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span><span class="p">,</span><span class="n">window</span><span class="o">=</span><span class="n">window_type</span><span class="p">,</span>
+                            <span class="n">nperseg</span><span class="o">=</span><span class="n">window_length</span><span class="p">,</span>
+                            <span class="n">noverlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+                            <span class="n">scaling</span><span class="o">=</span><span class="s1">&#39;density&#39;</span><span class="p">)</span>
+        <span class="c1"># Estimate degrees of freedom:</span>
+        <span class="c1"># DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)</span>
+        <span class="c1"># n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)</span>
+        <span class="c1"># dof = 2 * n_segments * (1 / smoothing_bins)</span>
+        <span class="k">return</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span></div>
+
+
+<div class="viewcode-block" id="WaveSpectralAnalyzer.get_spectra_and_params_for_bursts">
+<a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_spectra_and_params_for_bursts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">method</span><span class="p">,</span><span class="n">window_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">window_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">smoothing_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get wave spectra for each burst in the cleaned records.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        wave_spectra_data : dict</span>
+<span class="sd">            Dictionary containing wave spectra data with keys:</span>
+<span class="sd">            - &#39;S&#39;: List of power spectral densities for each burst.</span>
+<span class="sd">            - &#39;dir&#39;: List of directions (currently not computed, placeholder).</span>
+<span class="sd">            - &#39;freq&#39;: List of frequency arrays for each burst.</span>
+<span class="sd">            - &#39;time&#39;: List of timestamps corresponding to each burst.</span>
+<span class="sd">        wave_params_data : pandas.DataFrame</span>
+<span class="sd">            DataFrame containing wave parameters with columns:</span>
+<span class="sd">            - &#39;Hm0&#39;: Zero-moment wave height.</span>
+<span class="sd">            - &#39;Hrms&#39;: Root mean square wave height.</span>
+<span class="sd">            - &#39;Hmean&#39;: Mean wave height.</span>
+<span class="sd">            - &#39;Tp&#39;: Peak period.</span>
+<span class="sd">            - &#39;Tm01&#39;: Mean period (first moment).</span>
+<span class="sd">            - &#39;Tm02&#39;: Mean period (second moment).</span>
+<span class="sd">            - Index is the timestamp corresponding to each burst.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">hourly_timeindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_signal</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+        <span class="n">wave_params</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Hm0&quot;</span><span class="p">,</span><span class="s2">&quot;Hrms&quot;</span><span class="p">,</span><span class="s2">&quot;Hmean&quot;</span><span class="p">,</span><span class="s2">&quot;Tp&quot;</span><span class="p">,</span><span class="s2">&quot;Tm01&quot;</span><span class="p">,</span><span class="s2">&quot;Tm02&quot;</span><span class="p">]</span>
+        <span class="n">wave_params_data</span><span class="o">=</span><span class="p">{</span><span class="n">param</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">hourly_timeindex</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">wave_params</span><span class="p">}</span>
+
+        <span class="n">wave_spectra_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span><span class="s2">&quot;dir&quot;</span><span class="p">,</span><span class="s2">&quot;freq&quot;</span><span class="p">,</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+        <span class="n">wave_spectra_data</span><span class="o">=</span><span class="p">{</span><span class="n">var</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">wave_spectra_vars</span><span class="p">}</span>
+
+        <span class="n">wave_spectra_data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_timeindex</span>
+        <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hourly_timeindex</span>
+
+        <span class="k">if</span> <span class="s1">&#39;burstId&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_signal</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">burst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_signal</span><span class="p">[</span><span class="s2">&quot;burstId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+                <span class="n">burst_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_signal</span><span class="p">[</span><span class="s1">&#39;burstId&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">burst</span><span class="p">]</span>
+                <span class="n">len_burst_series</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_series</span><span class="p">)</span>
+
+                <span class="c1"># Create a time index for each expected burst based on the sampling frequency and burst length</span>
+                <span class="c1"># burst_start_time = burst_series.index[0]</span>
+                <span class="c1"># burst_end_time = burst_series.index[-1]</span>
+                <span class="c1"># expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, freq=pd.Timedelta(seconds=1/sampling_data[&#39;sampling_freq&#39;]))</span>
+
+                <span class="c1"># # Find which expected times are missing in the burst</span>
+                <span class="c1"># missing_times = expected_times.difference(burst_series.index)</span>
+                <span class="c1"># if not missing_times.empty:</span>
+                <span class="c1">#     print(f&quot;Missing timestamps in burst {hourly_timeindex[idx]}: {missing_times}&quot;)</span>
+
+                <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;fft&#39;</span><span class="p">:</span>
+                    <span class="c1"># Compute the spectrum using FFT</span>
+                    <span class="n">power</span><span class="p">,</span> <span class="n">power_kp</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">kpmin</span><span class="p">,</span> <span class="n">fmax_kp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_spectrum_from_direct_fft</span><span class="p">(</span><span class="n">burst_series</span><span class="p">[</span><span class="s1">&#39;eta[m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                    <span class="n">wave_spectra_data</span><span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">power_kp</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;welch&#39;</span><span class="p">:</span>
+                    <span class="c1"># Compute the spectrum using Welch method</span>
+                    <span class="n">freqs</span><span class="p">,</span><span class="n">power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_spectrum_from_welch</span><span class="p">(</span><span class="n">burst_series</span><span class="p">[</span><span class="s1">&#39;eta[m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">window_type</span><span class="p">,</span> <span class="n">window_length</span><span class="p">)</span>
+                    <span class="n">power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth_psd_spectrum</span><span class="p">(</span><span class="n">power</span><span class="p">,</span><span class="n">smoothing_bins</span><span class="p">)</span>
+                    <span class="n">wave_spectra_data</span><span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">power</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="c1"># Compute wave parameters from the spectrum</span>
+                <span class="n">Hm0</span><span class="p">,</span> <span class="n">Hrms</span><span class="p">,</span> <span class="n">Hmean</span><span class="p">,</span> <span class="n">Tp</span><span class="p">,</span> <span class="n">Tm01</span><span class="p">,</span> <span class="n">Tm02</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wave_params_from_spectrum_v1</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">freqs</span><span class="p">)</span>
+
+                <span class="c1"># Store wave parameters</span>
+                <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Hm0&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hm0</span>
+                <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Hrms&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hrms</span>
+                <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Hmean&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hmean</span>
+                <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Tp&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tp</span>
+                <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Tm01&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tm01</span>
+                <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Tm02&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tm02</span>
+            
+            <span class="n">wave_spectra_data</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freqs</span>
+            <span class="n">wave_spectra_data</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wave_spectra_data</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">])</span>
+
+            <span class="n">wave_params_data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">wave_params_data</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wave_spectra_data</span><span class="p">,</span><span class="n">wave_params_data</span></div>
+</div>
+
+
+<span class="c1">#     def decompose_into_IMFs_for_bursts(self,emd_type,maximum_IMFs,number_ensembles=None,amplitude_noise_std=None):</span>
+<span class="c1">#         hourly_timeindex = self.measurement_signal.index.floor(&#39;h&#39;).unique().sort_values()</span>
+<span class="c1">#         time_seconds = np.arange(0,self.burst_length_s,1)</span>
+
+<span class="c1">#         IMFs_all = np.zeros((len(hourly_timeindex),maximum_IMFs,self.burst_length_s))</span>
+
+<span class="c1">#         if &#39;burstId&#39; in self.measurement_signal.columns:</span>
+<span class="c1">#             for idx,burst in enumerate(self.measurement_signal[&quot;burstId&quot;].unique()):</span>
+<span class="c1">#                 burst_series = self.measurement_signal[self.measurement_signal[&#39;burstId&#39;] == burst]</span>
+<span class="c1">#                 if emd_type == &#39;EMD&#39;:</span>
+<span class="c1">#                     emd = EMD()</span>
+<span class="c1">#                     IMFs = emd(burst_series[&#39;eta[m]&#39;].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]</span>
+<span class="c1">#                 elif emd_type == &#39;EEMD&#39;:</span>
+<span class="c1">#                     eemd = EEMD(trials=number_ensembles, epsilon=amplitude_noise_std)</span>
+<span class="c1">#                     IMFs = eemd(burst_series[&#39;eta[m]&#39;].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]</span>
+<span class="c1">#                 else:</span>
+<span class="c1">#                     ceemd = CEEMDAN(DTYPE=np.float16,trials=number_ensembles,epsilon=amplitude_noise_std,parallel=True,processes=48)</span>
+<span class="c1">#                     IMFs = ceemd(burst_series[&#39;eta[m]&#39;].values,time_seconds,max_imf=maximum_IMFs)[:maximum_IMFs,:]</span>
+<span class="c1">#                 IMFs_all[idx,:,:] = IMFs</span>
+<span class="c1">#         return IMFs_all</span>
+
+<span class="c1">#     def compute_wavelet_scalogram(self,signal,mother_wavelet,maximum_scale):</span>
+<span class="c1">#         coefficients, frequencies = pywt.cwt(signal, scales, mother_wavelet, sampling_period=1/self.sampling_freq)</span>
+<span class="c1">#         return coefficients,frequencies</span>
+
+<span class="c1">#     def compute_wavelet_scalogram_windowed(self,signal,window_length,overlap,mother_wavelet,maximum_scale):</span>
+<span class="c1">#         step = int(window_length * (1 - overlap))</span>
+<span class="c1">#         if len(signal)==window_length:</span>
+<span class="c1">#             n_segments =1</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             n_segments = (len(signal) - window_length) // step + 1</span>
+<span class="c1">#         window = np.hanning(window_length)</span>
+
+<span class="c1">#         scales = np.arange(1, maximum_scale, 20)</span>
+<span class="c1">#         stitched = np.zeros((len(scales), len(signal)))</span>
+<span class="c1">#         weight = np.zeros(len(signal))</span>
+
+<span class="c1">#         for idx_seg in range(n_segments):</span>
+<span class="c1">#             start = idx_seg * step</span>
+<span class="c1">#             end = start + window_length</span>
+<span class="c1">#             segment = signal[start:end]</span>
+<span class="c1">#             coef, freqs = pywt.cwt(segment, scales, mother_wavelet, sampling_period=1/self.sampling_freq)</span>
+<span class="c1">#             coef_mag = np.abs(coef) * window  # Apply window to smooth overlap</span>
+<span class="c1">#             stitched[:, start:end] += coef_mag</span>
+<span class="c1">#             weight[start:end] += window</span>
+
+<span class="c1">#         stitched /= np.maximum(weight, 1e-8)</span>
+<span class="c1">#         return stitched,freqs</span>
+
+<span class="c1">#     def compute_all_wavelet_scalograms(self,window_length,overlap,mother_wavelet,maximum_scale):</span>
+<span class="c1">#         hourly_timeindex = self.measurement_signal.index.floor(&#39;h&#39;).unique().sort_values()</span>
+<span class="c1">#         scale = np.arange(1,maximum_scale,20)</span>
+<span class="c1">#         coefs_all = np.zeros((len(hourly_timeindex),len(scale),self.burst_length_s))</span>
+
+<span class="c1">#         if &#39;burstId&#39; in self.measurement_signal.columns:</span>
+<span class="c1">#             for idx,burst in enumerate(self.measurement_signal[&quot;burstId&quot;].unique()):</span>
+<span class="c1">#                 burst_series = self.measurement_signal[self.measurement_signal[&#39;burstId&#39;] == burst]</span>
+<span class="c1">#                 coefs,freqs = self.compute_wavelet_scalogram_windowed(burst_series[&#39;eta[m]&#39;].values,window_length,overlap,</span>
+<span class="c1">#                                                                             mother_wavelet,maximum_scale)</span>
+<span class="c1">#                 coefs_all[idx,:,:] = coefs</span>
+<span class="c1">#         return coefs_all,freqs</span>
+
+<span class="c1">#     @staticmethod</span>
+<span class="c1">#     def _compute_kp(freqs, anchoring_depth, sensor_height):</span>
+<span class="c1">#         L = [wave_props.wavelength(1/f, anchoring_depth) for f in freqs]</span>
+<span class="c1">#         k = [2*np.pi/l for l in L]</span>
+<span class="c1">#         Kp = np.array([np.cosh(ki*sensor_height)/np.cosh(ki*anchoring_depth) for ki in k])</span>
+<span class="c1">#         Kpmin = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \</span>
+<span class="c1">#                 (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth))</span>
+<span class="c1">#         Kp = np.clip(Kp, Kpmin, 10)</span>
+<span class="c1">#         return Kp, Kpmin</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By oceanicos
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, oceanicos.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

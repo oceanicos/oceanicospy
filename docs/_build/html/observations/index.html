@@ -43,8 +43,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'observations/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="BaseLogger" href="BaseLogger.html" />
-    <link rel="prev" title="swanpy" href="../models/swanpy.html" />
+    <link rel="next" title="Walkthrough Example" href="walkthrough.html" />
+    <link rel="prev" title="oceanicospy documentation" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -150,20 +150,22 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../analysis/spectral.html">Spectral</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../models/swanpy.html">swanpy</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="walkthrough.html">Walkthrough Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RBR.html">RBR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../models/swanpy.html">swanpy</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
@@ -320,10 +322,44 @@ document.write(`
                   
   <section id="observations">
 <h1>Observations<a class="headerlink" href="#observations" title="Link to this heading">#</a></h1>
-<p>Introduction to Observations</p>
+<p>This subpackage contains classes for handling observations from various sensors. Each class is designed to interface
+with a specific type of logger or sensor, providing methods for practical data retrieval. The sensors described here represent the whole existing set
+of sensors in the OCEANICOS research group used in 2025.</p>
+<p>The sensors include:</p>
+<ul class="simple">
+<li><p><strong>Pressure sensors</strong>: devices used to measure the water pressure at a given depth. Some of these sensors include an own-developed logger (BlueLog) and
+comercial loggers such as RBR and AQUAlogger.</p></li>
+<li><p><strong>Acoustic doppler current profilers (ADCP)</strong>: instruments that use sound waves to measure water current velocities.
+The AWAC is an example of such a device.</p></li>
+<li><p><strong>Weather stations</strong>: Despite the OCEANICOS research group is not an atmospheric research group, it is unneglectable the need of weather data for
+oceanographic research. In this group the examples of those stations are: ..</p></li>
+<li><p><strong>Resistive sensors</strong>: The lab sensors are used to measure the resistivity of the water, which can be used to infer properties like water depth.</p></li>
+<li><p><strong>Conductivity-Temperature-Depth (CTD) sensors</strong>: These sensors measure the conductivity, temperature, and depth of water, providing essential data for
+oceanographic studies.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This documentation is generated from the source code and may not include all details.
+For more information, refer to the source code or the specific sensor documentation.</p>
+</div>
+<p>All the classes in this subpackage are presented below and it can be imported as follows:</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>To use a specific sensor, you can import it directly from the <cite>oceanicospy.observations</cite> module.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.observations</span><span class="w"> </span><span class="kn">import</span> <span class="n">device_name_class</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">device_name_class</span><span class="p">()</span>  <span class="c1"># name of the specific sensor class you want to use.</span>
+</pre></div>
+</div>
+<p>For example, to use the AQUAlogger:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.observations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AQUAlogger</span>
+<span class="n">aqua_logger</span> <span class="o">=</span> <span class="n">AQUAlogger</span><span class="p">()</span>  <span class="c1"># Create an instance of the AQUAlogger class.</span>
+</pre></div>
+</div>
+</div>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="walkthrough.html">Walkthrough Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RBR.html">RBR</a></li>
@@ -344,20 +380,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../models/swanpy.html"
+       href="../index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">swanpy</p>
+        <p class="prev-next-title">oceanicospy documentation</p>
       </div>
     </a>
     <a class="right-next"
-       href="BaseLogger.html"
+       href="walkthrough.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">BaseLogger</p>
+        <p class="prev-next-title">Walkthrough Example</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

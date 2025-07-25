@@ -43,7 +43,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'observations/AWAC';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Plots" href="../plots.html" />
+    <link rel="next" title="Analysis" href="../analysis/index.html" />
     <link rel="prev" title="RBR" href="RBR.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -150,20 +150,22 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../analysis/spectral.html">Spectral</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../models/swanpy.html">swanpy</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="walkthrough.html">Walkthrough Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RBR.html">RBR</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">AWAC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../models/swanpy.html">swanpy</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
@@ -339,23 +341,36 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.awac.</span></span><span class="sig-name descname"><span class="pre">AWAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A).</p>
+<dd><p>A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing the .hdr and .wad files.</p></li>
+<li><p><strong>sampling_data</strong> (<em>dict</em>) – Dictionary containing the information about the device installation</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
-<p>04-Jan-2018 : Origination - Daniel Peláez
-01-Sep-2023 : Migration to Python - Alejandro Henao
-10-Dec-2024 : Class implementation - Franklin Ayala</p>
+<ul class="simple">
+<li><p>04-Jan-2018 : Origination - Daniel Peláez</p></li>
+<li><p>01-Sep-2023 : Migration to Python - Alejandro Henao</p></li>
+<li><p>10-Dec-2024 : Class implementation - Franklin Ayala</p></li>
+</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC.get_raw_wave_records">
-<span class="sig-name descname"><span class="pre">get_raw_wave_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_single_wad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC.get_raw_wave_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC.get_raw_wave_records" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_raw_wave_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_single_wad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC.get_raw_wave_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC.get_raw_wave_records" title="Link to this definition">#</a></dt>
 <dd><p>Reads and processes the .wad files to create a DataFrame containing the burst data.</p>
 <p>For each .wad file, the function reads the data, adds a ‘burstId’ column, and combines all the data into a single DataFrame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A DataFrame containing the concatenated data from all the .wad files with an added ‘burstId’ column.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>from_single_wad</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, reads data from a single .wad file. If False, reads data from all .wad files in the directory.
+Default is True, which means it reads from the first .wad file found in the directory.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>pandas.DataFrame</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame containing the concatenated data from all the .wad files with an added ‘burstId’ column.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -393,7 +408,22 @@ by the specified time range.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.observations.awac.AWAC.get_clean_currents_records">
 <span class="sig-name descname"><span class="pre">get_clean_currents_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compute_speed_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/awac.html#AWAC.get_clean_currents_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.awac.AWAC.get_clean_currents_records" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Processes the raw current data by reading the x and y components, setting the index to a date range, and optionally computing speed and direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compute_speed_dir</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, computes the current speed and direction from the x and y components. Default is True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x_component_clean</strong> (<em>pandas.DataFrame</em>) – Cleaned DataFrame of the x component of the current.</p></li>
+<li><p><strong>y_component_clean</strong> (<em>pandas.DataFrame</em>) – Cleaned DataFrame of the y component of the current.</p></li>
+<li><p><strong>current_speed</strong> (<em>pandas.DataFrame, optional</em>) – DataFrame of the current speed, only returned if compute_speed_dir is True.</p></li>
+<li><p><strong>current_dir</strong> (<em>pandas.DataFrame, optional</em>) – DataFrame of the current direction, only returned if compute_speed_dir is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -420,11 +450,11 @@ by the specified time range.</p>
       </div>
     </a>
     <a class="right-next"
-       href="../plots.html"
+       href="../analysis/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Plots</p>
+        <p class="prev-next-title">Analysis</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

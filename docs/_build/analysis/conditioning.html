@@ -1,0 +1,601 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Signal conditioning &#8212; oceanicospy 0.0.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'analysis/conditioning';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spectral" href="spectral.html" />
+    <link rel="prev" title="Analysis" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">oceanicospy 0.0.1 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Analysis</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../models/swanpy.html">swanpy</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../observations/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/RBR.html">RBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../retrievals.html">Retrievals</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/analysis/conditioning.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Signal conditioning</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nyquist-frequency">Nyquist frequency</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aliasing">Aliasing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windowing">Windowing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sliding-windowing">Sliding windowing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welch-method">Welch method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing">Smoothing</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="signal-conditioning">
+<h1>Signal conditioning<a class="headerlink" href="#signal-conditioning" title="Link to this heading">#</a></h1>
+<p>Most of the time series recorded by different devices need to be conditioned before
+using them in spectral analysis. Different key concepts will be explained in this section
+to obtain the most feasible results.</p>
+<section id="nyquist-frequency">
+<h2>Nyquist frequency<a class="headerlink" href="#nyquist-frequency" title="Link to this heading">#</a></h2>
+<p>It is defined as the minimum sampling rate that allows to reconstruct a signal. This frequency is given by the equation:</p>
+<div class="math notranslate nohighlight">
+\[f_{Nyquist} = \frac{f_s}{2}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_s\)</span> is the sampling frequency.</p>
+<p>For instance, if you want to record a signal which has a maximum frequency of 0.5 Hz (2s period),
+you need to sample it at least at 1 Hz. If a lower frequency signal is required, the sampling rate
+must be increased.</p>
+<div class="math notranslate nohighlight">
+\[\Delta t = \frac{1}{2f_{Nyquist}}\]</div>
+<p>At the end, there is a linear relationship between the sampling frequency and the
+maximum frequency that can be processed. Usually a sampling rate of 1Hz is enough for wind-wave analysis.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/nyquist_example.png"><img alt="Example of Nyquist frequency" src="../_images/nyquist_example.png" style="width: 90%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Illustration of the Nyquist frequency concept. The sampling rate determines the highest frequency that can be accurately represented.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>This is kind of an intuitive assumtion so we are tempted to sample the signal at the ups and downs to avoid losing information.</p>
+</section>
+<section id="aliasing">
+<h2>Aliasing<a class="headerlink" href="#aliasing" title="Link to this heading">#</a></h2>
+<p>Aliasing occurs when a signal is sampled at a rate that is too low to capture its highest frequency components,
+leading to distortion in the reconstructed signal. This happens when the sampling frequency is less than twice
+the highest frequency present in the signal (the Nyquist frequency).</p>
+<p>Let’s have a look at the following example:</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/aliased_signal_example.png"><img alt="Aliased" src="../_images/aliased_signal_example.png" style="width: 90%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Illustration of aliasing. The original signal is sampled at a rate that is too low, causing high-frequency components to be misrepresented as lower frequencies.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The sampling frequency is clearly below the Nyquist frequency. The PSD of the aliased signal is also computed.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_aliased_signal_example.png"><img alt="PSD" src="../_images/psd_aliased_signal_example.png" style="width: 90%;" />
+</a>
+</figure>
+<p>When a continuous signal with frequency components above the Nyquist frequency is sampled,
+those high frequencies are misrepresented in the sampled signal. They “fold” back into the frequency range
+<span class="math notranslate nohighlight">\([0, f_{s}/2]\)</span>, creating aliased frequencies. In this case, the original signal has a frequency of <span class="math notranslate nohighlight">\(2\,\mathrm{Hz}\)</span>, but the sampling frequency
+is 0.5Hz, which is below the Nyquist frequency (1Hz). This means the sampled signal will appear to have a frequency of 0.5Hz, which is incorrect.
+It’s like mirroring the frequency around the Nyquist frequency</p>
+</section>
+<section id="windowing">
+<h2>Windowing<a class="headerlink" href="#windowing" title="Link to this heading">#</a></h2>
+<p>The Fast Fourier Transform (FFT) assumes that the time-domain signal is perodic.
+This means that the signal is repeated indefinitely in both directions.
+However, in practice, we only have a finite segment of the signal, so the signal will not likely
+start and end at the same phase/amplitude values. To avoid introducing artifacts in the frequency domain,
+we apply a windowing function to the time-domain signal before performing the FFT.</p>
+<p>Assuming that we have the following non fully perodic time series:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/non_full_periodic_signal.png"><img alt="Non fully periodic signal" src="../_images/non_full_periodic_signal.png" style="width: 90%;" />
+</a>
+</figure>
+<p>Notice that the end part of the time series does not match the beginning part. Those discontinuities at
+the beginning and end of the time series will generate spurious amplitudes in the adjacent frequencies. We can compute
+the Power Spectral Density (PSD) as follows:</p>
+<p>INSERT EQUATION HERE</p>
+<p>A quick way to visualize this effect is then plotted in the following figure:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_non_periodic_signal.png"><img alt="PSD for non fully periodic signal" src="../_images/psd_non_periodic_signal.png" style="width: 90%;" />
+</a>
+</figure>
+<p>Fourier Transform can introduce “spectral leakage”, spreading the energy across multiple frequency bins
+rather than concentrating it at the correct frequency. A technical way to avoid this effect is to apply a windowing function
+to the time series before computing the FFT.  The windowing function is a mathematical function that tapers the signal to zero at the edges,
+reducing the discontinuities.</p>
+<p>So let’s say you have a discrete-time signal:</p>
+<div class="math notranslate nohighlight">
+\[x[n], \quad n = 0, 1, 2, ..., N-1\]</div>
+<p>We can define a window function ( w[n] ), such as the hamming window, that is also of length ( N ):</p>
+<div class="math notranslate nohighlight">
+\[w[n] = 0.54 - 0.46 \cos\left( \frac{2\pi n}{N-1} \right), \quad n = 0, 1, 2, ..., N-1\]</div>
+<p>This gives us set of weights the same length as our signal. Other windowing functions can be used, such as Hanning, Blackman, etc.
+Each has its own characteristics and is chosen based on the specific requirements of the analysis.:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/window_types.png"><img alt="Types of windowing functions" src="../_images/window_types.png" style="width: 90%;" />
+</a>
+</figure>
+<p>If we apply this hanning window to our signal, we get a new signal in the time domain:</p>
+<div class="math notranslate nohighlight">
+\[x_w[n] = x[n] \cdot w[n]\]</div>
+<p>This tapers the signal so that it smoothly goes to zero at the edges, reducing the sudden jumps that cause spectral leakage.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/windowed_signals.png"><img alt="Windowed signals under different windowing functions" src="../_images/windowed_signals.png" style="width: 90%;" />
+</a>
+</figure>
+<p>Now, when we compute the FFT of this windowed signal, we’ll get a cleaner frequency spectrum with less spectral leakage. It
+has to be mentioned that the windowing functions does change the spectral peak and, ultimately, the energy content of the signal.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_windowed_signal.png"><img alt="PSD for windowed signal" src="../_images/psd_windowed_signal.png" style="width: 90%;" />
+</a>
+</figure>
+</section>
+<section id="sliding-windowing">
+<h2>Sliding windowing<a class="headerlink" href="#sliding-windowing" title="Link to this heading">#</a></h2>
+<p>Another important requirement to use FFT Is that the signal needs to be stationary (i.e its statistical properties do not change over time).
+Oceanographic time series, particularly pressure or surface level series, are not stationary hence can not be directly used in FFT.</p>
+<p>Each window is certain percentage overlapped with the next one as is shown:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/non_stationary_signal.png"><img alt="Sliding window example" src="../_images/non_stationary_signal.png" style="width: 90%;" />
+</a>
+</figure>
+<p>If we directly compute the PSD of the whole signal,…</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_non_stationary_signal.png"><img alt="PSD for non stationary signal" src="../_images/psd_non_stationary_signal.png" style="width: 90%;" />
+</a>
+</figure>
+<p>To overcome this limitation, a technique is used to analyze a portion of a signal at a time, by moving
+the previously defined window across the signal. By breaking the signal into short time segments (windows),
+we can assume local stationarity — that the signal is approximately stationary within each small window.</p>
+<p>The PSD can be computed for each overlapping segment. The purpose of the overlapping is having a lower variance
+in the final PSD estimate because the amount of segments is higher than not overlapping.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/psd_segments_mean.png"><img alt="PSD for each segment and their mean" src="../_images/psd_segments_mean.png" style="width: 90%;" />
+</a>
+</figure>
+<p>Also, this technique avoids wasting data near the segment boundaries, which is especially important
+because windowing reduces the weight of data at the edges.</p>
+</section>
+<section id="welch-method">
+<h2>Welch method<a class="headerlink" href="#welch-method" title="Link to this heading">#</a></h2>
+<p>This method is finally employeed to estimate the PSD of a signal, producing a smoother and more reliable estimate than a single Fourier transform would, by reducing the variance in the estimate.</p>
+<p>If $x[n]$ is your signal, Welch’s method computes:</p>
+<div class="math notranslate nohighlight">
+\[\hat{P}_{xx}(f) = \frac{1}{K} \sum_{k=1}^{K} \left| \mathrm{FFT}\{ w[n] \cdot x_k[n] \} \right|^2\]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x_k[n]\)</span>: the <span class="math notranslate nohighlight">\(k\)</span>-th segment of the signal</p></li>
+<li><p><span class="math notranslate nohighlight">\(w[n]\)</span>: the window function</p></li>
+<li><p><span class="math notranslate nohighlight">\(K\)</span>: number of segments</p></li>
+</ul>
+<p>The PSD estimate is the average of all the individual PSD computed for each segments</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/welch_and_fft.png"><img alt="Comparison of Welch method and the direct FFT" src="../_images/welch_and_fft.png" style="width: 90%;" />
+</a>
+</figure>
+<p>The frequency resolution of the PSD estimate is determined by the length of the segment and the sampling frequency.</p>
+<div class="math notranslate nohighlight">
+\[\Delta f = \frac{f_s}{N}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(N\)</span> is the length of the segment. Based on that, the frequency resolution is expected to be lower when the Welch method is used,
+as the segments are shorter than the whole signal, which is the case when the FFT is computed directly.</p>
+</section>
+<section id="smoothing">
+<h2>Smoothing<a class="headerlink" href="#smoothing" title="Link to this heading">#</a></h2>
+<p>The final PSD estimate can be further smoothed to reduce noise and enhance the visibility of significant peaks.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Analysis</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="spectral.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Spectral</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nyquist-frequency">Nyquist frequency</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aliasing">Aliasing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windowing">Windowing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sliding-windowing">Sliding windowing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welch-method">Welch method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing">Smoothing</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By oceanicos
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, oceanicos.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

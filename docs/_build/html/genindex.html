@@ -149,20 +149,22 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis/spectral.html">Spectral</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="models/swanpy.html">swanpy</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="observations/walkthrough.html">Walkthrough Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/AQUAlogger.html">AQUAlogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/RBR.html">RBR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="models/swanpy.html">swanpy</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="plots.html">Plots</a></li>
@@ -273,23 +275,43 @@ document.write(`
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#W"><strong>W</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.__init__">__init__() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+
+      <ul>
+        <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__">(oceanicospy.analysis.temporal.WaveTemporalAnalyzer method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger">AQUAlogger (class in oceanicospy.observations.aqualogger)</a>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth">anchoring_depth (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger">AQUAlogger (class in oceanicospy.observations.aqualogger)</a>
+</li>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC">AWAC (class in oceanicospy.observations.awac)</a>
 </li>
   </ul></td>
@@ -299,6 +321,22 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger">BaseLogger (class in oceanicospy.observations.pressure_sensor_base)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s">burst_length_s (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft">compute_spectrum_from_direct_fft() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch">compute_spectrum_from_welch() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -332,10 +370,10 @@ document.write(`
       </ul></li>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_clean_wave_records">get_clean_wave_records() (oceanicospy.observations.awac.AWAC method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_currents_records">get_raw_currents_records() (oceanicospy.observations.awac.AWAC method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger.get_raw_records">get_raw_records() (oceanicospy.observations.aqualogger.AQUAlogger method)</a>
 
       <ul>
@@ -345,6 +383,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_wave_records">get_raw_wave_records() (oceanicospy.observations.awac.AWAC method)</a>
+</li>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts">get_spectra_and_params_for_bursts() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
 </li>
       <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1">get_wave_params_from_spectrum_v1() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
 </li>
@@ -365,6 +405,53 @@ document.write(`
   </ul></td>
 </tr></table>
 
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal">measurement_signal (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="observations/AQUAlogger.html#module-oceanicospy.observations.aqualogger">oceanicospy.observations.aqualogger</a>
+</li>
+        <li><a href="observations/BaseLogger.html#module-oceanicospy.observations.pressure_sensor_base">oceanicospy.observations.pressure_sensor_base</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    oceanicospy.observations.aqualogger
+
+      <ul>
+        <li><a href="observations/AQUAlogger.html#module-oceanicospy.observations.aqualogger">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    oceanicospy.observations.pressure_sensor_base
+
+      <ul>
+        <li><a href="observations/BaseLogger.html#module-oceanicospy.observations.pressure_sensor_base">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.params_from_zero_crossing">params_from_zero_crossing() (oceanicospy.analysis.temporal.WaveTemporalAnalyzer method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -376,6 +463,14 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data">sampling_data (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+</li>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq">sampling_freq (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height">sensor_height (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+</li>
       <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum">smooth_psd_spectrum() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
 </li>
   </ul></td>
@@ -385,6 +480,18 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer">WaveSpectralAnalyzer (class in oceanicospy.analysis.spectral)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer">WaveTemporalAnalyzer (class in oceanicospy.analysis.temporal)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.zero_crossing">zero_crossing() (oceanicospy.analysis.temporal.WaveTemporalAnalyzer method)</a>
 </li>
   </ul></td>
 </tr></table>

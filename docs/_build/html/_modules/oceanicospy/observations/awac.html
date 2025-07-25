@@ -149,20 +149,22 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/walkthrough.html">Walkthrough Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/RBR.html">RBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../models/swanpy.html">swanpy</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AQUAlogger</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../plots.html">Plots</a></li>
@@ -286,34 +288,40 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A). </span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory_path : str</span>
+<span class="sd">        Path to the directory containing the .hdr and .wad files.</span>
+<span class="sd">    sampling_data : dict</span>
+<span class="sd">        Dictionary containing the information about the device installation</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    04-Jan-2018 : Origination - Daniel Peláez</span>
-<span class="sd">    01-Sep-2023 : Migration to Python - Alejandro Henao</span>
-<span class="sd">    10-Dec-2024 : Class implementation - Franklin Ayala</span>
 
+<span class="sd">    - 04-Jan-2018 : Origination - Daniel Peláez</span>
+<span class="sd">    - 01-Sep-2023 : Migration to Python - Alejandro Henao</span>
+<span class="sd">    - 10-Dec-2024 : Class implementation - Franklin Ayala</span>
+<span class="sd"> </span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">directory_path</span><span class="p">,</span><span class="n">sampling_data</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the Awac class with the given directory path, sampling data.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        directory_path : str</span>
-<span class="sd">            Path to the directory containing the .hdr and .wad files.</span>
-<span class="sd">        sampling_data : dict</span>
-<span class="sd">            Dictionary containing the information about the device installation</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span> <span class="o">=</span> <span class="n">directory_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory_pathz</span> <span class="o">=</span> <span class="n">directory_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span> <span class="o">=</span> <span class="n">sampling_data</span>
 
 <div class="viewcode-block" id="AWAC.get_raw_wave_records">
 <a class="viewcode-back" href="../../../observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_wave_records">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_wave_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">from_single_wad</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_wave_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">from_single_wad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads and processes the .wad files to create a DataFrame containing the burst data.</span>
 
 <span class="sd">        For each .wad file, the function reads the data, adds a &#39;burstId&#39; column, and combines all the data into a single DataFrame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        from_single_wad : bool, optional</span>
+<span class="sd">            If True, reads data from a single .wad file. If False, reads data from all .wad files in the directory.</span>
+<span class="sd">            Default is True, which means it reads from the first .wad file found in the directory.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -406,6 +414,25 @@ document.write(`
 <div class="viewcode-block" id="AWAC.get_clean_currents_records">
 <a class="viewcode-back" href="../../../observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_clean_currents_records">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_clean_currents_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">compute_speed_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the raw current data by reading the x and y components, setting the index to a date range, and optionally computing speed and direction.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        compute_speed_dir : bool, optional</span>
+<span class="sd">            If True, computes the current speed and direction from the x and y components. Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x_component_clean : pandas.DataFrame</span>
+<span class="sd">            Cleaned DataFrame of the x component of the current.</span>
+<span class="sd">        y_component_clean : pandas.DataFrame</span>
+<span class="sd">            Cleaned DataFrame of the y component of the current.</span>
+<span class="sd">        current_speed : pandas.DataFrame, optional</span>
+<span class="sd">            DataFrame of the current speed, only returned if compute_speed_dir is True.</span>
+<span class="sd">        current_dir : pandas.DataFrame, optional</span>
+<span class="sd">            DataFrame of the current direction, only returned if compute_speed_dir is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         
         <span class="n">x_component_raw</span><span class="p">,</span> <span class="n">y_component_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_currents_records</span><span class="p">()</span>
         <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currents_header</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">],</span><span class="n">periods</span><span class="o">=</span><span class="n">x_component_raw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>

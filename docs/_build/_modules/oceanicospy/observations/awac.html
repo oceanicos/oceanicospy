@@ -1,0 +1,650 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>oceanicospy.observations.awac &#8212; oceanicospy 0.0.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/observations/awac';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">oceanicospy 0.0.1 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../models/swanpy.html">swanpy</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/RBR.html">RBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plots.html">Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../retrievals.html">Retrievals</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for oceanicospy.observations.awac</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">wave_props</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<div class="viewcode-block" id="AWAC">
+<a class="viewcode-back" href="../../../observations/AWAC.html#oceanicospy.observations.awac.AWAC">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AWAC</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A). </span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    04-Jan-2018 : Origination - Daniel Peláez</span>
+<span class="sd">    01-Sep-2023 : Migration to Python - Alejandro Henao</span>
+<span class="sd">    10-Dec-2024 : Class implementation - Franklin Ayala</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">directory_path</span><span class="p">,</span><span class="n">sampling_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the Awac class with the given directory path, sampling data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        directory_path : str</span>
+<span class="sd">            Path to the directory containing the .hdr and .wad files.</span>
+<span class="sd">        sampling_data : dict</span>
+<span class="sd">            Dictionary containing the information about the device installation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory_pathz</span> <span class="o">=</span> <span class="n">directory_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span> <span class="o">=</span> <span class="n">sampling_data</span>
+
+<div class="viewcode-block" id="AWAC.get_raw_wave_records">
+<a class="viewcode-back" href="../../../observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_wave_records">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_wave_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">from_single_wad</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads and processes the .wad files to create a DataFrame containing the burst data.</span>
+
+<span class="sd">        For each .wad file, the function reads the data, adds a &#39;burstId&#39; column, and combines all the data into a single DataFrame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.DataFrame</span>
+<span class="sd">            A DataFrame containing the concatenated data from all the .wad files with an added &#39;burstId&#39; column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">column_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_wave_header</span><span class="p">()</span>
+        <span class="n">wad_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span><span class="o">+</span><span class="s1">&#39;*.wad&#39;</span><span class="p">))</span> <span class="c1">#Each .wad file represents one burst</span>
+
+        <span class="k">if</span> <span class="n">from_single_wad</span><span class="p">:</span>
+            <span class="n">wad_filepath</span> <span class="o">=</span> <span class="n">wad_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">date_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="s1">&#39;minute&#39;</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">]</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">wad_filepath</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">date_columns</span><span class="o">+</span><span class="nb">list</span><span class="p">(</span><span class="n">column_names</span><span class="p">[</span><span class="mi">2</span><span class="p">:]))</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>          
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">burst_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">wad_filepath</span> <span class="ow">in</span> <span class="n">wad_files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span> <span class="c1">#What&#39;s the differenc with reading the main .wad file?</span>
+                <span class="n">burst_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">wad_filepath</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">column_names</span><span class="p">)</span>
+                <span class="n">burst_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">column_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="s1">&#39;burstId&#39;</span><span class="p">},</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">burst_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">burst_df</span><span class="p">)</span>
+
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">burst_list</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+    
+<div class="viewcode-block" id="AWAC.get_clean_wave_records">
+<a class="viewcode-back" href="../../../observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_clean_wave_records">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_clean_wave_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">from_single_wad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the raw data by converting certain columns to numeric types, adding a timestamp, and filtering the data </span>
+<span class="sd">        by the specified time range.</span>
+
+<span class="sd">        The function also renames columns and returns a cleaned DataFrame that includes only relevant data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.DataFrame</span>
+<span class="sd">            A cleaned DataFrame containing &#39;pressure&#39;, &#39;u&#39;, &#39;v&#39;, and &#39;burstId&#39; columns, filtered by the specified time range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_wave_records</span><span class="p">(</span><span class="n">from_single_wad</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">from_single_wad</span><span class="p">:</span>
+            <span class="n">df_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_dates_and_trim</span><span class="p">(</span><span class="n">df_raw</span><span class="p">)</span>
+            <span class="n">df_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_columns</span><span class="p">(</span><span class="n">df_clean</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">burst_start_times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span>
+                <span class="n">start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">],</span>
+                <span class="n">end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;end_time&#39;</span><span class="p">],</span>
+                <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;1h&#39;</span><span class="p">)</span>
+
+            <span class="c1"># For each burst, create a date range of 2Hz samples</span>
+            <span class="n">date_range</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">start_time</span> <span class="ow">in</span> <span class="n">burst_start_times</span><span class="p">:</span>
+                <span class="n">burst_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;500ms&#39;</span><span class="p">)</span>
+                <span class="n">date_range</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">burst_range</span><span class="p">)</span>
+
+            <span class="c1"># Concatenate all individual burst date ranges into a single DatetimeIndex</span>
+            <span class="n">full_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">rng</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">rng</span> <span class="ow">in</span> <span class="n">date_range</span><span class="p">]))</span>
+            <span class="n">df_clean</span> <span class="o">=</span> <span class="n">df_raw</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">full_index</span><span class="p">)</span>
+            <span class="n">df_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_dates_and_trim</span><span class="p">(</span><span class="n">df_clean</span><span class="p">)</span>
+            <span class="n">df_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_columns</span><span class="p">(</span><span class="n">df_clean</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df_clean</span></div>
+
+
+<div class="viewcode-block" id="AWAC.get_raw_currents_records">
+<a class="viewcode-back" href="../../../observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_currents_records">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_currents_records</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads and processes the .v1 and .v2 files to create a DataFrame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.DataFrame</span>
+<span class="sd">            A DataFrame containing the current magnitude and direction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currents_header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_currents_header</span><span class="p">()</span>
+        <span class="n">x_component_filepath</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span><span class="o">+</span><span class="s1">&#39;*.v1&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y_component_filepath</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span><span class="o">+</span><span class="s1">&#39;*.v2&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="n">column_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currents_header</span><span class="p">[</span><span class="s1">&#39;Number of cells&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">x_component_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">x_component_filepath</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">column_names</span><span class="p">)</span>
+        <span class="n">y_component_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">y_component_filepath</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">column_names</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x_component_df</span><span class="p">,</span> <span class="n">y_component_df</span></div>
+
+
+<div class="viewcode-block" id="AWAC.get_clean_currents_records">
+<a class="viewcode-back" href="../../../observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_clean_currents_records">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_clean_currents_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">compute_speed_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        
+        <span class="n">x_component_raw</span><span class="p">,</span> <span class="n">y_component_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_currents_records</span><span class="p">()</span>
+        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currents_header</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">],</span><span class="n">periods</span><span class="o">=</span><span class="n">x_component_raw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">freq</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">currents_header</span><span class="p">[</span><span class="s1">&#39;Profile interval&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+        <span class="n">x_component_clean</span> <span class="o">=</span> <span class="n">x_component_raw</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">date_range</span><span class="p">)</span>
+        <span class="n">y_component_clean</span> <span class="o">=</span> <span class="n">y_component_raw</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">date_range</span><span class="p">)</span>
+        <span class="n">x_component_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_dates_and_trim</span><span class="p">(</span><span class="n">x_component_clean</span><span class="p">)</span>
+        <span class="n">y_component_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_dates_and_trim</span><span class="p">(</span><span class="n">y_component_clean</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">compute_speed_dir</span><span class="p">:</span>
+            <span class="n">current_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x_component_clean</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="n">y_component_clean</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">current_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">wave_props</span><span class="o">.</span><span class="n">angulo_norte</span><span class="p">,</span><span class="n">row_x</span><span class="p">,</span><span class="n">row_y</span><span class="p">))</span> <span class="k">for</span> <span class="n">row_x</span><span class="p">,</span><span class="n">row_y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_component_raw</span><span class="o">.</span><span class="n">values</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y_component_raw</span><span class="o">.</span><span class="n">values</span><span class="p">)])</span>
+            <span class="n">current_dir</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">current_dir</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">date_range</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">current_speed</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">x_component_clean</span><span class="p">,</span><span class="n">y_component_clean</span><span class="p">,</span><span class="n">current_speed</span><span class="p">,</span><span class="n">current_dir</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x_component_clean</span><span class="p">,</span><span class="n">y_component_clean</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_wave_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads and parses the header file (.hdr) to extract the column names.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            An array of column names extracted from the .hdr file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_hdr_lines</span><span class="p">()</span>
+        <span class="n">data_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_column_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">column_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_column_names</span><span class="p">(</span><span class="n">data_lines</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">column_names</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_currents_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the header file (.hdr) to extract the column names for current data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            An array of column names extracted from the .hdr file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_hdr_lines</span><span class="p">()</span>
+        <span class="n">filtered_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">keyword</span> <span class="ow">in</span> <span class="n">line</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;first measurement&#39;</span><span class="p">,</span> <span class="s1">&#39;Profile interval&#39;</span><span class="p">,</span> <span class="s1">&#39;Number of cells&#39;</span><span class="p">,</span> <span class="s1">&#39;Cell size&#39;</span><span class="p">,</span> <span class="s1">&#39;Blanking distance&#39;</span><span class="p">]):</span>
+                <span class="n">filtered_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        
+        <span class="n">dict_current_header</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">filtered_lines</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="c1"># Split each line into key and value by the first occurrence of two or more spaces</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s{2,}&#39;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s1">&#39;first measurement&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;start_time&#39;</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y %I:%M:%S %p&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">numeric_value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[-+]?\d*\.\d+|\d+&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="n">value</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">numeric_value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">dict_current_header</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">dict_current_header</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_hdr_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load lines from the .hdr file.&quot;&quot;&quot;</span>
+        <span class="n">hdr_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span><span class="si">}</span><span class="s2">*.hdr&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hdr_files</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;No .hdr file found in the directory.&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">hdr_files</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_column_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract relevant lines between &#39;.wad]&#39; and the next line ending in &#39;-&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_reading</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_reading</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">):</span>
+                    <span class="n">is_reading</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.wad]&#39;</span><span class="p">):</span>
+                <span class="n">is_reading</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lines</span><span class="p">)[</span><span class="n">mask</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format the header lines into clean column names.&quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">names</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_dates_and_trim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to parse date and time from separate columns.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        df : pandas.DataFrame</span>
+<span class="sd">            DataFrame with time columns as named columns (year, month, day, hour, minute, second).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.Series</span>
+<span class="sd">            Series of parsed datetime objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if the DataFrame index is already a DatetimeIndex</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">date_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="s1">&#39;minute&#39;</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">]</span>   
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">date_columns</span><span class="p">])</span>   
+            <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">date_columns</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">])</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;end_time&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Missing &#39;start_time&#39; or &#39;end_time&#39; in sampling_data.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid time format in &#39;sampling_data&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rename_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renames columns in the DataFrame to a more readable format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        df : pandas.DataFrame</span>
+<span class="sd">            DataFrame with columns to be renamed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.DataFrame</span>
+<span class="sd">            DataFrame with renamed columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">relevant_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">column</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;Pressure&#39;</span> <span class="ow">in</span> <span class="n">column</span> <span class="ow">or</span> <span class="s1">&#39;Velocity&#39;</span> <span class="ow">in</span> <span class="n">column</span> <span class="ow">or</span> <span class="s1">&#39;burst&#39;</span> <span class="ow">in</span> <span class="n">column</span><span class="p">]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">relevant_columns</span><span class="p">]</span>
+
+        <span class="n">renamed_columns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">relevant_columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;burst&#39;</span><span class="p">):</span>
+                <span class="n">final_column</span> <span class="o">=</span> <span class="n">column</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">column</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> 
+                <span class="n">column</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">column</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">,</span><span class="s1">&#39;[&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">,</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
+                <span class="n">final_column</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">column</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+            <span class="n">renamed_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">final_column</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">renamed_columns</span>
+            
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;pressure[bar]&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;pressure[dbar]&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">10.0</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pressure[bar]&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s2">&quot;pressure&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By oceanicos
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, oceanicos.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
