@@ -2,7 +2,7 @@ Water Level Forcing
 ===================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 The ``waterlevel_forcing`` module preprocesses water-level boundary conditions for
 XBeach simulations. It connects to the **University of Hawaii Sea Level Center (UHSLC)**

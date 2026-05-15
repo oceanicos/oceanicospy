@@ -2,7 +2,7 @@ Bluelog
 =======
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 .. autoclass:: oceanicospy.observations.pressure_sensors.bluelog.Bluelog
    :inherited-members:

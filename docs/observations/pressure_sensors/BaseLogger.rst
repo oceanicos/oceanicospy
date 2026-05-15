@@ -2,7 +2,7 @@ BaseLogger
 ==========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 Because all the pressure sensors share a common data structure, which basically consists of a time series of pressure values, 
 the ``BaseLogger`` class is designed to provide a common interface for all those sensors. 

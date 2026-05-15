@@ -2,7 +2,7 @@ Wind forcing
 ============
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 The wind forcing module is responsible for managing wind data for SWAN simulations. 
 It includes functionalities to download, process, and save wind data from various sources.

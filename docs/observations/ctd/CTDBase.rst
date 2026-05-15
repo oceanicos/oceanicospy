@@ -2,7 +2,7 @@ CTDBase
 =======
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 Because all CTD sensors share a common data structure consisting of conductivity, temperature, and depth time series,
 the ``CTDBase`` class is designed to provide a common interface for all those sensors.

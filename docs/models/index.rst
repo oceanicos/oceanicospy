@@ -5,7 +5,7 @@ This section of the documentation provides an overview of the workflow automated
 The models are implemented in the `swanpy` and `xbeachpy` submodules, respectively.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    swanpy/index

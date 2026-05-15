@@ -6,7 +6,7 @@ the computational grid, bathymetry, wave boundary conditions, wind forcing, wate
 forcing, and optional vegetation maps.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    gridmaker

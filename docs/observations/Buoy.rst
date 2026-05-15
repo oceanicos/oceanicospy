@@ -2,7 +2,7 @@ WaveBuoy
 =========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    
 .. autoclass:: oceanicospy.observations.buoy.WaveBuoy
    :members:

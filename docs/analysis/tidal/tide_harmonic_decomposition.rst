@@ -1,8 +1,8 @@
-Tide Harmonic Decomposition
-===========================
+Harmonic Decomposition
+======================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 This section describes the methods used to perform tidal harmonic decomposition, which are implemented through the ``tide_harmonic_decomposition`` function.
 

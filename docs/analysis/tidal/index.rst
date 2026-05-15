@@ -1,5 +1,5 @@
-Harmonic decomposition
-======================
+Tide harmonic decomposition
+===========================
 
 This section covers the tools available for tidal harmonic analysis of sea level time series,
 including constituent estimation and tidal signal decomposition using the UTide method.

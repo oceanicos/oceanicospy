@@ -2,7 +2,7 @@ Sea Sun Marine Tech CTD
 =======================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 .. autoclass:: oceanicospy.observations.ctd.SeaSunMarineTechCTD
    :inherited-members:

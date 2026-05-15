@@ -2,7 +2,7 @@ GridMaker
 =========
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 The ``gridmaker`` module is responsible for generating the XBeach computational grid.
 It follows a builder pattern: the main :class:`GridMaker` class exposes two properties

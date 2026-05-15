@@ -2,7 +2,7 @@ Weather Station Base
 ====================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 Because all weather stations share a common data structure consisting of atmospheric measurements such as wind speed,
 temperature, and precipitation, the ``WeatherStationBase`` class is designed to provide a common interface for all those stations.

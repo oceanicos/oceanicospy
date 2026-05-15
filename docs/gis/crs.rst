@@ -2,7 +2,7 @@ Coordinate reference systems
 ============================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
 The ``crs`` module provides tools to reproject point data between
 coordinate reference systems.  Both vector files and XYZ plain-text files

@@ -2,7 +2,7 @@ WeatherSens
 ===========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 .. autoclass:: oceanicospy.observations.weather_stations.weathersens.WeatherSens
    :inherited-members:

@@ -8,7 +8,7 @@ These methods are useful not only for short wave analysis, but also for other ty
 This section also includes tools for spectral analysis like filtering, windowing and spectral density estimation. 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    spectral/index

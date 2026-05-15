@@ -2,7 +2,7 @@ Profile interpolator
 ====================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
 ``ProfileInterpolator`` samples Z values from a scattered XYZ point cloud
 at the positions defined by a :class:`~oceanicospy.gis.ProfileAxis`.  The

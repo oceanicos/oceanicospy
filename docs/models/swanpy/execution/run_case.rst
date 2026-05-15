@@ -2,7 +2,7 @@ Case Runner
 ============
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 This module provides functionality to run SWAN cases using the `oceanicospy` package.
 

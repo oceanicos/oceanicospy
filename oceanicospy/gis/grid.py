@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import shapefile
 
 from pathlib import Path
 from typing import Optional, Union
@@ -349,13 +350,6 @@ class Grid:
                 f"Shapefile not found at '{shapefile_path}'. "
                 "Check input folder and name."
             )
-        try:
-            import shapefile
-        except ImportError as e:
-            raise ImportError(
-                "PyShp (shapefile) is required for shapefile-based grid generation. "
-                "Install it via: pip install pyshp"
-            ) from e
 
         sf = shapefile.Reader(str(shapefile_path))
         shape = sf.shapes()[0]

@@ -2,7 +2,7 @@ Boundary conditions
 ====================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 The boundary conditions module is responsible for managing the boundary conditions for SWAN simulations. 
 It includes functionalities to download, process, and save boundary condition data from various sources.

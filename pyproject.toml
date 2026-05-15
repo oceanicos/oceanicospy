@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oceanicospy"
-version = "0.1.0rc3"
-description = "A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval"
+version = "0.1.0"
+description = "Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale"
 readme = "README.md"
 authors = [
   { name = "OCEANICOS developer team", email = "oceanicos_med@unal.edu.co" }
@@ -36,6 +36,7 @@ dependencies = [
   "pandas>=2.2.3",
   "pyemd>=1.0.0",
   "pyproj>=3.7.0",
+  "pyshp>=3.0.0",
   "pywavelets",
   "requests>=2.32.3",
   "scipy>=1.14.1",
@@ -72,3 +73,7 @@ where = ["."]
 
 [tool.esbonio.sphinx]
 buildCommand = ["sphinx-build", "-M", "html", "docs", "${defaultBuildDir}"]
+
+[project.urls]
+Homepage = "https://github.com/oceanicos-dev-org/oceanicospy"
+Repository = "https://github.com/oceanicos-dev-org/oceanicospy"

@@ -3,7 +3,7 @@ Contributing
 
 .. contents:: On this page
    :local:
-   :depth: 1
+   :depth: 2
 
 Types of contributions
 ----------------------
@@ -41,7 +41,7 @@ Improvements to docstrings, tutorials, examples, or these pages are always welco
 Development workflow
 --------------------
 
-After installing the library in editable mode (see :ref:`For developers <for-developers>`), you can work on your changes locally and test them interactively.
+After installing the library in editable mode (see :doc:`dev_setup`), you can work on your changes locally and test them interactively.
 In the forked repository, follow these steps to contribute your changes back to the main project:
 
 1. Create a feature branch

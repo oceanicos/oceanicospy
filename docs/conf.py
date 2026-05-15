@@ -24,7 +24,7 @@ os.environ['SKIP_DATA_DOWNLOAD'] = '1'
 project = 'oceanicospy'
 copyright = '2025, OCEANICOS research group'
 author = 'OCEANICOS research group'
-release = '0.1.0rc3'
+release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

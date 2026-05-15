@@ -2,7 +2,7 @@ Water level forcing
 ===================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 The water level forcing module is responsible for managing water level data for SWAN simulations. 
 It includes functionalities to download, process, and save water level data from various sources.

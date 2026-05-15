@@ -2,7 +2,7 @@ AWAC
 ====
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 .. autoclass:: oceanicospy.observations.awac.AWAC
    :members:

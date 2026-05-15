@@ -2,7 +2,7 @@ Grid
 ====
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
 ``Grid`` constructs the 2D sampling axes of a regular spatial grid.  It
 supports constant spacing and can be built from explicit bounding-box

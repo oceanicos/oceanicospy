@@ -2,7 +2,7 @@ Initializer
 ===========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 The Initializer module is responsible for setting up the XBeach project structure.
 It creates the required directory tree (``input/``, ``pros/``, ``run/``, ``output/``),

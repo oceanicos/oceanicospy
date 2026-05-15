@@ -3,8 +3,8 @@
 **`oceanicospy` is an open-source, user-friendly Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15725746.svg)](https://doi.org/10.5281/zenodo.15725746)
-![Version](https://img.shields.io/badge/version-0.1.0rc3-blue)
-![Status](https://img.shields.io/badge/status-beta-orange)
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Status](https://img.shields.io/badge/status-stable-green)
 ![License](https://img.shields.io/badge/license-GPLv3-green)
 
 ---
@@ -30,7 +30,7 @@
 Create a Python environment (conda, venv, or similar) and install from PyPI:
 
 ```bash
-pip install --pre oceanicospy
+pip install oceanicospy
 ```
 
 Verify the installation:
@@ -43,21 +43,38 @@ Expected output:
 
 ```
 Name: oceanicospy
-Version: 0.1.0rc3
-Summary: A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval
+Version: 0.1.0
+Summary: Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale.
+Home-page: https://github.com/oceanicos-dev-org/oceanicospy
+Author: 
 Author-email: OCEANICOS developer team <oceanicos_med@unal.edu.co>
-License: GPLv3
+License: GNU GENERAL PUBLIC LICENSE
 ```
 
 ### Google Colab
 
-Install the latest pre-release directly in a Colab notebook:
+Install the latest stable version in a Colab notebook:
 
 ```python
-!pip install --pre oceanicospy
+!pip install oceanicospy
 ```
 
 A runtime restart may be required after installation due to dependency conflicts with Colab's pre-installed packages.
+
+---
+
+## Package structure
+
+```
+oceanicospy/
+├── analysis/      # temporal and spectral analysis (WaveSpectralAnalyzer, tidal analysis, …)
+├── gis/           # geospatial utilities (shapefiles, XYZ data, projections)
+├── models/        # numerical model preprocessing (SWAN, WW3, XBeach)
+├── observations/  # instrument readers (RBR, AQUAlogger, AWAC, CTD, …)
+├── plots/         # visualization utilities
+├── retrievals/    # automated data retrieval (ERA5, CMEMS, UHSLC)
+└── utils/         # shared helpers
+```
 
 ---
 
@@ -77,21 +94,6 @@ from oceanicospy.analysis import WaveSpectralAnalyzer
 ```
 
 > Wildcard imports (`from oceanicospy.analysis import *`) are convenient for exploration but can shadow names from other libraries. Prefer explicit imports in scripts.
-
----
-
-## Package structure
-
-```
-oceanicospy/
-├── analysis/      # temporal and spectral analysis (WaveSpectralAnalyzer, tidal analysis, …)
-├── gis/           # geospatial utilities (shapefiles, XYZ data, projections)
-├── models/        # numerical model preprocessing (SWAN, WW3, XBeach)
-├── observations/  # instrument readers (RBR, AQUAlogger, AWAC, CTD, …)
-├── plots/         # visualization utilities
-├── retrievals/    # automated data retrieval (ERA5, CMEMS, UHSLC)
-└── utils/         # shared helpers
-```
 
 ---
 
