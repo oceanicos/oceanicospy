@@ -5,8 +5,8 @@ np.seterr(divide = 'ignore')
 
 def wavelength(T,h):
     """
-    Computes the wavelength for intermediate waters
-    
+    Computes the wavelength for intermediate waters.
+
     Parameters
     ----------
     T: float
@@ -23,21 +23,20 @@ def wavelength(T,h):
     01-Sep-2023 : First Python function - Juan Diego Toro
 
     """
-
-    Lo = (constants.GRAVITY*T**2)/(2*np.pi);
-    L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh((h*2*np.pi)/Lo);
-    i = 0;
+    Lo = (constants.GRAVITY*T**2)/(2*np.pi)
+    L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh((h*2*np.pi)/Lo)
+    i = 0
     while (abs(Lo-L1)>0.0001):
-        Lo = L1;
-        L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh(h*2*np.pi/Lo);
-        i = i+1;
+        Lo = L1
+        L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh(h*2*np.pi/Lo)
+        i = i+1
         if (i>5000):
             break
     return (L1)
 
 def direction(vn,ve):
     """
-    Computes the direction w.r.t north
+    Computes the direction w.r.t. north
     
     Parameters
     ----------
@@ -76,11 +75,11 @@ def direction(vn,ve):
 
 def angulo_norte(x,y):
     if x > 0 and y > 0:
-        theta = 90 - (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 90 - (np.arctan2(abs(y),abs(x))*(180/np.pi))
     elif x < 0 and y > 0:
-        theta = 270 + (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 270 + (np.arctan2(abs(y),abs(x))*(180/np.pi))
     elif x < 0 and y < 0:
-        theta = 270 - (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 270 - (np.arctan2(abs(y),abs(x))*(180/np.pi))
     else:
-        theta = 90 + (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 90 + (np.arctan2(abs(y),abs(x))*(180/np.pi))
     return theta

@@ -36,7 +36,7 @@ def plot_wave_parameters(wave_parameters,output_dir,metadata_text, parameters=['
     return fig,ax
 
 
-def plot_1d_wave_spectra(wave_spectra,ax,metadata_text=None,output_dir=None,figsize=(12, 3), ylabel='f [Hz]', xlabel='Time', label_comparison=''):
+def plot_1d_wave_spectra(wave_spectra,ax,metadata_text=None,output_dir=None,figsize=(12, 3), ylabel='f [Hz]', xlabel='Time', label_comparison='',cmap='plasma'):
     """
     Function to plot the 1d wave spectra over time.
 
@@ -52,7 +52,7 @@ def plot_1d_wave_spectra(wave_spectra,ax,metadata_text=None,output_dir=None,figs
             wave_spectra['time'],
             wave_spectra['freq'],
             np.transpose(wave_spectra['S']),
-            cmap='magma_r',
+            cmap=cmap,
             vmin=0,
             vmax=0.3,
             shading='auto'
@@ -61,7 +61,7 @@ def plot_1d_wave_spectra(wave_spectra,ax,metadata_text=None,output_dir=None,figs
         return ax,cax
     else:
         fig,ax = plt.subplots(1,1,figsize=figsize)
-        ax.pcolormesh(wave_spectra['time'], wave_spectra['freq'][0],np.transpose(wave_spectra['S']),cmap='plasma')
+        ax.pcolormesh(wave_spectra['time'], wave_spectra['freq'][0],np.transpose(wave_spectra['S']),cmap=cmap)
         ax.set(ylabel=ylabel,xlabel=xlabel)
         ax.axhline(y=0.04,color='red',ls='--')
         ax.colorbar(label='S [m^2/Hz]')

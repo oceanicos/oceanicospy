@@ -1,8 +1,23 @@
-/data/observations/AQ
-/data/observations/RBR
-/data/observations/AWAC
+/data/model_runs/*
+/data/nc_data/*
+/data/observations/*
+/data/temp/*
+/data/model_config_templates/ww3
+/data/model_config_templates/swan/launcher*
+/data/model_config_templates/swan/swaninit
+/data/model_config_templates/xbeach/launcher*
+/data/gis
+
+# no tracking html files
+docs/_build/
+_build/
+
+# no tracking DS_ files created by macOS
+.DS_Store
+**/.DS_Store
 
 # Byte-compiled / optimized / DLL files
+.pytest_cache
 __pycache__/
 *.py[cod]
 *$py.class
@@ -12,3 +27,7 @@ build/
 dist/
 *.egg-info/
 
+# no tracking vs settings and requirements.txt
+.vscode/
+requirements.txt
+.venv/

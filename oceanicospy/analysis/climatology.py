@@ -1,7 +1,6 @@
-import numpy as np
 import pandas as pd
 
-def compute_annual_cycle(data, time):
+def compute_annual_cycle(data, time, freq='Monthly', method='mean'):
     """
     Compute the annual cycle of a given time series data.
 
@@ -22,6 +21,7 @@ def compute_annual_cycle(data, time):
     ValueError
         If the input data is not a 1D numpy array or a pandas Series.
     """
+    
     if data.ndim == 1:
         if isinstance(data, pd.Series):
             dataset = pd.DataFrame(data, columns=['data'], index=time)
@@ -29,8 +29,24 @@ def compute_annual_cycle(data, time):
             time_index = pd.to_datetime(time)
             dataset = pd.DataFrame(data, columns=['data'], index=time_index)
         
-        dataset['month'] = dataset.index.month
-        annual_cycle = dataset.groupby('month')['data'].mean() # The column is called 'data'
-        return annual_cycle.values
+        if freq == 'Monthly':
+            if method == 'mean':
+                 data = dataset.groupby(dataset.index.month)['data'].mean()
+                 error = dataset.groupby(dataset.index.month)['data'].std()
+                 return pd.DataFrame({'month': data.index, 'mean': data.values, 'std': error.values})
+            elif method == 'median':
+                 data = dataset.groupby(dataset.index.month)['data'].median()
+                 error = dataset.groupby(dataset.index.month)['data'].std()
+                 return pd.DataFrame({'month': data.index, 'median': data.values, 'std': error.values})
+    
+        elif freq == 'Seasonal':
+            if method == 'mean':
+                data = dataset.groupby((dataset.index.month%12 + 3)//3)['data'].mean()
+                error = dataset.groupby((dataset.index.month%12 + 3)//3)['data'].std()
+                return pd.DataFrame({'season': data.index, 'mean': data.values, 'std': error.values})
+            elif method == 'median':
+                data = dataset.groupby((dataset.index.month%12 + 3)//3)['data'].median()
+                error = dataset.groupby((dataset.index.month%12 + 3)//3)['data'].std()
+                return pd.DataFrame({'season': data.index, 'median': data.values, 'std': error.values})
     else:
         raise ValueError('The input data must be a 1D np array or a pandas Series.')
