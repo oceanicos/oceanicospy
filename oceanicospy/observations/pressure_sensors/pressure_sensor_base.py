@@ -4,6 +4,7 @@ import os
 import glob as glob
 import pandas as pd
 from scipy.signal import detrend
+import re
 
 from oceanicospy.utils import constants
 

@@ -1,6 +1,7 @@
 import glob
 import pandas as pd
 import os
+from collections import Counter
 
 from .pressure_sensor_base import BaseLogger
 
@@ -33,7 +34,7 @@ class AQUAlogger(BaseLogger):
     @property
     def _file_pattern(self):
         return '*.csv'        
-    
+
     def _load_raw_dataframe(self):
         """
         Reads the AQUAlogger ``.csv`` file into a raw DataFrame.
@@ -57,13 +58,24 @@ class AQUAlogger(BaseLogger):
         """
 
         filepath = self._get_records_file()
-        with open(filepath, "r", encoding="utf-8") as f:
-            for lineno, line in enumerate(f, start=1):
-                if line.startswith("HEADING"):
-                    line_header_number = lineno
-                    line_units = next(f)
-                    break
-    
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                for lineno, line in enumerate(f, start=1):
+                    if line.startswith("HEADING"):
+                        line_header_number = lineno
+                        line_units = next(f)
+                        break                        
+        except:
+            with open(filepath, "r", encoding="latin-1") as f:
+                for lineno, line in enumerate(f, start=1):
+                    if line.startswith("HEADING"):
+                        line_header_number = lineno
+                        line_units = next(f)
+                        break
+
+        if line_header_number is None:
+            raise StopIteration("No HEADING row found in the file.")
+
         header = line.strip().split(",")
         units = line_units.strip().split(",")
 
@@ -75,14 +87,14 @@ class AQUAlogger(BaseLogger):
         for i in range(len(header_names)):
             if units_names[i] == 'units':
                 col_name = 'units'
-            elif units_names[i] == 'timecode':
+            elif units_names[i] == 'timecode' or header_names[i] == 'timecode':  # ← v3.0 AND v4.0
                 col_name = 'date'
             elif units_names[i] == 'raw':
-                col_name = header_names[i]+f'[{units_names[i]}]'
+                col_name = header_names[i] + f'[{units_names[i]}]'
             elif header_names[i] == '':
-                col_name = header_names[i-1]+f'[{units_names[i]}]'
+                col_name = header_names[i-1] + f'[{units_names[i]}]'
             else:
-                pass
+                col_name = f'unknown_{i}'  # ← safety fallback instead of silent pass
             col_names.append(col_name)
         
         df = pd.read_csv(filepath, names=col_names, header=line_header_number, encoding='latin-1')
@@ -108,7 +120,11 @@ class AQUAlogger(BaseLogger):
         """        
         raw_columns = [col for col in df.columns if 'raw' in col.lower() or '[]' in col]
         df = df.drop(columns=raw_columns)
-        df['date'] = pd.to_datetime(df['date'], errors='coerce')        
+        if 'a. m.' in df['date'].iloc[0] or 'p. m.' in df['date'].iloc[0]:  # ← v3.0 format with AM/PM in Spanish
+            df['date'] = [i.replace('a. m.', 'AM').replace('p. m.', 'PM') for i in df['date']]
+            df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y %I:%M:%S %p', errors='coerce')
+        else:
+            df['date'] = pd.to_datetime(df['date'], errors='coerce')
         df = df.set_index('date')
         return df
 
