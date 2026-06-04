@@ -1,7 +1,6 @@
 import glob
 import pandas as pd
 import os
-from collections import Counter
 
 from .pressure_sensor_base import BaseLogger
 
@@ -87,14 +86,14 @@ class AQUAlogger(BaseLogger):
         for i in range(len(header_names)):
             if units_names[i] == 'units':
                 col_name = 'units'
-            elif units_names[i] == 'timecode' or header_names[i] == 'timecode':  # ← v3.0 AND v4.0
+            elif units_names[i] == 'timecode' or header_names[i] == 'timecode':
                 col_name = 'date'
             elif units_names[i] == 'raw':
                 col_name = header_names[i] + f'[{units_names[i]}]'
             elif header_names[i] == '':
                 col_name = header_names[i-1] + f'[{units_names[i]}]'
             else:
-                col_name = f'unknown_{i}'  # ← safety fallback instead of silent pass
+                pass
             col_names.append(col_name)
         
         df = pd.read_csv(filepath, names=col_names, header=line_header_number, encoding='latin-1')
@@ -120,7 +119,7 @@ class AQUAlogger(BaseLogger):
         """        
         raw_columns = [col for col in df.columns if 'raw' in col.lower() or '[]' in col]
         df = df.drop(columns=raw_columns)
-        if 'a. m.' in df['date'].iloc[0] or 'p. m.' in df['date'].iloc[0]:  # ← v3.0 format with AM/PM in Spanish
+        if 'a. m.' in df['date'].iloc[0] or 'p. m.' in df['date'].iloc[0]:
             df['date'] = [i.replace('a. m.', 'AM').replace('p. m.', 'PM') for i in df['date']]
             df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y %I:%M:%S %p', errors='coerce')
         else:
