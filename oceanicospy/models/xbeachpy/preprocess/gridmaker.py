@@ -303,12 +303,14 @@ class GridMaker:
         shutil.copy(str(x_file), str(run_folder / "x.grd"))
         shutil.copy(str(y_file), str(run_folder / "y.grd"))
 
-        return {
+        self._grid_dict = {
             "xfilepath": "x.grd",
             "yfilepath": "y.grd",
             "meshes_x": meshes_x,
             "meshes_y": meshes_y,
         }
+
+        return self._grid_dict
 
     def fill_grid_section(self) -> None:
         """Write the generated grid metadata to the params.txt file."""

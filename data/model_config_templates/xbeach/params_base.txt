@@ -31,23 +31,22 @@ alfa      = $alfa
 
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-wbctype    = swan
+wbctype    = $wbctype
 bcfile     = $bcfilepath
 wbcversion = $w_bc_version
 nspectrumloc = $n_spectrum_loc
-
-%%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-windfile     = $windfilepath
 
 %%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tideloc      = 1
 zs0file      = $sealevelfilepath
 
+%%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+windfile     = $windfilepath
+
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tstart       = 0
 CFL          = 0.7
-tstop        = $tstop_value
 tstart       = $tstart_value
+tstop        = $tstop_value
 tint         = $tint_value
 tintg        = $tintg_value
 

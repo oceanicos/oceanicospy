@@ -325,6 +325,46 @@ class WaterLevelForcing:
 
         self.wl_info = {'sealevelvalue': round(data_cecoldo['Nivel_mar [m]'].values[0], 3)}
 
+    def load_existing_waterlevel(self, input_filename) -> dict:
+        """
+        Load an existing water-level file from the input folder and deploy it
+        to the run folder.
+
+        Parameters
+        ----------
+        input_filename : str
+            Name of the water-level file in the input folder (e.g.
+            ``"water_level.wl"``).
+
+        Returns
+        -------
+        dict
+            ``self.wl_info`` dictionary with ``'sealevelfilepath'`` set to
+            *input_filename*.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the file does not exist in the input folder.
+        """
+        input_dir = Path(self.init.dict_folders["input"])
+        run_dir = Path(self.init.dict_folders["run"])
+        filepath = input_dir / input_filename
+
+        if not filepath.exists():
+            raise FileNotFoundError(
+                f"Water-level file not found in input folder: {filepath}"
+            )
+
+        utils.deploy_input_file(input_filename, str(input_dir), str(run_dir), self.use_link)
+
+        if self.wl_info is not None:
+            self.wl_info.update({"sealevelfilepath": input_filename})
+        else:
+            self.wl_info = {"sealevelfilepath": input_filename}
+
+        return self.wl_info
+
     def fill_wl_section(self):
         """
         Write water-level configuration into the XBeach params file.

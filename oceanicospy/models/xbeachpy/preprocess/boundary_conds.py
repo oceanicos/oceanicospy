@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import re
 import os
+import shutil
+from pathlib import Path
 
 from .... import utils
 
@@ -22,10 +24,20 @@ class BoundaryConditions:
         Case initialization object.  Must expose ``ini_date``, ``end_date``,
         and ``dict_folders`` (a mapping with at least ``"input"`` and ``"run"``
         keys pointing to the respective directories).
+    is_time_varying : bool, optional
+        Whether the boundary condition is time-varying.  When ``True`` the
+        ``wbctype`` key is set to ``'jons_table'``; when ``False`` it is set
+        to ``'jons'`` and the input file is checked for ``'='`` symbols.
+        Defaults to ``False``.
+    is_spatial_varying : bool, optional
+        Whether the boundary condition is spatially varying.  Not yet used in
+        the current implementation.  Defaults to ``False``.
 
     """
-    def __init__ (self,init):
+    def __init__ (self,init,is_time_varying=False,is_spatial_varying=False):
         self.init = init
+        self.is_time_varying = is_time_varying
+        self.is_spatial_varying = is_spatial_varying
         self._purger()
         print('*** Initializing Boundary Conditions ***')
 
@@ -319,6 +331,62 @@ class BoundaryConditions:
             raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
 
         self._write_loclist(location_points)
+
+    def create_spectra_from_jonswap(self, input_filename):
+        """
+        Generate boundary condition spectra using the JONSWAP definition.
+
+        Sets the ``wbctype`` parameter in :attr:`dict_boundaries` based on
+        :attr:`is_time_varying`: ``'jons_table'`` when time-varying is enabled,
+        ``'jons'`` otherwise.  When time-varying is disabled, the input file
+        is verified to contain at least one ``'='`` character (indicating a
+        parameterised format).
+
+        Parameters
+        ----------
+        input_filename : str
+            Name of the JONSWAP input file located in
+            ``self.init.dict_folders["input"]``.
+
+        Raises
+        ------
+        ValueError
+            If :attr:`is_time_varying` is ``False`` and the input file does not
+            contain any ``'='`` symbol.
+        """
+        if not hasattr(self, 'dict_boundaries') or self.dict_boundaries is None:
+            self.dict_boundaries = {}
+        if self.is_time_varying:
+            self.dict_boundaries['wbctype'] = 'jons_table'
+        else:
+            self.dict_boundaries['wbctype'] = 'jons'
+            filepath = os.path.join(self.init.dict_folders["input"], input_filename)
+
+            # quick validation to check if input file is in expected format (key=value pairs, at least one pair)
+            with open(filepath, 'r') as f:
+                content = f.read()
+            if '=' not in content:
+                raise ValueError(f"Input file must contain at least one '=' symbol.")
+        
+        input_folder = Path(self.init.dict_folders["input"])
+        run_folder = Path(self.init.dict_folders["run"])
+
+        input_path = input_folder / input_filename
+        if not input_path.exists():
+            raise FileNotFoundError(
+                f"Input file '{input_filename}' not found in {input_folder}."
+            )
+
+        try:
+            np.loadtxt(input_path)
+        except ValueError as exc:
+            raise ValueError(
+                f"Could not parse '{input_filename}' as a numeric array: {exc}"
+            ) from exc
+
+        shutil.copy(str(input_path), str(run_folder / input_filename))
+
+        self.dict_boundaries['bcfilepath'] = input_filename
 
     def fill_boundaries_section(self):
         """

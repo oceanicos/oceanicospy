@@ -31,14 +31,14 @@ that group related functionality together.
    :caption: User Guide
 
    analysis/index
-   observations/index
-   downloads/index
-   models/index
-   gis/index
+..   observations/index
+..   downloads/index
+..   models/index
+..   gis/index
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Development & Support
 
-   contributing
-   support
+..   :maxdepth: 1
+..   :caption: Development & Support
+..
+..   contributing
+..   support
