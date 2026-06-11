@@ -125,7 +125,7 @@ class AWAC:
                 value = match[1]
                 if 'first measurement' in key:
                     key = 'start_time'
-                    value = pd.to_datetime(value, format='%m/%d/%Y %I:%M:%S %p')
+                    value = pd.to_datetime(value.replace('a. m.','AM').replace('p. m.','PM'), format='mixed')
                 else:
                     numeric_value = re.findall(r"[-+]?\d*\.\d+|\d+", value)
                     value=float(numeric_value[0])
@@ -151,7 +151,7 @@ class AWAC:
         if not hdr_files:
             raise FileNotFoundError("No .hdr file found in the directory.")
 
-        with open(hdr_files[0], 'r') as file:
+        with open(hdr_files[0], 'r', encoding="cp1252") as file:
             return file.read().splitlines()
 
     def _extract_column_lines(self, lines: list) -> list:
