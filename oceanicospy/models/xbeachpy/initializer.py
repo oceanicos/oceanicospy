@@ -28,16 +28,26 @@ class Initializer:
     ----------
     root_path : str
         Root directory of the case.  All sub-folders are created inside this
-        path.  Must end with a trailing slash (e.g. ``'path/to/case/'``).
+        path.  Works with or without a trailing slash.
     dict_ini_data : dict
         Case-level flags that override the package defaults in
         ``xbeachpy/utils/defaults.py`` and are substituted into
-        ``params.txt``.  Typical keys:
+        ``params.txt``.  User-supplied values take precedence over
+        the defaults.  Common keys include:
+
+        XBeach model flags (default value shown in parentheses):
+
+        - ``act_flow`` — flow module (``1`` = on)
+        - ``act_morf`` — morphological updating (``1`` = on)
+        - ``act_sedtrans`` — sediment transport (``1`` = on)
+        - ``act_swrunup`` — swash runup (``0`` = off)
+        - ``act_wavemodel`` — spectral wave model (``0`` = stationary, ``1`` = surfbeat)
+        - ``act_veg`` — vegetation module (``0`` = off)
+        - ``act_wnd`` — wind forcing (``1`` = on)
+
+        Case metadata (not in defaults, user must supply):
 
         - ``case_description`` — free-form label (not used by XBeach)
-        - ``act_morf`` — morphological updating (``0`` = off)
-        - ``act_sedtrans`` — sediment transport (``0`` = off)
-        - ``act_wavemodel`` — spectral wave model (``1`` = surfbeat)
         - ``dims`` — number of dimensions (``2`` = 2D)
 
     ini_date : datetime, optional
@@ -55,9 +65,8 @@ class Initializer:
         self.dict_ini_data = dict_ini_data
         self.folder_names = ['input', 'pros', 'run', 'output']
         self.dict_folders = {
-            name: f'{self.root_path}{name}/' for name in self.folder_names
+            name: f'{Path(self.root_path) / name}/' for name in self.folder_names
         }
-
         print('*** Initializing XBeach model ***\n')
 
     def _generate_baseline_XBeach(self, template_in, template_out, replacement_dict):
@@ -115,6 +124,16 @@ class Initializer:
         from ``xbeachpy/utils/defaults.py`` with the user-supplied
         ``dict_ini_data`` (user values take precedence), and writes the
         rendered file to ``<run>/params.txt``.
+
+        The defaults dictionary contains the following keys:
+
+        - ``act_flow`` → ``'1'``
+        - ``act_morf`` → ``'1'``
+        - ``act_sedtrans`` → ``'1'``
+        - ``act_swrunup`` → ``'0'``
+        - ``act_wavemodel`` → ``'0'``
+        - ``act_veg`` → ``'0'``
+        - ``act_wnd`` → ``'1'``
 
         All values in ``dict_ini_data`` are cast to ``str`` before substitution
         as required by the :class:`string.Template` engine.
