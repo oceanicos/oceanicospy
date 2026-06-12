@@ -3,10 +3,10 @@
 %%%                                                                          %%%
 %%% date:     30-May-24 	                                                 %%%
 %%% function: manual   
-%%% case:     $case_description                                               %%%
+%%% case:     $case_description                                              %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Physics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Physics %%%
 flow = $act_flow
 morphology = $act_morf
 sedtrans = $act_sedtrans
@@ -15,7 +15,7 @@ wavemodel = $act_wavemodel
 vegetation = $act_veg
 wind = $act_wnd
 
-%%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Grid parameters %%%
 
 xfile     = $xfilepath
 yfile     = $yfilepath
@@ -28,29 +28,57 @@ thetamax  = $thetamax
 dtheta    = $dtheta
 thetanaut = 1
 alfa      = $alfa
+posdwn    = $posdwn
 
-%%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Waves: boundary and propagation %%%
 
-wbctype    = $wbctype
-bcfile     = $bcfilepath
-wbcversion = $w_bc_version
+wbctype      = $wbctype
+bcfile       = $bcfilepath
+lateralwave  = wavecrest
+dtbc         = 1
+wbcversion   = $w_bc_version
 nspectrumloc = $n_spectrum_loc
+scheme       = upwind_2
+waveform     = 2
+gamma        = 0.78
+gammax       = 3
+nspr         = 1
+nmax         = 0.7
+snells       = 1
 
-%%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Flow parameters %%%
+bedfriction  = manning
+bedfriccoef  = 0.02
+lat          = 39
+eps          = 0.001
+hmin         = 0.200
+
+%%% Tide %%%
 tideloc      = 1
+tidetype     = instant
 zs0file      = $sealevelfilepath
 
-%%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Wind %%%
 windfile     = $windfilepath
 
-%%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-CFL          = 0.7
+%%% Model time %%%
+CFL          = $CFL_parameter
 tstart       = $tstart_value
 tstop        = $tstop_value
 tint         = $tint_value
 tintg        = $tintg_value
 
-%%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Sediment transport %%%
+facua        = 0.15
+form         = 2
+dilatancy    = 1
+
+%%% Avalanching %%%
+hswitch      = 0.5
+dryslp       = 1.5
+wetslp       = 0.8
+
+%%% Output selection %%%
 outputformat = netcdf
 ncfilename = $outputfilepath
 

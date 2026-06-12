@@ -332,7 +332,7 @@ class BoundaryConditions:
 
         self._write_loclist(location_points)
 
-    def create_spectra_from_jonswap(self, input_filename):
+    def load_existing_jonswap_spectra(self, input_filename):
         """
         Generate boundary condition spectra using the JONSWAP definition.
 
@@ -357,7 +357,7 @@ class BoundaryConditions:
         if not hasattr(self, 'dict_boundaries') or self.dict_boundaries is None:
             self.dict_boundaries = {}
         if self.is_time_varying:
-            self.dict_boundaries['wbctype'] = 'jons_table'
+            self.dict_boundaries['wbctype'] = 'jonstable'
         else:
             self.dict_boundaries['wbctype'] = 'jons'
             filepath = os.path.join(self.init.dict_folders["input"], input_filename)

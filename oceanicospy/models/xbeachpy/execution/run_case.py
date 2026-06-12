@@ -1,5 +1,7 @@
 import glob
 import numpy as np
+from pathlib import Path
+import re
 
 from .... import utils
 
@@ -29,6 +31,18 @@ class CaseRunner():
         self.init = init
         self.dict_comp_data = dict_comp_data
         print('\n*** Initializing Case Runner ***\n')
+
+    def _delete_placeholder_leftover(self):
+        """
+        Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
+
+        Scans the domain ``.swn`` run file and overwrites any remaining
+        ``$word`` tokens that were not substituted during preprocessing.
+        """
+        run_file = Path(f'{self.init.dict_folders["run"]}params.txt')
+        text = run_file.read_text()
+        text = re.sub(r"\$\w+", " ", text)  # wipe leftovers
+        run_file.write_text(text)
 
     def write_output_file(self, filename):
         """
@@ -134,5 +148,12 @@ class CaseRunner():
 
         str_comp_data = {k: str(v) for k, v in self.dict_comp_data.items()}
         self.dict_comp_data.update(str_comp_data)
-
+        
         utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', self.dict_comp_data)
+        self._delete_placeholder_leftover()
+
+    def purge_leftover_placeholders(self):
+        """
+        Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
+        """
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', self.dict_comp_data) # to delete unused variables
