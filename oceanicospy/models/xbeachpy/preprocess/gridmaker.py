@@ -130,6 +130,41 @@ class _RectangularGridBuilder:
     def __init__(self, gridmaker: "GridMaker") -> None:
         self._gm = gridmaker
 
+    def from_coordinates(
+        self,
+        x_start: float,
+        x_end: float,
+        y_start: float,
+        y_end: float,
+        dx: float,
+        dy: Optional[float] = None,
+        crs: Optional[str] = None,
+    ) -> Grid:
+        """
+        Build a rectangular grid from the bounding box defined by two corner coordinates.
+
+        Parameters
+        ----------
+        x_start, x_end : float
+            Minimum and maximum x coordinates of the grid bounding box.
+        y_start, y_end : float
+            Minimum and maximum y coordinates of the grid bounding box.
+        dx : float
+            Grid spacing in the x direction.
+        dy : float, optional
+            Grid spacing in the y direction. Defaults to *dx*.
+        crs : str, optional
+            CRS string for metadata only (e.g. ``"EPSG:9377"``).
+
+        Returns
+        -------
+        Grid
+        """
+        grid = Grid.from_coordinates(x_start, x_end, y_start, y_end, dx, dy=dy, crs=crs)
+        self._gm._grid = grid
+        self._gm._grid_dict = self._export(grid)
+        return grid
+
     def from_shapefile(
         self,
         source_file: str,
