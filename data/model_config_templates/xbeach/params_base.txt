@@ -17,6 +17,8 @@ wind = $act_wnd
 
 %%% Grid parameters %%%
 
+gridform  = $gridform
+xyfile    = $xyfilepath
 xfile     = $xfilepath
 yfile     = $yfilepath
 depfile   = $depfilepath

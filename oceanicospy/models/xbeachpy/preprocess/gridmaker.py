@@ -347,6 +347,62 @@ class GridMaker:
 
         return self._grid_dict
 
+    def load_existing_DELFTgrid(self, xygrid_filename) -> dict:
+        """
+        Load an existing DELFT3D-style grid from a single file containing both
+        x and y coordinate matrices, validate it, copy the file into the run
+        folder, and return a descriptor dictionary.
+
+        The file is expected to contain the x-coordinate matrix followed by
+        the y-coordinate matrix, separated by a comment line holding the
+        keyword ``y-coordinate``.
+
+        Parameters
+        ----------
+        xygrid_filename : str
+            Name of the grid file inside the project input folder.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``xyfilepath``, ``meshes_x``, and ``meshes_y``.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the grid file is not found in the input folder.
+        ValueError
+            If the x and y arrays do not have the same shape.
+        """
+        input_folder = Path(self.init.dict_folders["input"])
+        run_folder = Path(self.init.dict_folders["run"])
+
+        src = input_folder / xygrid_filename
+        if not src.exists():
+            raise FileNotFoundError(f"DELFT grid file not found: {src}")
+
+        lines = src.read_text().splitlines()
+
+        # Find the line after "missing value" which holds meshes_y and meshes_x
+        try:
+            mv_idx = next(i for i, line in enumerate(lines) if "missing value" in line.lower())
+            meshes_x, meshes_y = map(int, lines[mv_idx + 1].split())
+        except (StopIteration, ValueError, IndexError):
+            raise ValueError(
+                "Could not find '<meshes_y> <meshes_x>' line after 'missing value' directive."
+            )
+        
+        dst = run_folder / "xy.grd"
+        shutil.copy(str(src), str(dst))
+
+        self._grid_dict = {
+            "xyfilepath": "xy.grd",
+            "meshes_x": meshes_x,
+            "meshes_y": meshes_y,
+        }
+
+        return self._grid_dict
+
     def fill_grid_section(self) -> None:
         """Write the generated grid metadata to the params.txt file."""
 
