@@ -150,12 +150,12 @@ class BathyMaker:
                 f"Bathymetry file '{dep_filename}' not found in {input_folder}."
             )
 
-        try:
-            np.loadtxt(dep_path)
-        except ValueError as exc:
-            raise ValueError(
-                f"Could not parse '{dep_filename}' as a numeric array: {exc}"
-            ) from exc
+        # try:
+        #     np.loadtxt(dep_path)
+        # except ValueError as exc:
+        #     raise ValueError(
+        #         f"Could not parse '{dep_filename}' as a numeric array: {exc}"
+        #     ) from exc
 
         shutil.copy(str(dep_path), str(run_folder / dep_filename))
 
