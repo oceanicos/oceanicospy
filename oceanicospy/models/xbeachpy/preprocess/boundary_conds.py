@@ -281,7 +281,7 @@ class BoundaryConditions:
                 floc.write(f"{x} {y} 'bounds_conds/filelist_{idx_site}.txt'\n")
 
 
-    def spectra_from_swan(self, input_filename,location_points, point_indexes=None):
+    def spectra_from_swan(self, input_filename,location_points=None, point_indexes=None):
         """
         Convert a SWAN spectral output file into XBeach boundary condition files.
 
@@ -314,23 +314,32 @@ class BoundaryConditions:
         from ``params.txt``; :attr:`dict_boundaries` is not populated in that
         case.
         """
-        self.dataset = self._load_dataset(input_filename, point_indexes)
-        self.data_spectra = self.dataset.efth
-        self.number_spectrum_locs = len(self.dataset.site)
 
-        self.dict_boundaries = {
-            'w_bc_version': 3,
-            'n_spectrum_loc': self.number_spectrum_locs,
-            'bcfilepath': 'bounds_conds/loclist.txt',
-        }
+        if self.is_spatial_varying:
+            if location_points is None:
+                raise ValueError("Spatially varying boundary conditions require 'location_points' to be provided.")
 
-        for idx_site in range(self.number_spectrum_locs):
-            self._write_site_filelist(idx_site)
+            self.dataset = self._load_dataset(input_filename, point_indexes)
+            self.data_spectra = self.dataset.efth
+            self.number_spectrum_locs = len(self.dataset.site)
 
-        if self.number_spectrum_locs != len(location_points):
-            raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
+            self.dict_boundaries = {
+                'w_bc_version': 3,
+                'n_spectrum_loc': self.number_spectrum_locs,
+                'bcfilepath': 'bounds_conds/loclist.txt',
+            }
 
-        self._write_loclist(location_points)
+            for idx_site in range(self.number_spectrum_locs):
+                self._write_site_filelist(idx_site)
+
+            if self.number_spectrum_locs != len(location_points):
+                raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
+
+            self._write_loclist(location_points)
+        
+        else:
+            self.dataset = self._load_dataset(input_filename, point_indexes)
+            print(self.dataset)
 
     def load_existing_jonswap_spectra(self, input_filename):
         """

@@ -7,8 +7,6 @@ import copernicusmarine
 import shutil
 import gc
 import time
-import psutil
-
 
 class CMDSDownloader:
     """
