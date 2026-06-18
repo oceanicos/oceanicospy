@@ -354,6 +354,10 @@ class BoundaryConditions:
                 'bcfilepath': 'bounds_conds/filelist_0.txt',
             }
 
+    # def _download_wave_parameters
+    # def get_waves_from_cmds
+    # def define_jonswap_from_wave_parameters
+
     def load_existing_jonswap_spectra(self, input_filename):
         """
         Generate boundary condition spectra using the JONSWAP definition.
@@ -408,7 +412,7 @@ class BoundaryConditions:
 
         shutil.copy(str(input_path), str(run_folder / input_filename))
 
-        self.dict_boundaries['bcfilepath'] = input_filename
+        self.dict_boundaries['bcfilepath'] = input_filename 
 
     def fill_boundaries_section(self):
         """

@@ -275,6 +275,72 @@ class CMDSDownloader:
         )
 
     @classmethod
+    def for_IBI_waves(
+        cls,
+        lon_min: float,
+        lon_max: float,
+        lat_min: float,
+        lat_max: float,
+        start_datetime_local: datetime,
+        end_datetime_local: datetime,
+        utc_offset_hours: float,
+        output_path: str | Path,
+        output_filename: str | None = None,
+        file_format: str = "netcdf",
+    ) -> "CMDSDownloader":
+        """
+        Create a :class:`CMDSDownloader` pre-configured for wave forecasts from the IBI model.
+
+        Uses the CMEMS IBI wave analysis and forecast dataset
+        ``cmems_mod_ibi_wav_anfc_0.05deg_PT3H-i`` with variables
+        ``VHM0`` (significant wave height), ``VMDR`` (mean wave direction),
+        and ``VTPK`` (peak period).
+
+        Parameters
+        ----------
+        lon_min : float
+            Western boundary of the bounding box in degrees (EPSG:4326).
+        lon_max : float
+            Eastern boundary of the bounding box in degrees (EPSG:4326).
+        lat_min : float
+            Southern boundary of the bounding box in degrees (EPSG:4326).
+        lat_max : float
+            Northern boundary of the bounding box in degrees (EPSG:4326).
+        start_datetime_local : datetime
+            Start of the desired time window in local time.
+        end_datetime_local : datetime
+            End of the desired time window in local time.
+        utc_offset_hours : float
+            Local-time offset from UTC in hours, following the convention
+            ``local - UTC``. For example, UTC-5 (Colombia) is ``-5``.
+        output_path : str or Path
+            Directory where the output file will be written.
+        output_filename : str, optional
+            Name of the output file (e.g. ``"waves_IBI.nc"``).
+        file_format : str, optional
+            ``"netcdf"`` (default) or ``"zarr"``.           
+
+        Returns
+        -------
+        CMDSDownloader
+            Instance configured for IBI wave data.
+        """
+        return cls(
+            dataset_id="cmems_mod_ibi_wav_my_0.027deg_PT1H-i",
+            variables=["VHM0", "VMDR", "VTPK"],
+            lon_min=lon_min,
+            lon_max=lon_max,
+            lat_min=lat_min,
+            lat_max=lat_max,
+            start_datetime_local=start_datetime_local,
+            end_datetime_local=end_datetime_local,
+            utc_offset_hours=utc_offset_hours,
+            output_path=output_path,
+            output_filename=output_filename,
+            file_format=file_format,
+        )
+
+    @classmethod
     def for_winds(
         cls,
         lon_min: float,
