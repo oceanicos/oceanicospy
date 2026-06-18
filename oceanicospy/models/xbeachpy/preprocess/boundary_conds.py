@@ -38,6 +38,7 @@ class BoundaryConditions:
         self.init = init
         self.is_time_varying = is_time_varying
         self.is_spatial_varying = is_spatial_varying
+        self.direction_corrector = False
         self._purger()
         print('*** Initializing Boundary Conditions ***')
 
@@ -81,13 +82,14 @@ class BoundaryConditions:
         RuntimeError
             If the loaded dataset does not contain a ``time`` coordinate.
         """
-        self.dataset = read_swan(f'{self.init.dict_folders["input"]}{input_filename}')
+        self.dataset = read_swan(f'{self.init.dict_folders["input"]}{input_filename}',dirorder=False)
+
         if "time" not in self.dataset.coords:
             raise RuntimeError("Loaded dataset has no 'time' coordinate to filter on.")
         start = np.datetime64(self.init.ini_date)
         end = np.datetime64(self.init.end_date)
 
-        if point_indexes is not None:
+        if point_indexes is not None and self.is_spatial_varying:
             self.dataset = self.dataset.isel(site=point_indexes)
         return self.dataset.sel(time=slice(start, end))
 
@@ -147,7 +149,10 @@ class BoundaryConditions:
             elif 'number of directions' in line:
                 for _ in range(36):
                     next_line = forigin.readline()
-                    line = line + str(float(next_line) + 270) + '\n'
+                    if self.direction_corrector:
+                        line = line + str(float(next_line) + 270) + '\n'
+                    else:
+                        line = line + next_line
                 fdest.write(line)
 
             # if the line has two numeric values separated by three spaces, we assume it's a coordinate line 
@@ -181,7 +186,7 @@ class BoundaryConditions:
         for row in spec_matrix:
             np.savetxt(fdest, row, fmt='%7.0f')
 
-    def _write_sp2_file(self, site_idx, time_idx, lon, lat):
+    def _write_sp2_file(self, site_idx, time_idx, lon, lat,swan_spec_file='SpecSWAN.out'):
         """
         Write a single ``.sp2`` file for one site/time-step combination.
 
@@ -210,19 +215,23 @@ class BoundaryConditions:
         The spectral energy is normalised by ``0.1E-05`` before being passed
         to :meth:`_write_sp2_spectrum`.
         """
-        spec_matrix = np.matrix(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+
+        try:
+            spec_matrix = np.matrix(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+        except ValueError:
+            spec_matrix = np.matrix(self.data_spectra[time_idx, 0, 0, :, :]) / 0.1e-5
 
         time_str = pd.to_datetime(self.dataset.time.values[time_idx]).strftime('%Y%m%d.%H%M%S')
         sp2_path = (
             f"{self.init.dict_folders['run']}"
             f"bounds_conds/point_{site_idx}/spec_time{time_idx}_point{site_idx}.sp2"
         )
-        with open(f"{self.init.dict_folders['input']}SpecSWAN.out") as forigin:
+        with open(f"{self.init.dict_folders['input']}{swan_spec_file}") as forigin:
             with open(sp2_path, "w") as fdest:
                 self._write_sp2_header(forigin, fdest, lon, lat)
                 self._write_sp2_spectrum(fdest, spec_matrix, time_str)
 
-    def _write_site_filelist(self, site_idx):
+    def _write_site_filelist(self, site_idx,swan_spec_file='SpecSWAN.out'):
         """
         Create the output directory and ``filelist_<site_idx>.txt`` for one boundary site.
 
@@ -258,7 +267,7 @@ class BoundaryConditions:
         with open(filelist_path, "w") as filelist:
             filelist.write('FILELIST\n')
             for idx_time in range(len(self.dataset.time)):
-                self._write_sp2_file(site_idx, idx_time, self.lon.values, self.lat.values)
+                self._write_sp2_file(site_idx, idx_time, self.lon.values, self.lat.values,swan_spec_file)
                 filelist.write(
                     f"3600 0.2 'bounds_conds/point_{site_idx}/"
                     f"spec_time{idx_time}_point{site_idx}.sp2'\n"
@@ -279,7 +288,6 @@ class BoundaryConditions:
             for idx_site in range(self.number_spectrum_locs):
                 x, y = location_points[idx_site]
                 floc.write(f"{x} {y} 'bounds_conds/filelist_{idx_site}.txt'\n")
-
 
     def spectra_from_swan(self, input_filename,location_points=None, point_indexes=None):
         """
@@ -315,31 +323,36 @@ class BoundaryConditions:
         case.
         """
 
-        if self.is_spatial_varying:
-            if location_points is None:
-                raise ValueError("Spatially varying boundary conditions require 'location_points' to be provided.")
+        if self.is_spatial_varying and (location_points is None or point_indexes is None):
+            raise ValueError("Spatially varying boundary conditions require both 'location_points' and 'point_indexes' to be provided.")
 
-            self.dataset = self._load_dataset(input_filename, point_indexes)
-            self.data_spectra = self.dataset.efth
+        self.dataset = self._load_dataset(input_filename, point_indexes)
+        self.data_spectra = self.dataset.efth
+        try:
             self.number_spectrum_locs = len(self.dataset.site)
+        except AttributeError:
+            self.number_spectrum_locs = len(self.dataset.lon)
 
-            self.dict_boundaries = {
-                'w_bc_version': 3,
-                'n_spectrum_loc': self.number_spectrum_locs,
-                'bcfilepath': 'bounds_conds/loclist.txt',
-            }
+        for idx_site in range(self.number_spectrum_locs):
+            self._write_site_filelist(idx_site,input_filename)
 
-            for idx_site in range(self.number_spectrum_locs):
-                self._write_site_filelist(idx_site)
-
+        if self.is_spatial_varying:
             if self.number_spectrum_locs != len(location_points):
                 raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
 
             self._write_loclist(location_points)
-        
+
+            self.dict_boundaries = {
+                'wbctype': 'swan',
+                'w_bc_version': 3,
+                'n_spectrum_loc': self.number_spectrum_locs,
+                'bcfilepath': 'bounds_conds/loclist.txt',
+            }
         else:
-            self.dataset = self._load_dataset(input_filename, point_indexes)
-            print(self.dataset)
+            self.dict_boundaries = {
+                'wbctype': 'swan',
+                'bcfilepath': 'bounds_conds/filelist_0.txt',
+            }
 
     def load_existing_jonswap_spectra(self, input_filename):
         """
