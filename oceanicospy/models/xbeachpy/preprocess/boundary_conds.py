@@ -1,10 +1,13 @@
 from wavespectra import read_swan
 import numpy as np
 import pandas as pd
+import xarray as xr
 import re
 import os
 import shutil
 from pathlib import Path
+from ....downloads import *
+
 
 from .... import utils
 
@@ -354,9 +357,110 @@ class BoundaryConditions:
                 'bcfilepath': 'bounds_conds/filelist_0.txt',
             }
 
-    # def _download_wave_parameters
-    # def get_waves_from_cmds
-    # def define_jonswap_from_wave_parameters
+    def _download_CMDS(self,utc_offset_hours, filepath=None,wave_info=None,format_localtime=False):
+        """
+        Download CMDS wave data for the specified region and time period.
+
+        Initializes a :class:`CMDSDownloader` configured for wave variables
+        and spatial bounds derived from *wind_info*, then downloads the data
+        and optionally reformats timestamps to local time.
+
+        Parameters
+        ----------
+        utc_offset_hours : int
+            Time difference to UTC in hours for local-time conversion.
+        filepath : str or None, optional
+            Destination path for the downloaded CMDS NetCDF file.
+            If ``None``, a default path is used.
+        wind_info : dict or None, optional
+            Spatial extent dictionary.  Expected keys: ``lon_ll_corner_wind``,
+            ``lat_ll_corner_wind``, ``nx_wind``, ``ny_wind``, ``dx_wind``,
+            ``dy_wind``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
+
+        Returns
+        -------
+        str
+            Path to the downloaded (or local-time-formatted) NetCDF file.
+        """
+        filepath = Path(filepath)
+        CMDSdownload_obj = CMDSDownloader.for_IBI_waves(
+                        lon_min = wave_info['lon_ll_corner_wave'],
+                        lon_max = wave_info['lon_ll_corner_wave'] + (wave_info['nx_wave'] * wave_info['dx_wave']),
+                        lat_min = wave_info['lat_ll_corner_wave'],
+                        lat_max = wave_info['lat_ll_corner_wave'] + (wave_info['ny_wave'] * wave_info['dy_wave']),
+                        start_datetime_local = self.init.ini_date,
+                        end_datetime_local = self.init.end_date,
+                        utc_offset_hours = utc_offset_hours,
+                        output_path = filepath.parent,
+                        output_filename = filepath.name
+                        )
+        self.filepath_utc = CMDSdownload_obj.download()
+        print("\t CMDS IBI wave data downloaded successfully")
+        if format_localtime:
+            self.filepath_localtime = CMDSdownload_obj.format_to_localtime()
+            return self.filepath_localtime
+        return self.filepath_utc
+
+    def get_waves_from_CMDS(self,utc_offset_hours,waves_info_dict,filename='waves_ibi_cmds.nc',override=False,format_localtime=False):
+        """
+        Download CMDS wave data for the current domain, or skip if already present.
+
+        Checks whether the CMDS wave NetCDF file already exists in the domain
+        input directory.  If it does not exist (or *override* is ``True``),
+        the data are downloaded via :meth:`_download_CMDS`.
+
+        Parameters
+        ----------
+        utc_offset_hours : int
+            Time difference to UTC in hours for local-time conversion.
+        wind_info_dict : dict
+            Spatial extent dictionary forwarded to :meth:`_download_CMDS`.
+        filename : str, optional
+            Name of the CMDS wave NetCDF output file.
+            Defaults to ``'waves_cmds.nc'``.
+        override : bool, optional
+            If ``True``, re-downloads the file even if it already exists.
+            Defaults to ``False``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
+        """
+        filepath = f"{self.init.dict_folders['input']}/{filename}"
+        file_exists = utils.verify_file(filepath)
+        if not file_exists or override:
+            self._download_CMDS(utc_offset_hours,wave_info=waves_info_dict,filepath=filepath,format_localtime=format_localtime)
+        else:
+            print("\t CMDS wave data already exists, skipping download")
+
+    def create_jonswap_from_netcdf(self,nc_file='waves_ibi_cmds.nc', output_name='jonswap_table.txt',  gammajsp=3.3, s=20.0, duration=3600, dtbc=0.3):
+        ds = xr.open_dataset(nc_file)
+        hm0 = ds["VHM0"].values
+        print(hm0)
+
+        tp = ds["VTPK"].values
+        dirn = ds["VMDR"].values
+
+        if len(hm0.shape) > 1:
+            hm0 = hm0.ravel()
+            tp = tp.ravel()
+            dirn = dirn.ravel()
+
+        n = len(hm0)
+
+        out = np.column_stack([
+            hm0, tp, dirn,
+            np.full(n, gammajsp),
+            np.full(n, s),
+            np.full(n, duration),
+            np.full(n, dtbc),
+        ])
+
+        np.savetxt(output_name, out, fmt="%.3f %.3f %.3f %.4f %.4f %.0f %.3f")
+        ds.close()
+        print(f"JONSWAP table written to {output_name} ({n} rows)")
 
     def load_existing_jonswap_spectra(self, input_filename):
         """
