@@ -436,10 +436,9 @@ class BoundaryConditions:
             print("\t CMDS wave data already exists, skipping download")
 
     def create_jonswap_from_netcdf(self,nc_file='waves_ibi_cmds.nc', output_name='jonswap_table.txt',  gammajsp=3.3, s=20.0, duration=3600, dtbc=0.3):
-        ds = xr.open_dataset(nc_file)
+        ds = xr.open_dataset(f"{self.init.dict_folders['input']}/{nc_file}")
+        ds = ds.isel(longitude=0, latitude=0)  # Select the first grid point for simplicity
         hm0 = ds["VHM0"].values
-        print(hm0)
-
         tp = ds["VTPK"].values
         dirn = ds["VMDR"].values
 
@@ -458,8 +457,14 @@ class BoundaryConditions:
             np.full(n, dtbc),
         ])
 
-        np.savetxt(output_name, out, fmt="%.3f %.3f %.3f %.4f %.4f %.0f %.3f")
+        np.savetxt(f"{self.init.dict_folders['run']}/{output_name}", out, fmt="%.3f %.3f %.3f %.4f %.4f %.0f %.3f")
         ds.close()
+
+        self.dict_boundaries = {
+                'wbctype': 'jonstable',
+                'bcfilepath': output_name,
+            }
+
         print(f"JONSWAP table written to {output_name} ({n} rows)")
 
     def load_existing_jonswap_spectra(self, input_filename):
