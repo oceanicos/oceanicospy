@@ -122,6 +122,9 @@ class AQUAlogger(BaseLogger):
         if 'a. m.' in df['date'].iloc[0] or 'p. m.' in df['date'].iloc[0]:
             df['date'] = [i.replace('a. m.', 'AM').replace('p. m.', 'PM') for i in df['date']]
             df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y %I:%M:%S %p', errors='coerce')
+        elif 'a.m.' in df['date'].iloc[0] or 'p.m.' in df['date'].iloc[0]:
+            df['date'] = [i.replace('a.m.', 'AM').replace('p.m.', 'PM') for i in df['date']]
+            df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y %I:%M:%S %p', errors='coerce')
         else:
             df['date'] = pd.to_datetime(df['date'], errors='coerce')
         df = df.set_index('date')
