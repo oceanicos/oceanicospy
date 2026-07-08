@@ -21,12 +21,6 @@ gridform  = $gridform
 xyfile    = $xyfilepath
 xfile     = $xfilepath
 yfile     = $yfilepath
-<<<<<<< HEAD
-=======
-xori      = $xori
-yori      = $yori
-depfile   = $depfilepath
->>>>>>> 6db7f50d7906ba80f54c94ea333c122ed84b2e61
 nx        = $meshes_x
 ny        = $meshes_y
 xori      = $xori
@@ -75,8 +69,8 @@ windfile     = $windfilepath
 CFL          = $CFL_parameter
 tstart       = $tstart_value
 tstop        = $tstop_value
-tint         = $tint_value
 tintg        = $tintg_value
+tintp        = $tintp_value
 
 %%% Sediment transport %%%
 facua        = 0.15
@@ -100,3 +94,6 @@ $string_points
 
 npointvar    = $len_point_vars
 $point_vars
+
+nrugauge = $len_rugauge_points
+$string_rugauge_points
