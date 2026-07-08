@@ -128,6 +128,10 @@ class CaseRunner():
         else:
             self.dict_comp_data['len_point_vars'] = 0
             self.dict_comp_data['point_vars'] = ''
+    
+    def fill_extra_sections(self,not_default_params=None):
+        if not_default_params:
+            utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', not_default_params)
 
     def fill_computation_section(self):
         """

@@ -21,12 +21,6 @@ gridform  = $gridform
 xyfile    = $xyfilepath
 xfile     = $xfilepath
 yfile     = $yfilepath
-<<<<<<< HEAD
-=======
-xori      = $xori
-yori      = $yori
-depfile   = $depfilepath
->>>>>>> 6db7f50d7906ba80f54c94ea333c122ed84b2e61
 nx        = $meshes_x
 ny        = $meshes_y
 xori      = $xori
@@ -44,28 +38,28 @@ posdwn    = $posdwn
 
 wbctype      = $wbctype
 bcfile       = $bcfilepath
-lateralwave  = wavecrest
-dtbc         = 1
+lateralwave  = $lateralwave
+dtbc         = $dtbc
 wbcversion   = $w_bc_version
 nspectrumloc = $n_spectrum_loc
-scheme       = upwind_2
-waveform     = 2
-gamma        = 0.78
-gammax       = 3
-nspr         = 1
-nmax         = 0.7
-snells       = 1
+scheme       = $scheme
+waveform     = $waveform
+gamma        = $gamma
+gammax       = $gammax
+nspr         = $nspr
+nmax         = $nmax
+snells       = $snells
 
 %% Flow parameters %%%
-bedfriction  = manning
-bedfriccoef  = 0.02
-lat          = 39
-eps          = 0.001
-hmin         = 0.200
+bedfriction  = $bedfriction
+bedfriccoef  = $bedfriccoef
+lat          = $lat
+eps          = $eps
+hmin         = $hmin
 
 %%% Tide %%%
-tideloc      = 1
-tidetype     = instant
+tideloc      = $tideloc
+tidetype     = $tidetype
 zs0file      = $sealevelfilepath
 
 %%% Wind %%%
@@ -79,14 +73,14 @@ tint         = $tint_value
 tintg        = $tintg_value
 
 %%% Sediment transport %%%
-facua        = 0.15
-form         = 2
-dilatancy    = 1
+facua        = $facua
+form         = $form
+dilatancy    = $dilatancy
 
 %%% Avalanching %%%
-hswitch      = 0.5
-dryslp       = 1.5
-wetslp       = 0.8
+hswitch      = $hswitch
+dryslp       = $dryslp
+wetslp       = $wetslp
 
 %%% Output selection %%%
 outputformat = netcdf

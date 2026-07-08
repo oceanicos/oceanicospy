@@ -37,6 +37,7 @@ class BoundaryConditions:
         the current implementation.  Defaults to ``False``.
 
     """
+
     def __init__ (self,init,is_time_varying=False,is_spatial_varying=False):
         self.init = init
         self.is_time_varying = is_time_varying
@@ -523,20 +524,37 @@ class BoundaryConditions:
 
         self.dict_boundaries['bcfilepath'] = input_filename 
 
-    def fill_boundaries_section(self):
+    def fill_boundaries_section(self, extra_params=None):
         """
         Write the boundary-condition parameters to ``params.txt``.
 
-        Converts every value in :attr:`dict_boundaries` to ``str`` (required
-        by the placeholder-substitution engine) and calls
-        :func:`utils.fill_files` to replace the corresponding ``$placeholder``
-        tokens in ``<run>/params.txt``.
+        Merges :attr:`DEFAULT_PROPAGATION_PARAMS` (the default "Waves:
+        boundary and propagation" settings), :attr:`dict_boundaries`, and
+        *extra_params*, converts every value to ``str`` (required by the
+        placeholder-substitution engine), and calls :func:`utils.fill_files`
+        to replace the corresponding ``$placeholder`` tokens in
+        ``<run>/params.txt``.
 
-        Must be called after :meth:`spectra_from_swan` has populated
+        Must be called after :meth:`spectra_from_swan`,
+        :meth:`create_jonswap_from_netcdf`, or
+        :meth:`load_existing_jonswap_spectra` has populated
         :attr:`dict_boundaries`.
+
+        Parameters
+        ----------
+        extra_params : dict, optional
+            Overrides for the default "Waves: boundary and propagation"
+            parameters (``lateralwave``, ``dtbc``, ``scheme``, ``waveform``,
+            ``gamma``, ``gammax``, ``nspr``, ``nmax``, ``snells``). Any key
+            present here takes precedence over the corresponding default in
+            :attr:`DEFAULT_PROPAGATION_PARAMS`. Defaults to ``None`` (no
+            overrides).
         """
-        for param in self.dict_boundaries:
-            self.dict_boundaries[param]=str(self.dict_boundaries[param])
+        params_to_fill = {
+            **self.dict_boundaries,
+            **(extra_params or {}),
+        }
+        params_to_fill = {param: str(value) for param, value in params_to_fill.items()}
 
         print (f'\n*** Adding/Editing boundary information for domain in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',self.dict_boundaries)
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',params_to_fill)
