@@ -69,8 +69,8 @@ windfile     = $windfilepath
 CFL          = $CFL_parameter
 tstart       = $tstart_value
 tstop        = $tstop_value
-tint         = $tint_value
 tintg        = $tintg_value
+tintp        = $tintp_value
 
 %%% Sediment transport %%%
 facua        = $facua
@@ -94,3 +94,6 @@ $string_points
 
 npointvar    = $len_point_vars
 $point_vars
+
+nrugauge = $len_rugauge_points
+$string_rugauge_points
