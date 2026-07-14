@@ -329,7 +329,7 @@ class AWAC:
         if from_single_wad:
             wad_filepath = wad_files[0]
             date_columns = ['month', 'day', 'year', 'hour', 'minute', 'second']
-            df = pd.read_csv(wad_filepath,sep=r"\s+",names=date_columns+list(column_names[2:]))
+            df = pd.read_csv(wad_filepath,sep=r"\s+",names=date_columns+list(column_names[6:]))
             df = df.dropna(axis=1)          
         else:
             burst_list = []
