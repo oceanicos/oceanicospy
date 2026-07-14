@@ -1,0 +1,17 @@
+project:
+  title: "oceanicospy — Kick-off"
+
+format:
+  revealjs:
+    output-file: index.html
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: false
+    preview-links: auto
+    logo: ""
+    footer: "oceanicospy 0.1.0"
+    transition: fade
+    code-line-numbers: true
+    highlight-style: github
+    toc: false
+    embed-resources: true
