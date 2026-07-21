@@ -43,7 +43,6 @@ dtbc         = $dtbc
 wbcversion   = $w_bc_version
 nspectrumloc = $n_spectrum_loc
 scheme       = $scheme
-waveform     = $waveform
 gamma        = $gamma
 gammax       = $gammax
 nspr         = $nspr
