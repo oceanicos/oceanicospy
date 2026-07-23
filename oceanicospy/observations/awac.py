@@ -326,16 +326,22 @@ class AWAC:
         column_names = self._read_wave_header()
         wad_files = sorted(glob.glob(self.directory_path+'*.wad')) #Each .wad file represents one burst
 
+        targets=['year','month','day','hour','minute','second']
+        new_column_names = [
+            next((t for t in targets if t in item.lower()), item) 
+            for item in column_names
+        ]
+
         if from_single_wad:
             wad_filepath = wad_files[0]
-            date_columns = ['month', 'day', 'year', 'hour', 'minute', 'second']
-            df = pd.read_csv(wad_filepath,sep=r"\s+",names=date_columns+list(column_names[6:]))
+            # date_columns = ['month', 'day', 'year', 'hour', 'minute', 'second']
+            df = pd.read_csv(wad_filepath,sep=r"\s+",names=new_column_names)
             df = df.dropna(axis=1)          
         else:
             burst_list = []
 
             for wad_filepath in wad_files[1:]: 
-                burst_df = pd.read_csv(wad_filepath,sep=r"\s+",names=column_names)
+                burst_df = pd.read_csv(wad_filepath,sep=r"\s+",names=new_column_names)
                 burst_df.rename(columns={column_names[0]:'burstId'},inplace=True)
                 burst_list.append(burst_df)
 

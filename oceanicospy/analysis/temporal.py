@@ -181,8 +181,8 @@ class WaveTemporalAnalyzer:
             if self.zero_centered:
                 burst_signal_detrended = burst_signal.copy()
             else:
-                burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x, type='constant'), axis=0)
-                burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
+                burst_signal_detrended = burst_signal.apply(lambda x: detrend(x, type='constant'), axis=0)
+                # burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
 
             H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended[self.surface_level_column].values,
                                     self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
