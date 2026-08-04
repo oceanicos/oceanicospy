@@ -89,8 +89,16 @@ class BoundaryConditions:
 
         - **number of locations**: rewrites the location count to ``1`` and retains
           only the coordinate line that matches ``(lon, lat)``.
-        - **number of directions**: reads the following 36 direction values and
-          offsets each by 270 degrees to convert from SWAN's convention to XBeach's.
+        - **number of directions**: discards the raw 36 direction values (they are
+          in the SWAN file's original, unsorted bin order) and instead writes
+          ``self.dataset.dir.values``, i.e. the direction axis wavespectra already
+          sorted when it was read (``read_swan`` defaults to ``dirorder=True``).
+          This is the order the energy matrix columns in
+          :meth:`_write_sp2_spectrum` are aligned to, so header and data must
+          match. No degree offset is applied: the source file already declares
+          nautical convention (``NDIR ... nautical directions``, from ``SET
+          NAUT`` in the SWAN run), which is what XBeach assumes by default for
+          ``wbctype = swan``.
 
         Parameters
         ----------
@@ -130,12 +138,15 @@ class BoundaryConditions:
                     next_line = forigin.readline()
                 fdest.write(line)
 
-            # if the line contains the number of directions, we need to read the following 36 lines 
-            # and add 270 to each direction value
+            # If the line contains the number of directions, the following 36 lines
+            # hold the raw NDIR block in the file's own (unsorted) bin order. We
+            # discard them and write the directions in dataset order instead, since
+            # that's the order _write_sp2_spectrum's energy columns are in.
             elif 'number of directions' in line:
                 for _ in range(36):
-                    next_line = forigin.readline()
-                    line = line + str(float(next_line) + 270) + '\n'
+                    forigin.readline()
+                for direction in self.dataset.dir.values:
+                    line = line + str(float(direction)) + '\n'
                 fdest.write(line)
 
             # if the line has two numeric values separated by three spaces, we assume it's a coordinate line 
