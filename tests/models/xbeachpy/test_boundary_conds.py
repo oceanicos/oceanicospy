@@ -148,3 +148,31 @@ class TestSpectraFromSwanDirectionAlignment:
         # convention already (SET NAUT), which is what XBeach assumes by
         # default for wbctype=swan.
         assert dirs == pytest.approx(sorted(RAW_DIRS))
+
+
+class TestSpectraFromSwanLocationsBlock:
+    def test_no_leftover_coordinates_leak_into_header(self, fake_init):
+        # The fixture's site 0 (LON/LAT) is the *first* of two coordinate
+        # lines in the raw file's LONLAT block, so the second site's (LON2/
+        # LAT2) coordinate line is the leftover that used to leak through:
+        # the old skip-logic used `.isdigit()` to detect and discard
+        # unmatched coordinate lines, which never matches a value with a
+        # decimal point, so the leftover fell through to the generic
+        # "else: write the line" branch instead of being discarded.
+        bc = BoundaryConditions(init=fake_init)
+        bc.spectra_from_swan(
+            input_filename="SpecSWAN.out",
+            location_points=[(0, 0), (0, -100)],
+        )
+
+        sp2_path = (
+            Path(fake_init.dict_folders["run"])
+            / "bounds_conds" / "point_0" / "spec_time0_point0.sp2"
+        )
+        lines = sp2_path.read_text().splitlines()
+
+        loc_idx = next(i for i, l in enumerate(lines) if "number of locations" in l)
+        assert lines[loc_idx].split()[0] == "1"
+        # Exactly one coordinate line should follow the count, then AFREQ --
+        # not a second, unmatched site's coordinate line.
+        assert "AFREQ" in lines[loc_idx + 2]

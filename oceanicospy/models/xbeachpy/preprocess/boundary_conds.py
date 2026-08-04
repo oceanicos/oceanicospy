@@ -88,7 +88,11 @@ class BoundaryConditions:
         transformations:
 
         - **number of locations**: rewrites the location count to ``1`` and retains
-          only the coordinate line that matches ``(lon, lat)``.
+          only the coordinate line that matches ``(lon, lat)``. The original count is
+          read from the ``'number of locations'`` line itself, so exactly that many
+          coordinate lines are consumed from ``forigin`` -- regardless of where the
+          matching one falls among them -- leaving no unread leftovers to leak into
+          the rest of the header.
         - **number of directions**: discards the raw 36 direction values (they are
           in the SWAN file's original, unsorted bin order) and instead writes
           ``self.dataset.dir.values``, i.e. the direction axis wavespectra already
@@ -125,17 +129,22 @@ class BoundaryConditions:
             line = forigin.readline()
             if 'date and time' in line:
                 break
-            # If the line contains the number of locations, we need to rewrite it to 1 
-            # and find the matching location line
-            elif 'number of locations' in line: 
+            # If the line contains the number of locations, we need to rewrite it to 1
+            # and find the matching location line. Read exactly as many coordinate
+            # lines as the original count says (rather than trying to detect the end
+            # of the block from the line content) so every leftover line -- matching
+            # or not -- is consumed and none of them leak into the rest of the header.
+            elif 'number of locations' in line:
+                n_locations = int(re.search(r'\d+', line).group())
                 line = re.sub(r'\d+', "1", line)
-                next_line = forigin.readline()
-                while next_line.strip().isalpha() == False:
+                matched_line = None
+                for _ in range(n_locations):
+                    next_line = forigin.readline()
                     next_line_list = [float(x) for x in next_line.split('   ') if x]
                     if (lon in next_line_list) and (lat in next_line_list):
-                        line += next_line
-                        break
-                    next_line = forigin.readline()
+                        matched_line = next_line
+                if matched_line is not None:
+                    line += matched_line
                 fdest.write(line)
 
             # If the line contains the number of directions, the following 36 lines
