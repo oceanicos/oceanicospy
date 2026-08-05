@@ -6,7 +6,7 @@ from scipy.signal import resample,detrend
 from ..utils import wave_props
 
 class WaveTemporalAnalyzer:
-    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]',zero_centered=False): 
+    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]',zero_centered=False,activate_Kp=True): 
         """
         Initializes the analysis object with measurement signal and sampling data.
 
@@ -40,6 +40,7 @@ class WaveTemporalAnalyzer:
         self.burst_length_s = self.sampling_data['burst_length_s']
         self.surface_level_column = surface_level_column
         self.zero_centered = zero_centered
+        self.activate_Kp = activate_Kp
 
     def _check_burst_length(self,burst_series):
         """Verify that the burst has the expected number of samples based on the sampling frequency and burst length.
@@ -90,7 +91,7 @@ class WaveTemporalAnalyzer:
             measured_signal = measured_signal[~measured_signal["burstId"].isin(burst_to_delete)]
         return measured_signal       
 
-    def apply_zero_upcrossing_burst(self, burst_signal, anchoring_depth, sensor_height):
+    def apply_zero_upcrossing_burst(self, burst_signal, anchoring_depth, sensor_height, activate_Kp):
         """
         This function calculates the significant wave height, the period, and the wavelength
         with the zero-upcrossing method.
@@ -103,6 +104,8 @@ class WaveTemporalAnalyzer:
             The measurement depth.
         sensor_height : float
             The distance from the bottom to the sensor.
+        activate_Kp : bool
+            Whether to apply the transference factor.
 
         Returns
         -------
@@ -135,19 +138,22 @@ class WaveTemporalAnalyzer:
             T.append(time[second_up] - time[first_up])
         H_cross = np.array(H_cross)
         T = np.array(T)
-
         # Determine the wavenumber based on the dispersion relation
         L = np.array([wave_props.wavelength(t, anchoring_depth+sensor_height) for t in T], dtype=np.float64) 
         k = 2.*np.pi/L
 
-        # Computing non-adaptive transference factor Kp
-        Kp = np.cosh(k * sensor_height) / np.cosh(k * anchoring_depth) 
-        Kp_min = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \
-                (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth)) 
-        # Clip Kp to avoid unrealistic amplification of wave heights for very long waves
-        Kp = np.clip(Kp, Kp_min, 1)
+        if activate_Kp:
+            # Computing non-adaptive transference factor Kp
+            Kp = np.cosh(k * sensor_height) / np.cosh(k * anchoring_depth) 
+            Kp_min = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \
+                    (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth)) 
+            # Clip Kp to avoid unrealistic amplification of wave heights for very long waves
+            Kp = np.clip(Kp, Kp_min, 1)
 
-        H = H_cross/(Kp)
+            H = H_cross/(Kp)
+        else:
+            H = H_cross
+
         n = min(1,len(H) // 3) # to prevent errors when there are fewer than 3 waves in the burst
 
         H_sorted = np.sort(H)
@@ -185,7 +191,7 @@ class WaveTemporalAnalyzer:
                 # burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
 
             H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended[self.surface_level_column].values,
-                                    self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
+                                    self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'], self.activate_Kp)
 
             wave_params_data['time'].append(burst_signal_detrended.index[0])
             wave_params_data['H1/3'].append(H_top_third)
