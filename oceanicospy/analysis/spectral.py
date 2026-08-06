@@ -108,7 +108,7 @@ class WaveSpectralAnalyzer():
             measured_signal = measured_signal[~measured_signal["burstId"].isin(burst_to_delete)]
         return measured_signal       
         
-    def _compute_spectrum_for_burst(self, burst_signal, method, kp_correction, window_type, window_length, smoothing_bins):
+    def _compute_spectrum_for_burst(self, burst_signal, method, kp_correction, kp_method, window_type, window_length, smoothing_bins):
         """Calculate the spectrum for the burst using the specified method and applying Kp correction if needed.
         
         Parameters
@@ -141,10 +141,10 @@ class WaveSpectralAnalyzer():
         if self._check_burst_length(burst_signal):
             burst_signal = burst_signal.values
             if method == 'fft':
-                result = self.compute_spectrum_from_direct_fft(burst_signal, kp_correction)
+                result = self.compute_spectrum_from_direct_fft(burst_signal, kp_correction, kp_method)
             elif method == 'welch':
                 # welch's method requires at least 2 segments, so we set the default overlap to 50% of the window length if not provided
-                result = self.compute_spectrum_from_welch(burst_signal, kp_correction, window_type, window_length)
+                result = self.compute_spectrum_from_welch(burst_signal, kp_correction, kp_method, window_type, window_length)
             else:
                 raise ValueError(f"Unknown method: {method}. Use 'fft' or 'welch'.")
 
@@ -407,7 +407,7 @@ class WaveSpectralAnalyzer():
         return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
     @extras.timing_decorator
-    def compute_spectrum_from_direct_fft(self,signal,kp_correction):
+    def compute_spectrum_from_direct_fft(self,signal,kp_correction, kp_method):
         """
         Computes the density variance spectrum based on the Fast Fourier transform. 
         
@@ -448,10 +448,10 @@ class WaveSpectralAnalyzer():
         if kp_correction == False:
             return freqs,PSD
         else:
-            return self.correction_by_Kp(freqs,PSD)
+            return self.correction_by_Kp(freqs,PSD,kp_method)
 
     @extras.timing_decorator
-    def compute_spectrum_from_welch(self,signal,kp_correction,window_type,window_length,overlap=None):
+    def compute_spectrum_from_welch(self,signal,kp_correction,kp_method,window_type,window_length,overlap=None):
         """
         Compute PSD using Welch's method and smooth across frequency bins.
 
@@ -461,6 +461,8 @@ class WaveSpectralAnalyzer():
             1D numpy array containing the signal.
         kp_correction : bool
             If True, applies Kp correction to the spectrum.
+        kp_method : str
+            Method for Kp correction: ``'adaptive'`` or ``'nonadaptive'``.
         window_type : str, optional
             Type of window to use (default is ``'hamming'``).
             Can be any window name supported by scipy.signal.windows, e.g.,
@@ -488,9 +490,9 @@ class WaveSpectralAnalyzer():
         if kp_correction == False:
             return freqs,PSD
         else:
-            return self._correction_by_Kp(freqs,PSD)
+            return self.correction_by_Kp(freqs,PSD,kp_method)
 
-    def get_spectra_and_params_for_bursts(self, method, kp_correction=True, ig_split=False, freq_split=None, 
+    def get_spectra_and_params_for_bursts(self, method, kp_correction=True, kp_method='adaptive', ig_split=False, freq_split=None, 
                                           window_type=None, window_length=None, overlap=None, smoothing_bins=None):
         """
         Compute wave spectra and integral parameters for each burst in the measurement signal.
@@ -557,7 +559,7 @@ class WaveSpectralAnalyzer():
             burst_series = self.measured_signal[self.measured_signal["burstId"] == burst_id]
             burst_signal = burst_series[self.surface_level_column]
             freqs, spectrum = self._compute_spectrum_for_burst(burst_signal, method, 
-                                                            kp_correction, window_type, 
+                                                            kp_correction, kp_method, window_type, 
                                                             window_length, smoothing_bins)
             wave_spectra_data["S"].append(spectrum)
 
