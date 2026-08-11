@@ -231,6 +231,12 @@ class WaveSpectralAnalyzer():
         PSD_Kp = PSD / (Kp**2)
         PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,24)
         minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5)
+        if len(minima_idx) == 0:
+            print("No minima found in the smoothed PSD. Reducing prominence iteratively by 0.01.")
+            k=0
+            while len(minima_idx) == 0:
+                minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5-k*0.01)
+                k+=1
         last_min_idx = minima_idx[-1]
         f_maxpcorr = freqs[last_min_idx]
 
