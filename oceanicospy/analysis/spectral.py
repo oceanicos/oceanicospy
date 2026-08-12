@@ -140,6 +140,8 @@ class WaveSpectralAnalyzer():
          """
         if self._check_burst_length(burst_signal):
             burst_signal = burst_signal.values
+            #Detrend signal
+            burst_signal = burst_signal - np.mean(burst_signal)
             if method == 'fft':
                 result = self.compute_spectrum_from_direct_fft(burst_signal, kp_correction, kp_method)
             elif method == 'welch':
