@@ -147,6 +147,8 @@ class WaveTemporalAnalyzer:
             Kp = np.cosh(k * sensor_height) / np.cosh(k * anchoring_depth) 
             Kp_min = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \
                     (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth)) 
+            if Kp_min < 0.15:
+                Kp_min = 0.15
             # Clip Kp to avoid unrealistic amplification of wave heights for very long waves
             Kp = np.clip(Kp, Kp_min, 1)
 
