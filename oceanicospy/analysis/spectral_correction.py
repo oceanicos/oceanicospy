@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import pandas as pd
 import pywt
-from scipy.signal import find_peaks,welch
+from scipy.signal import welch
 
 from ..utils import wave_props,extras
 
@@ -153,7 +153,7 @@ class WaveSpectralAnalyzer():
             if (kp_correction & return_kp):
                 freqs, spectrum, _, Kp = result  # (freqs, PSD_kp, PSD, Kp)
             elif kp_correction:
-                freqs, spectrum, _ = result  # (freqs, PSD_kp, PSD)
+                freqs, spectrum, _ = result
             else:
                 freqs, spectrum = result  # (freqs, PSD)
 
@@ -185,18 +185,33 @@ class WaveSpectralAnalyzer():
         PSD_smoothed = np.convolve(PSD, kernel, mode='same')
         return PSD_smoothed
 
-    def _compute_nonadaptive_Kp(self,freqs):
+    def _compute_nonadaptive_Kp(self,freqs,kp_min_predefined=0.15):
         """Compute non-adaptive Kp correction factor based on linear wave theory.
 
         Parameters
         ----------
         freqs : ndarray
             Frequency array corresponding to the PSD.
-        
+        kp_min_predefined : float, optional
+            User-defined floor for Kp, applied as ``max(Kpmin_L, kp_min_predefined)``
+            following the practical recommendation of Karimpour & Chen (2017),
+            section 3.1.5. Default is 0.15, the value suggested in the paper to
+            avoid amplifying the recorded data by more than ~6x.
+
         Returns
         -------
         Kp : ndarray
             The non-adaptive Kp correction factor for each frequency.
+
+        Notes
+        -----
+        ``Kpmin_L`` (Eq. 6 in [1]_) is the theoretical minimum derived from linear
+        wave theory alone. The paper notes that using ``Kpmin_L`` on its own can be
+        overly permissive once waves become non-sinusoidal (intermediate/shallow
+        water), so the practical approach combines it with a predefined floor.
+
+        .. [1] Karimpour, A., & Chen, Q. (2017). Wind wave analysis in depth limited
+            water using OCEANLYZ, A MATLAB toolbox. Computers & Geosciences, 106, 181-189.
         """
 
         total_depth = self.anchoring_depth + self.sensor_height
@@ -206,60 +221,111 @@ class WaveSpectralAnalyzer():
         if freqs[0]==0:
             Kp[0] = 1
 
-        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
-                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
+        # Kpmin_L (Eq. 6): theoretical floor from linear wave theory, evaluated at
+        # kmax_L = pi/(h-ds) = pi/anchoring_depth (Eq. 7-c geometry).
+        kmax_L = np.pi / self.anchoring_depth
+        Kp_min_L = (np.cosh(kmax_L * self.sensor_height)) / (np.cosh(kmax_L * total_depth))
+
+        # Practical floor (section 3.1.5): max(Kpmin_L, predefined Kpmin)
+        Kp_min = max(Kp_min_L, kp_min_predefined)
         Kp = np.clip(Kp, Kp_min, 1)
         return Kp
     
-    def _compute_adaptive_Kp(self,freqs,PSD):
+    def _compute_adaptive_Kp(self,freqs,PSD,fminpcorr=0.05,smoothing_bins=24):
         """Compute adaptive Kp correction factor based on the spectrum shape.
+
+        Follows the second adaptive method described in section 3.2 of [1]_
+        (also implemented in OCEANLYZ's ``PcorFFTFun``): the spectrum is
+        corrected by Kp without a floor, and the frequency where the
+        corrected tail reaches a minimum before rising again is taken as
+        ``fmaxpcorr``. Beyond that frequency, Kp is held constant
+        (equivalent to OCEANLYZ's ``pressureattenuation='all'``).
+
         Parameters
         ----------
         freqs : ndarray
             Frequency array corresponding to the PSD.
         PSD : ndarray
             Power spectral density to be corrected.
+        fminpcorr : float, optional
+            Minimum frequency considered when locating the spectral peak fp,
+            mirroring OCEANLYZ's ``fminpcorr`` input. Default is 0.05 Hz.
+        smoothing_bins : int, optional
+            Moving-average window used to smooth the spectrum before peak/
+            minimum detection. Default is 24 bins.
 
         Returns
         -------
         Kp_final : ndarray
             The adaptive Kp correction factor for each frequency.
+
+        Notes
+        -----
+        Two safeguards from [1]_ are enforced that the previous
+        implementation lacked:
+
+        1. The search for the tail minimum is bounded above by
+           ``fmaxpcorr_L`` (Eq. 7-c), the maximum frequency linear wave
+           theory allows Kp to be applied to. Without this bound, noisy
+           spectra could push ``fmaxpcorr`` past the point where the
+           correction is physically meaningful.
+        2. The minimum is searched for starting at the spectral peak fp
+           (first minimum after the peak, as in ``PcorFFTFun``), not the
+           last minimum found across the whole spectrum, which could
+           otherwise pick up 2nd-harmonic peaks or far-tail noise.
+
+        .. [1] Karimpour, A., & Chen, Q. (2017). Wind wave analysis in depth limited
+            water using OCEANLYZ, A MATLAB toolbox. Computers & Geosciences, 106, 181-189.
         """
 
         total_depth = self.anchoring_depth + self.sensor_height
         L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
         k = 2*np.pi/L
         Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
-        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
-                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
-
         if freqs[0] == 0:
             Kp[0] = 1
 
-        PSD_Kp = PSD / (Kp**2)
-        PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,24)
-        minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5)
-        if len(minima_idx) == 0:
-            print("No minima found in the smoothed PSD. Reducing prominence iteratively by 0.01.")
-            k=0
-            while len(minima_idx) == 0:
-                minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5-k*0.01)
-                k+=1
-        last_min_idx = minima_idx[-1]
-        f_maxpcorr = freqs[last_min_idx]
+        # fmaxpcorr_L (Eq. 7-c) and its associated Kpmin_L (Eq. 6): the linear-theory
+        # ceiling that an adaptive fmaxpcorr must never exceed. kmax_L = pi/(h-ds).
+        kmax_L = np.pi / self.anchoring_depth
+        f_maxpcorr_L = (1/(2*np.pi)) * np.sqrt(9.81 * kmax_L * np.tanh(kmax_L * total_depth))
+        Kp_min_L = np.cosh(kmax_L * self.sensor_height) / np.cosh(kmax_L * total_depth)
 
-        # Assuming f_maxpcorr is always lower than fcmax and fmax_Kp
-        total_depth = self.anchoring_depth + self.sensor_height
+        PSD_Kp = PSD / (Kp**2)
+        PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,smoothing_bins)
+        PSD_smoothed = self._smooth_psd_spectrum(PSD,smoothing_bins)
+
+        # Locate fp on the RAW (uncorrected) smoothed spectrum, at or above fminpcorr,
+        # so the peak location isn't biased by the Kp amplification itself.
+        idx_fminpcorr = np.max(np.nonzero(freqs <= fminpcorr)[0]) if np.any(freqs <= fminpcorr) else 0
+        idx_peak = idx_fminpcorr + np.argmax(PSD_smoothed[idx_fminpcorr:])
+
+        # Upper bound for the search window: fmaxpcorr_L.
+        if np.any(freqs <= f_maxpcorr_L):
+            idx_fmaxpcorrL = np.max(np.nonzero(freqs <= f_maxpcorr_L)[0])
+        else:
+            idx_fmaxpcorrL = len(freqs) - 1
+        if idx_fmaxpcorrL <= idx_peak:
+            idx_fmaxpcorrL = min(idx_peak + 1, len(freqs) - 1)
+
+        # First minimum of the Kp-corrected spectrum between fp and fmaxpcorr_L.
+        search_window = PSD_Kp_smoothed[idx_peak:idx_fmaxpcorrL + 1]
+        idx_fmaxpcorr = idx_peak + np.argmin(search_window)
+        f_maxpcorr = freqs[idx_fmaxpcorr]
+
+        # Kp value held constant beyond fmaxpcorr, never below the theoretical Kpmin_L.
         L_max = wave_props.wavelength(1/f_maxpcorr, total_depth)
         k_max = 2*np.pi/L_max
-        Kp_min = np.cosh(k_max * self.sensor_height) / np.cosh(k_max * total_depth)
+        Kp_floor = np.cosh(k_max * self.sensor_height) / np.cosh(k_max * total_depth)
+        Kp_floor = max(Kp_floor, Kp_min_L)
 
         Kp_final = Kp.copy()
-        Kp_final[0:last_min_idx] =  Kp[0:last_min_idx]
-        Kp_final[last_min_idx:] = Kp_min
+        Kp_final[idx_fmaxpcorr:] = Kp_floor
+        if freqs[0] == 0:
+            Kp_final[0] = 1
         return Kp_final
     
-    def correction_by_Kp(self,freqs,PSD,kp_method='adaptive', return_kp=False):
+    def correction_by_Kp(self,freqs,PSD,kp_method='adaptive',return_kp=False,fminpcorr=0.05,kp_min_predefined=0.15,smoothing_bins=24):
         """Apply Kp correction to the power spectral density (PSD) based on the specified method.
         
         Parameters
@@ -270,6 +336,15 @@ class WaveSpectralAnalyzer():
             Power spectral density to be corrected.
         kp_method : str, optional
             Method for Kp correction: ``'adaptive'`` or ``'nonadaptive'``. Default is ``'adaptive'``
+        fminpcorr : float, optional
+            Minimum frequency considered when locating the spectral peak fp in the
+            adaptive method. Default is 0.05 Hz. Unused if ``kp_method='nonadaptive'``.
+        kp_min_predefined : float, optional
+            Predefined floor combined with Kpmin_L (``max(Kpmin_L, kp_min_predefined)``)
+            in the nonadaptive method. Default is 0.15. Unused if ``kp_method='adaptive'``.
+        smoothing_bins : int, optional
+            Moving-average window used before peak/minimum detection in the adaptive
+            method. Default is 24 bins. Unused if ``kp_method='nonadaptive'``.
         
         Returns
         -------
@@ -289,9 +364,9 @@ class WaveSpectralAnalyzer():
         """
         
         if kp_method == 'nonadaptive':
-            Kp = self._compute_nonadaptive_Kp(freqs)
+            Kp = self._compute_nonadaptive_Kp(freqs,kp_min_predefined=kp_min_predefined)
         else:
-            Kp = self._compute_adaptive_Kp(freqs,PSD)
+            Kp = self._compute_adaptive_Kp(freqs,PSD,fminpcorr=fminpcorr,smoothing_bins=smoothing_bins)
         PSD_Kp = PSD / (Kp**2)
 
         if return_kp:
@@ -507,7 +582,7 @@ class WaveSpectralAnalyzer():
         if kp_correction == False:
             return freqs,PSD
         else:
-            return self.correction_by_Kp(freqs,PSD,kp_method, return_kp)
+            return self.correction_by_Kp(freqs,PSD,kp_method,return_kp)
 
     def get_spectra_and_params_for_bursts(self, method, kp_correction=True, kp_method='adaptive', return_kp=False, ig_split=False, freq_split=None, 
                                           window_type=None, window_length=None, overlap=None, smoothing_bins=None):
@@ -610,7 +685,6 @@ class WaveSpectralAnalyzer():
         if return_kp:
             wave_spectra_data["Kp"] = np.array(wave_spectra_data["Kp"])
         wave_params_data = pd.DataFrame(wave_params_data, index=hourly_timeindex)
-
         return wave_spectra_data, wave_params_data
 
     def compute_wavelet_scalograms(self,mother_wavelet,points_scale,burst_mode=False,window_length=None,overlap=None):

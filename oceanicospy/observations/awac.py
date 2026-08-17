@@ -2,8 +2,9 @@ import glob
 import re
 import numpy as np
 import pandas as pd
-
+from scipy.signal import detrend
 from ..utils import wave_props
+from ..utils import constants
 
 class AWAC:
     """
@@ -283,7 +284,7 @@ class AWAC:
         Pressure columns are converted from dbar to bar and renamed to 'pressure[bar]'.
         """
 
-        relevant_columns = [column for column in df.columns if 'Pressure' in column or 'Velocity' in column or 'burst' in column]
+        relevant_columns = [column for column in df.columns if 'Pressure' in column or 'Velocity' in column or 'burst' in column or 'AST' in column]
         df = df[relevant_columns].copy()
 
         renamed_columns = []
@@ -348,7 +349,7 @@ class AWAC:
             df = pd.concat(burst_list, ignore_index=True)
         return df
     
-    def get_clean_wave_records(self,from_single_wad=True):
+    def get_clean_wave_records(self,from_single_wad=True, detrended=False):
         """
         Return a cleaned, time-indexed wave DataFrame trimmed to the deployment window.
  
@@ -387,6 +388,10 @@ class AWAC:
             df_clean = self._parse_dates_and_trim(df_raw)
             df_clean['burstId'] = pd.factorize(df_clean.index.floor('h'))[0] + 1
             df_clean = self._rename_columns(df_clean)
+            df_clean = self._compute_depth_from_pressure(df_clean)
+            df_clean['eta[m]'] = df_clean.groupby('burstId')['depth[m]'].transform(lambda x: x - x.mean())
+            if detrended:
+                df_clean['eta[m]'] = df_clean.groupby('burstId')['eta[m]'].transform(lambda x: detrend(x.values, type='linear'))
         else:
             wave_setup = self._read_wave_setup()
 
@@ -406,6 +411,10 @@ class AWAC:
             df_clean = df_raw.set_index(full_index)
             df_clean = self._parse_dates_and_trim(df_clean)
             df_clean = self._rename_columns(df_clean)
+            df_clean = self._compute_depth_from_pressure(df_clean)
+            df_clean['eta[m]'] = df_clean.groupby('burstId')['depth[m]'].transform(lambda x: x - x.mean())
+            if detrended:
+                df_clean['eta[m]'] = df_clean.groupby('burstId')['eta[m]'].transform(lambda x: detrend(x.values, type='linear'))
 
         return df_clean
 
@@ -477,3 +486,32 @@ class AWAC:
             return x_component_clean,y_component_clean,current_speed,current_dir
         else:
             return x_component_clean,y_component_clean
+
+    def _compute_depth_from_pressure(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Computes depth from pressure using the hydrostatic formula
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing the pressure data.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            The DataFrame with an added 'depth[m]' column computed from pressure if it doesn't exist, and with an 
+            auxiliary 'depth_aux[m]' column if 'depth[m]' already exists for comparison and their difference is over 0.1 m.
+
+        Notes
+        -----
+        The depth is computed using the formula: $depth = (absolute pressure) / (density * gravity)$
+        As AWAC register the absolute is not necessary to subtract the atmospheric pressure.
+        """
+
+        depth_computed = ((df['pressure[bar]']) * 1e5) / (constants.WATER_DENSITY * constants.GRAVITY)
+        if 'depth[m]' not in df.columns:
+            df['depth[m]'] = depth_computed
+        else:
+            df['depth_aux[m]'] = depth_computed     
+            if (df['depth_aux[m]'] - df['depth[m]']).abs().max() <= 0.1:
+                df = df.drop(columns=['depth_aux[m]'])
+        return df
