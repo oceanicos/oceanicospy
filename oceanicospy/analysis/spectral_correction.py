@@ -214,7 +214,7 @@ class WaveSpectralAnalyzer():
             water using OCEANLYZ, A MATLAB toolbox. Computers & Geosciences, 106, 181-189.
         """
 
-        total_depth = self.anchoring_depth + self.sensor_height
+        total_depth = self.anchoring_depth
         L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
         k = 2*np.pi/L
         Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
@@ -223,7 +223,7 @@ class WaveSpectralAnalyzer():
 
         # Kpmin_L (Eq. 6): theoretical floor from linear wave theory, evaluated at
         # kmax_L = pi/(h-ds) = pi/anchoring_depth (Eq. 7-c geometry).
-        kmax_L = np.pi / self.anchoring_depth
+        kmax_L = np.pi / (self.anchoring_depth - self.sensor_height)
         Kp_min_L = (np.cosh(kmax_L * self.sensor_height)) / (np.cosh(kmax_L * total_depth))
 
         # Practical floor (section 3.1.5): max(Kpmin_L, predefined Kpmin)
@@ -278,7 +278,7 @@ class WaveSpectralAnalyzer():
             water using OCEANLYZ, A MATLAB toolbox. Computers & Geosciences, 106, 181-189.
         """
 
-        total_depth = self.anchoring_depth + self.sensor_height
+        total_depth = self.anchoring_depth
         L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
         k = 2*np.pi/L
         Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
@@ -287,7 +287,7 @@ class WaveSpectralAnalyzer():
 
         # fmaxpcorr_L (Eq. 7-c) and its associated Kpmin_L (Eq. 6): the linear-theory
         # ceiling that an adaptive fmaxpcorr must never exceed. kmax_L = pi/(h-ds).
-        kmax_L = np.pi / self.anchoring_depth
+        kmax_L = np.pi / (self.anchoring_depth - self.sensor_height)
         f_maxpcorr_L = (1/(2*np.pi)) * np.sqrt(9.81 * kmax_L * np.tanh(kmax_L * total_depth))
         Kp_min_L = np.cosh(kmax_L * self.sensor_height) / np.cosh(kmax_L * total_depth)
 
