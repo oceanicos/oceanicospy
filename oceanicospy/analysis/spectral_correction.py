@@ -108,7 +108,7 @@ class WaveSpectralAnalyzer():
             measured_signal = measured_signal[~measured_signal["burstId"].isin(burst_to_delete)]
         return measured_signal       
         
-    def _compute_spectrum_for_burst(self, burst_signal, method, kp_correction, kp_method, return_kp, window_type, window_length, smoothing_bins):
+    def _compute_spectrum_for_burst(self, burst_signal, method, kp_correction, kp_method, return_kp, window_type, window_length, smoothing_bins, return_diagnostics=False):
         """Calculate the spectrum for the burst using the specified method and applying Kp correction if needed.
         
         Parameters
@@ -125,6 +125,9 @@ class WaveSpectralAnalyzer():
             The length of the window in samples for Welch's method.
         smoothing_bins : int
             The number of bins for moving-average smoothing (Welch only).
+        return_diagnostics : bool, optional
+            If True (requires ``kp_correction=True`` and ``return_kp=True``), also
+            returns the Kp diagnostics dict. Default is False.
         
         Returns
          -------
@@ -132,6 +135,10 @@ class WaveSpectralAnalyzer():
              The frequency array corresponding to the spectrum.
          spectrum : ndarray
              The computed power spectral density (PSD) for the burst.
+         Kp : ndarray, optional
+             Only returned if ``return_kp=True``.
+         diagnostics : dict, optional
+             Only returned if ``return_kp=True`` and ``return_diagnostics=True``.
             
         Raises        
         ------
@@ -142,15 +149,19 @@ class WaveSpectralAnalyzer():
             burst_signal = burst_signal.values
             #Detrend signal
             burst_signal = burst_signal - np.mean(burst_signal)
+            want_diagnostics = kp_correction and return_kp and return_diagnostics
             if method == 'fft':
-                result = self.compute_spectrum_from_direct_fft(burst_signal, kp_correction, kp_method, return_kp)
+                result = self.compute_spectrum_from_direct_fft(burst_signal, method, kp_correction, kp_method, return_kp, want_diagnostics)
             elif method == 'welch':
                 # welch's method requires at least 2 segments, so we set the default overlap to 50% of the window length if not provided
-                result = self.compute_spectrum_from_welch(burst_signal, kp_correction, kp_method, return_kp, window_type, window_length)
+                result = self.compute_spectrum_from_welch(burst_signal, method, kp_correction, kp_method, return_kp, window_type, window_length,
+                                                            return_diagnostics=want_diagnostics)
             else:
                 raise ValueError(f"Unknown method: {method}. Use 'fft' or 'welch'.")
 
-            if (kp_correction & return_kp):
+            if want_diagnostics:
+                freqs, spectrum, _, Kp, diagnostics = result  # (freqs, PSD_kp, PSD, Kp, diagnostics)
+            elif (kp_correction & return_kp):
                 freqs, spectrum, _, Kp = result  # (freqs, PSD_kp, PSD, Kp)
             elif kp_correction:
                 freqs, spectrum, _ = result
@@ -161,7 +172,9 @@ class WaveSpectralAnalyzer():
             if method == 'welch' and smoothing_bins is not None:
                 spectrum = self._smooth_psd_spectrum(spectrum, smoothing_bins)
 
-            if return_kp:
+            if want_diagnostics:
+                return freqs, spectrum, Kp, diagnostics
+            elif return_kp:
                 return freqs, spectrum, Kp
             else:
                 return freqs, spectrum
@@ -185,23 +198,45 @@ class WaveSpectralAnalyzer():
         PSD_smoothed = np.convolve(PSD, kernel, mode='same')
         return PSD_smoothed
 
-    def _compute_nonadaptive_Kp(self,freqs,kp_min_predefined=0.15):
+    def _compute_nonadaptive_Kp(self,freqs,method, PSD=None,kp_min_predefined=0.15,smoothing_bins=24,return_diagnostics=False):
         """Compute non-adaptive Kp correction factor based on linear wave theory.
 
         Parameters
         ----------
         freqs : ndarray
             Frequency array corresponding to the PSD.
+        PSD : ndarray, optional
+            Power spectral density. Not used to compute Kp itself (the
+            non-adaptive method is purely geometric), but if provided and
+            ``return_diagnostics=True`` it is used to build the smoothed
+            diagnostic spectra.
         kp_min_predefined : float, optional
             User-defined floor for Kp, applied as ``max(Kpmin_L, kp_min_predefined)``
             following the practical recommendation of Karimpour & Chen (2017),
             section 3.1.5. Default is 0.15, the value suggested in the paper to
             avoid amplifying the recorded data by more than ~6x.
+        smoothing_bins : int, optional
+            Moving-average window used to build the diagnostic spectra when
+            ``return_diagnostics=True``. Default is 24 bins.
+        return_diagnostics : bool, optional
+            If True, also returns a dict with the diagnostic spectra and the
+            frequency values involved in the correction. Default is False.
 
         Returns
         -------
         Kp : ndarray
             The non-adaptive Kp correction factor for each frequency.
+        diagnostics : dict, optional
+            Only returned if ``return_diagnostics=True``. Keys:
+
+            - ``PSD_smoothed``: smoothed raw PSD (``None`` if ``PSD`` not provided).
+            - ``PSD_Kp_smoothed``: smoothed PSD corrected by the *unclipped* Kp
+              (``None`` if ``PSD`` not provided).
+            - ``fmaxpcorr``: frequency at which the floor starts being applied
+              (``None`` if the floor is never reached within ``freqs``).
+            - ``fmaxpcorr_L``: theoretical ceiling from linear wave theory (Eq. 7-c).
+            - ``Kp_min_L``: theoretical floor from linear wave theory (Eq. 6).
+            - ``Kp_min``: floor actually applied, ``max(Kp_min_L, kp_min_predefined)``.
 
         Notes
         -----
@@ -217,21 +252,51 @@ class WaveSpectralAnalyzer():
         total_depth = self.anchoring_depth
         L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
         k = 2*np.pi/L
-        Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
+        Kp_raw = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
         if freqs[0]==0:
-            Kp[0] = 1
+            Kp_raw[0] = 1
 
         # Kpmin_L (Eq. 6): theoretical floor from linear wave theory, evaluated at
-        # kmax_L = pi/(h-ds) = pi/anchoring_depth (Eq. 7-c geometry).
+        # kmax_L = pi/(h-ds) (Eq. 7-c geometry).
         kmax_L = np.pi / (self.anchoring_depth - self.sensor_height)
+        f_maxpcorr_L = (1/(2*np.pi)) * np.sqrt(9.81 * kmax_L * np.tanh(kmax_L * total_depth))
         Kp_min_L = (np.cosh(kmax_L * self.sensor_height)) / (np.cosh(kmax_L * total_depth))
 
         # Practical floor (section 3.1.5): max(Kpmin_L, predefined Kpmin)
         Kp_min = max(Kp_min_L, kp_min_predefined)
-        Kp = np.clip(Kp, Kp_min, 1)
-        return Kp
+        Kp = np.clip(Kp_raw, Kp_min, 1)
+
+        if not return_diagnostics:
+            return Kp
+
+        # Frequency at which the floor first kicks in (Kp_raw drops to/below Kp_min).
+        clipped_mask = Kp_raw <= Kp_min
+        if np.any(clipped_mask):
+            fmaxpcorr = freqs[np.argmax(clipped_mask)]
+        else:
+            fmaxpcorr = None
+
+        if (PSD is not None) & (method is not 'welch'):
+            PSD_smoothed = self._smooth_psd_spectrum(PSD, smoothing_bins)
+            PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD / (Kp_raw**2), smoothing_bins)
+        elif method is 'welch':
+            PSD_smoothed = PSD
+            PSD_Kp_smoothed = PSD / (Kp_raw**2)
+        else:
+            PSD_smoothed = None
+            PSD_Kp_smoothed = None
+
+        diagnostics = {
+            'PSD_smoothed': PSD_smoothed,
+            'PSD_Kp_smoothed': PSD_Kp_smoothed,
+            'fmaxpcorr': fmaxpcorr,
+            'fmaxpcorr_L': f_maxpcorr_L,
+            'Kp_min_L': Kp_min_L,
+            'Kp_min': Kp_min,
+        }
+        return Kp, diagnostics
     
-    def _compute_adaptive_Kp(self,freqs,PSD,fminpcorr=0.05,smoothing_bins=24):
+    def _compute_adaptive_Kp(self,freqs,PSD,method,fminpcorr=0.05,smoothing_bins=24,return_diagnostics=False):
         """Compute adaptive Kp correction factor based on the spectrum shape.
 
         Follows the second adaptive method described in section 3.2 of [1]_
@@ -253,11 +318,26 @@ class WaveSpectralAnalyzer():
         smoothing_bins : int, optional
             Moving-average window used to smooth the spectrum before peak/
             minimum detection. Default is 24 bins.
+        return_diagnostics : bool, optional
+            If True, also returns a dict with the diagnostic spectra and the
+            frequency values involved in the correction. Default is False.
 
         Returns
         -------
         Kp_final : ndarray
             The adaptive Kp correction factor for each frequency.
+        diagnostics : dict, optional
+            Only returned if ``return_diagnostics=True``. Keys:
+
+            - ``PSD_smoothed``: smoothed raw (uncorrected) PSD, used to locate ``fp``.
+            - ``PSD_Kp_smoothed``: smoothed PSD corrected by the *unclipped* Kp,
+              used to search for ``fmaxpcorr``.
+            - ``fminpcorr``: lower frequency bound used to search for ``fp``.
+            - ``fp``: detected spectral peak frequency.
+            - ``fmaxpcorr``: detected adaptive cutoff frequency.
+            - ``fmaxpcorr_L``: theoretical ceiling from linear wave theory (Eq. 7-c).
+            - ``Kp_min_L``: theoretical floor from linear wave theory (Eq. 6).
+            - ``Kp_floor``: Kp value actually held constant beyond ``fmaxpcorr``.
 
         Notes
         -----
@@ -292,8 +372,12 @@ class WaveSpectralAnalyzer():
         Kp_min_L = np.cosh(kmax_L * self.sensor_height) / np.cosh(kmax_L * total_depth)
 
         PSD_Kp = PSD / (Kp**2)
-        PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,smoothing_bins)
-        PSD_smoothed = self._smooth_psd_spectrum(PSD,smoothing_bins)
+        if method is not 'welch':
+            PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,smoothing_bins)
+            PSD_smoothed = self._smooth_psd_spectrum(PSD,smoothing_bins)
+        else:
+            PSD_Kp_smoothed = PSD_Kp
+            PSD_smoothed = PSD
 
         # Locate fp on the RAW (uncorrected) smoothed spectrum, at or above fminpcorr,
         # so the peak location isn't biased by the Kp amplification itself.
@@ -323,9 +407,23 @@ class WaveSpectralAnalyzer():
         Kp_final[idx_fmaxpcorr:] = Kp_floor
         if freqs[0] == 0:
             Kp_final[0] = 1
-        return Kp_final
+
+        if not return_diagnostics:
+            return Kp_final
+
+        diagnostics = {
+            'PSD_smoothed': PSD_smoothed,
+            'PSD_Kp_smoothed': PSD_Kp_smoothed,
+            'fminpcorr': fminpcorr,
+            'fp': freqs[idx_peak],
+            'fmaxpcorr': f_maxpcorr,
+            'fmaxpcorr_L': f_maxpcorr_L,
+            'Kp_min_L': Kp_min_L,
+            'Kp_floor': Kp_floor,
+        }
+        return Kp_final, diagnostics
     
-    def correction_by_Kp(self,freqs,PSD,kp_method='adaptive',return_kp=False,fminpcorr=0.05,kp_min_predefined=0.15,smoothing_bins=24):
+    def correction_by_Kp(self,freqs,PSD,method, kp_method='adaptive',return_kp=False,return_diagnostics=False,fminpcorr=0.05,kp_min_predefined=0.15,smoothing_bins=24):
         """Apply Kp correction to the power spectral density (PSD) based on the specified method.
         
         Parameters
@@ -336,6 +434,14 @@ class WaveSpectralAnalyzer():
             Power spectral density to be corrected.
         kp_method : str, optional
             Method for Kp correction: ``'adaptive'`` or ``'nonadaptive'``. Default is ``'adaptive'``
+        return_kp : bool, optional
+            If True, also returns the Kp array used for the correction. Default is False.
+        return_diagnostics : bool, optional
+            If True (requires ``return_kp=True``), also returns a dict with the
+            diagnostic spectra (``PSD_smoothed``, ``PSD_Kp_smoothed``) and the
+            frequency values involved in the correction (``fminpcorr``, ``fp``,
+            ``fmaxpcorr``, ``fmaxpcorr_L``, etc. — see ``_compute_adaptive_Kp``/
+            ``_compute_nonadaptive_Kp`` for the exact keys per method). Default is False.
         fminpcorr : float, optional
             Minimum frequency considered when locating the spectral peak fp in the
             adaptive method. Default is 0.05 Hz. Unused if ``kp_method='nonadaptive'``.
@@ -343,8 +449,8 @@ class WaveSpectralAnalyzer():
             Predefined floor combined with Kpmin_L (``max(Kpmin_L, kp_min_predefined)``)
             in the nonadaptive method. Default is 0.15. Unused if ``kp_method='adaptive'``.
         smoothing_bins : int, optional
-            Moving-average window used before peak/minimum detection in the adaptive
-            method. Default is 24 bins. Unused if ``kp_method='nonadaptive'``.
+            Moving-average window used before peak/minimum detection (adaptive) or
+            to build the diagnostic spectra (nonadaptive). Default is 24 bins.
         
         Returns
         -------
@@ -354,6 +460,10 @@ class WaveSpectralAnalyzer():
             The Kp-corrected power spectral density.
         PSD : ndarray
             The original power spectral density (returned for reference).
+        Kp : ndarray, optional
+            Only returned if ``return_kp=True``.
+        diagnostics : dict, optional
+            Only returned if ``return_kp=True`` and ``return_diagnostics=True``.
             
         Notes
         -----
@@ -363,13 +473,26 @@ class WaveSpectralAnalyzer():
             A MATLAB toolbox. Computers & Geosciences, 106, 181-189. https://doi.org/10.1016/j.cageo.2017.06.010
         """
         
+        want_diagnostics = return_kp and return_diagnostics
+
         if kp_method == 'nonadaptive':
-            Kp = self._compute_nonadaptive_Kp(freqs,kp_min_predefined=kp_min_predefined)
+            result = self._compute_nonadaptive_Kp(freqs,method,PSD,kp_min_predefined=kp_min_predefined,
+                                                    smoothing_bins=smoothing_bins,return_diagnostics=want_diagnostics)
         else:
-            Kp = self._compute_adaptive_Kp(freqs,PSD,fminpcorr=fminpcorr,smoothing_bins=smoothing_bins)
+            result = self._compute_adaptive_Kp(freqs,PSD,method,fminpcorr=fminpcorr,smoothing_bins=smoothing_bins,
+                                                return_diagnostics=want_diagnostics)
+
+        if want_diagnostics:
+            Kp, diagnostics = result
+        else:
+            Kp = result
+            diagnostics = None
+
         PSD_Kp = PSD / (Kp**2)
 
-        if return_kp:
+        if want_diagnostics:
+            return freqs, PSD_Kp, PSD, Kp, diagnostics
+        elif return_kp:
             return freqs, PSD_Kp, PSD, Kp
         else:
             return freqs, PSD_Kp, PSD
@@ -499,7 +622,7 @@ class WaveSpectralAnalyzer():
         return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
     @extras.timing_decorator
-    def compute_spectrum_from_direct_fft(self,signal,kp_correction, kp_method, return_kp):
+    def compute_spectrum_from_direct_fft(self,signal,method, kp_correction, kp_method, return_kp, return_diagnostics=False):
         """
         Computes the density variance spectrum based on the Fast Fourier transform. 
         
@@ -509,6 +632,9 @@ class WaveSpectralAnalyzer():
             An array containing the signal
         kp_correction : bool
             If True, applies Kp correction to the spectrum.     
+        return_diagnostics : bool, optional
+            If True (requires ``return_kp=True``), also returns the Kp
+            diagnostics dict from ``correction_by_Kp``. Default is False.
         
         Returns
         -------
@@ -518,6 +644,10 @@ class WaveSpectralAnalyzer():
             Density variance spectrum    
         PSD_kp : ndarray (optional)
             Density variance spectrum corrected by Kp    
+        Kp : ndarray, optional
+            Only returned if ``return_kp=True``.
+        diagnostics : dict, optional
+            Only returned if ``return_kp=True`` and ``return_diagnostics=True``.
 
         Notes
         -----
@@ -540,10 +670,10 @@ class WaveSpectralAnalyzer():
         if kp_correction == False:
             return freqs,PSD
         else:
-            return self.correction_by_Kp(freqs,PSD,kp_method, return_kp)
+            return self.correction_by_Kp(freqs,PSD,method,kp_method,return_kp,return_diagnostics)
 
     @extras.timing_decorator
-    def compute_spectrum_from_welch(self,signal,kp_correction,kp_method,return_kp,window_type,window_length,overlap=None):
+    def compute_spectrum_from_welch(self,signal,method, kp_correction,kp_method,return_kp,window_type,window_length,overlap=None,return_diagnostics=False):
         """
         Compute PSD using Welch's method and smooth across frequency bins.
 
@@ -563,6 +693,9 @@ class WaveSpectralAnalyzer():
             Length of the Hamming window in samples.
         overlap: int, optional
             Number of overlapping samples between segments (default is half of window_length).
+        return_diagnostics : bool, optional
+            If True (requires ``return_kp=True``), also returns the Kp
+            diagnostics dict from ``correction_by_Kp``. Default is False.
 
         Returns
         -------
@@ -572,6 +705,10 @@ class WaveSpectralAnalyzer():
             Power spectral density.
         PSD_kp : ndarray (optional)
             Density variance spectrum corrected by Kp
+        Kp : ndarray, optional
+            Only returned if ``return_kp=True``.
+        diagnostics : dict, optional
+            Only returned if ``return_kp=True`` and ``return_diagnostics=True``.
         """
 
         freqs, PSD = welch(x=signal,fs=self.sampling_freq,window=window_type,
@@ -582,9 +719,9 @@ class WaveSpectralAnalyzer():
         if kp_correction == False:
             return freqs,PSD
         else:
-            return self.correction_by_Kp(freqs,PSD,kp_method,return_kp)
+            return self.correction_by_Kp(freqs,PSD,method, kp_method,return_kp,return_diagnostics)
 
-    def get_spectra_and_params_for_bursts(self, method, kp_correction=True, kp_method='adaptive', return_kp=False, ig_split=False, freq_split=None, 
+    def get_spectra_and_params_for_bursts(self, method, kp_correction=True, kp_method='adaptive', return_kp=False, return_diagnostics=False, ig_split=False, freq_split=None, 
                                           window_type=None, window_length=None, overlap=None, smoothing_bins=None):
         """
         Compute wave spectra and integral parameters for each burst in the measurement signal.
@@ -595,6 +732,15 @@ class WaveSpectralAnalyzer():
             Spectrum computation method: ``'fft'`` or ``'welch'``.
         kp_correction : bool, optional
             Whether to apply Kp pressure correction. Default is True.
+        return_kp : bool, optional
+            Whether to return the Kp array used for each burst. Default is False.
+        return_diagnostics : bool, optional
+            If True (requires ``kp_correction=True`` and ``return_kp=True``), also
+            collects the Kp diagnostics dict for each burst (smoothed spectra and
+            key frequencies — ``fminpcorr``, ``fp``, ``fmaxpcorr``, ``fmaxpcorr_L``,
+            etc.) under ``wave_spectra_data["diagnostics"]``, as a list with one
+            dict per burst, in the same order as ``wave_spectra_data["time"]``.
+            Default is False.
         ig_split : bool, optional
             Whether to compute infragravity and wind wave Hm0 separately. Default is False.
         freq_split : float, optional
@@ -617,6 +763,9 @@ class WaveSpectralAnalyzer():
             - ``freq``: ndarray of frequency values.
             - ``dir``: empty list (placeholder for directional info).
             - ``time``: DatetimeIndex of hourly timestamps.
+            - ``Kp``: ndarray of shape (n_bursts, n_freqs) (only if ``return_kp=True``).
+            - ``diagnostics``: list of dicts, one per burst (only if ``return_kp=True``
+              and ``return_diagnostics=True``).
         wave_params_data : pd.DataFrame
             Wave parameters indexed by time, with columns:
 
@@ -643,17 +792,24 @@ class WaveSpectralAnalyzer():
 
         wave_param_names = ["Hm0", "Hrms", "Hmean", "Tp", "Tm01", "Tm02"]
         
+        want_diagnostics = kp_correction and return_kp and return_diagnostics
+
         wave_params_data = {param: np.zeros(len(hourly_timeindex)) for param in wave_param_names}
+        wave_spectra_data = {"S": [], "dir": [], "freq": None, "time": hourly_timeindex}
         if return_kp:
-            wave_spectra_data = {"S": [], "dir": [], "freq": None, "Kp": [], "time": hourly_timeindex}
-        else:
-            wave_spectra_data = {"S": [], "dir": [], "freq": None, "time": hourly_timeindex}
+            wave_spectra_data["Kp"] = []
+        if want_diagnostics:
+            wave_spectra_data["diagnostics"] = []
         wave_params_data["time"] = hourly_timeindex
 
         for idx, burst_id in enumerate(self.measured_signal["burstId"].unique()):
             burst_series = self.measured_signal[self.measured_signal["burstId"] == burst_id]
             burst_signal = burst_series[self.surface_level_column]
-            if return_kp:
+            if want_diagnostics:
+                freqs, spectrum, Kp, diagnostics = self._compute_spectrum_for_burst(burst_signal, method, 
+                                                kp_correction, kp_method, return_kp, window_type, 
+                                                window_length, smoothing_bins, return_diagnostics)
+            elif return_kp:
                 freqs, spectrum, Kp = self._compute_spectrum_for_burst(burst_signal, method, 
                                                 kp_correction, kp_method, return_kp, window_type, 
                                                 window_length, smoothing_bins)
@@ -665,6 +821,8 @@ class WaveSpectralAnalyzer():
             wave_spectra_data["S"].append(spectrum)
             if return_kp:
                 wave_spectra_data["Kp"].append(Kp)
+            if want_diagnostics:
+                wave_spectra_data["diagnostics"].append(diagnostics)
 
             # Compute wave parameters
             wave_params = self.get_wave_params_from_spectrum(spectrum, freqs)
