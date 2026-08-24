@@ -42,7 +42,7 @@ class CaseRunner():
         """
         self.dict_comp_data['outputfilepath'] = filename
 
-    def write_output_points(self, filename=None):
+    def write_output_points(self, filename=None, delimiter=None):
         """
         Load output point coordinates from a text file and register them.
 
@@ -64,7 +64,7 @@ class CaseRunner():
             points_file = None
 
         if points_file:
-            points_data = np.loadtxt(points_file)
+            points_data = np.loadtxt(points_file, delimiter=delimiter)
             self.dict_comp_data['len_points'] = len(points_data)
             string_points = [f'{point[0]} {point[1]}\n' for point in points_data]
             string_points[-1] = string_points[-1].strip()  # remove trailing newline
