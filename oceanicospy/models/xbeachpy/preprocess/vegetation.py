@@ -40,7 +40,7 @@ class Vegetation():
         - ``'length'`` (*float*) — alongshore extent of the patch in metres.
     """
 
-    def __init__(self, dict_species, dict_locations, *args, **kwargs):
+    def __init__(self, dict_species, dict_locations, run_path, xfile_name, *args, **kwargs):
         """
         Parameters
         ----------
@@ -51,6 +51,8 @@ class Vegetation():
         """
         self.dict_species = dict_species
         self.dict_locations = dict_locations
+        self.run_path = run_path
+        self.xfile_name = xfile_name
         self.dict_veggie = {}
 
     def definition_species(self):
@@ -63,9 +65,9 @@ class Vegetation():
         ``vegetation_file`` in :attr:`dict_veggie` for later use by
         :meth:`fill_vegetation_section`.
         """
-        os.system(f'touch {self.dict_folders["run"]}veggielist.txt')
+        os.system(f'touch {self.run_path}veggielist.txt')
 
-        with open(f'{self.dict_folders["run"]}veggielist.txt', 'w') as f:
+        with open(f'{self.run_path}veggielist.txt', 'w') as f:
             for specie in self.dict_species.keys():
                 f.write(f'{specie}.txt\n')
 
@@ -87,7 +89,7 @@ class Vegetation():
         so that XBeach can parse multi-layer inputs (e.g. stem density per layer).
         """
         for specie in self.dict_species.keys():
-            with open(f'{self.dict_folders["run"]}{specie}.txt', 'w') as f:
+            with open(f'{self.run_path}{specie}.txt', 'w') as f:
                 for key, value in self.dict_species[specie].items():
                     if type(value) == list:
                         value_to_write = ' '.join([str(i) for i in value])
@@ -112,7 +114,7 @@ class Vegetation():
         the grid: ``abscissa_start = max(x) + loc``.  Negative ``loc`` values
         therefore place the patch seaward of the shoreline.
         """
-        x = np.genfromtxt(f'{self.dict_folders["run"]}x_profile.grd')
+        x = np.genfromtxt(f'{self.run_path}{self.xfile_name}')
         max_x = np.nanmax(x)
         veggie_locs = np.zeros(x.shape)
         for idx, dic_space in enumerate(self.dict_locations.values()):
@@ -122,7 +124,7 @@ class Vegetation():
             index_start = np.argmin(np.abs(x - abscisa_start))
             veggie_locs[index_start:index_end] = int(idx + 1)
 
-        np.savetxt(f'{self.dict_folders["run"]}veggiemapfile.txt', veggie_locs, fmt='%d')
+        np.savetxt(f'{self.run_path}veggiemapfile.txt', veggie_locs, fmt='%d')
         self.dict_veggie.update({'vegetation_map_file': 'veggiemapfile.txt'})
 
     def fill_vegetation_section(self):
@@ -139,4 +141,4 @@ class Vegetation():
         """
         for param in self.dict_veggie:
             self.dict_veggie[param] = str(self.dict_veggie[param])
-        utils.fill_files(f'{self.dict_folders["run"]}params.txt', self.dict_veggie)
+        utils.fill_files(f'{self.run_path}params.txt', self.dict_veggie)
