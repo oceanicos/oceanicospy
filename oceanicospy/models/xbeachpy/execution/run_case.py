@@ -56,7 +56,7 @@ class CaseRunner():
         """
         self.dict_comp_data['outputfilepath'] = filename
 
-    def write_output_points(self, filename=None):
+    def write_output_points(self, filename=None,point_type='regular'):
         """
         Load output point coordinates from a text file and register them.
 
@@ -71,6 +71,8 @@ class CaseRunner():
             Name of the whitespace-delimited text file with output point
             coordinates (two columns: x, y).  The file must reside in the
             case input directory (``init.dict_folders["input"]``).
+        point_type : str, optional
+            Type of output points to write (e.g., 'regular', 'rugauge').
         """
         try:
             points_file = glob.glob(f'{self.init.dict_folders["input"]}{filename}')[0]
@@ -79,13 +81,32 @@ class CaseRunner():
 
         if points_file:
             points_data = np.loadtxt(points_file)
-            self.dict_comp_data['len_points'] = len(points_data)
-            string_points = [f'{point[0]} {point[1]}\n' for point in points_data]
+            if points_data.ndim == 1:
+                points_data = points_data.reshape(1, -1)
+            if points_data.shape[1] == 3:
+                string_points = [f'{point[0]} {point[1]} {int(point[2])}\n' for point in points_data]
+            elif points_data.shape[1] == 2:
+                string_points = [f'{point[0]} {point[1]}\n' for point in points_data]
+            else:
+                raise ValueError(f"Output points file must have 2 or 3 columns, but found {points_data.shape[1]}.")
             string_points[-1] = string_points[-1].strip()  # remove trailing newline
-            self.dict_comp_data['string_points'] = ''.join(string_points)
+
+            if point_type == 'regular':
+                self.dict_comp_data['len_points'] = len(points_data)
+                self.dict_comp_data['string_points'] = ''.join(string_points)
+            elif point_type == 'rugauge':
+                self.dict_comp_data['len_rugauge_points'] = len(points_data)
+                self.dict_comp_data['string_rugauge_points'] = ''.join(string_points)
+            else:
+                raise ValueError(f"Unknown point_type '{point_type}'. Must be 'regular' or 'rugauge'.")
         else:
-            self.dict_comp_data['len_points'] = 0
-            self.dict_comp_data['string_points'] = ''
+            if point_type == 'regular':
+                self.dict_comp_data['len_points'] = 0
+                self.dict_comp_data['string_points'] = ''
+            elif point_type == 'rugauge':
+                self.dict_comp_data['len_rugauge_points'] = 0
+                self.dict_comp_data['string_rugauge_points'] = ''
+            
 
     def select_global_vars(self, list_vars=None):
         """
@@ -128,6 +149,10 @@ class CaseRunner():
         else:
             self.dict_comp_data['len_point_vars'] = 0
             self.dict_comp_data['point_vars'] = ''
+    
+    def fill_extra_sections(self,not_default_params=None):
+        if not_default_params:
+            utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', not_default_params)
 
     def fill_computation_section(self):
         """

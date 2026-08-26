@@ -365,7 +365,7 @@ class WaterLevelForcing:
 
         return self.wl_info
 
-    def fill_wl_section(self):
+    def fill_wl_section(self, not_default_params=None):
         """
         Write water-level configuration into the XBeach params file.
 
@@ -378,6 +378,10 @@ class WaterLevelForcing:
         """
         if self.wl_info is None:
             raise ValueError("No water level information available to fill in params file.")
+
+        # Merge not_default_params with wl_info
+        if not_default_params:
+            self.wl_info.update(not_default_params)
 
         print('\n*** Adding/Editing water level information in params file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', self.wl_info)
