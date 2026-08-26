@@ -114,7 +114,8 @@ def deploy_input_file(
     else:
         if verify_link(filename, run_dir):
             remove_link(filename, run_dir)
-        shutil.copy2(f'{origin_dir}{filename}', run_dir)
+        src = Path(origin_dir) / filename
+        shutil.copy2(src, run_dir)
 
 def fill_files(file_path: str, replacements: dict):
     """

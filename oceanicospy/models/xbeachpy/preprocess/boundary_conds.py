@@ -1,8 +1,13 @@
 from wavespectra import read_swan
 import numpy as np
 import pandas as pd
+import xarray as xr
 import re
 import os
+import shutil
+from pathlib import Path
+from ....downloads import *
+
 
 from .... import utils
 
@@ -22,10 +27,22 @@ class BoundaryConditions:
         Case initialization object.  Must expose ``ini_date``, ``end_date``,
         and ``dict_folders`` (a mapping with at least ``"input"`` and ``"run"``
         keys pointing to the respective directories).
+    is_time_varying : bool, optional
+        Whether the boundary condition is time-varying.  When ``True`` the
+        ``wbctype`` key is set to ``'jons_table'``; when ``False`` it is set
+        to ``'jons'`` and the input file is checked for ``'='`` symbols.
+        Defaults to ``False``.
+    is_spatial_varying : bool, optional
+        Whether the boundary condition is spatially varying.  Not yet used in
+        the current implementation.  Defaults to ``False``.
 
     """
-    def __init__ (self,init):
+
+    def __init__ (self,init,is_time_varying=False,is_spatial_varying=False):
         self.init = init
+        self.is_time_varying = is_time_varying
+        self.is_spatial_varying = is_spatial_varying
+        self.direction_corrector = False
         self._purger()
         print('*** Initializing Boundary Conditions ***')
 
@@ -69,13 +86,14 @@ class BoundaryConditions:
         RuntimeError
             If the loaded dataset does not contain a ``time`` coordinate.
         """
-        self.dataset = read_swan(f'{self.init.dict_folders["input"]}{input_filename}')
+        self.dataset = read_swan(f'{self.init.dict_folders["input"]}{input_filename}',dirorder=False)
+
         if "time" not in self.dataset.coords:
             raise RuntimeError("Loaded dataset has no 'time' coordinate to filter on.")
         start = np.datetime64(self.init.ini_date)
         end = np.datetime64(self.init.end_date)
 
-        if point_indexes is not None:
+        if point_indexes is not None and self.is_spatial_varying:
             self.dataset = self.dataset.isel(site=point_indexes)
         return self.dataset.sel(time=slice(start, end))
 
@@ -135,7 +153,10 @@ class BoundaryConditions:
             elif 'number of directions' in line:
                 for _ in range(36):
                     next_line = forigin.readline()
-                    line = line + str(float(next_line) + 270) + '\n'
+                    if self.direction_corrector:
+                        line = line + str(float(next_line) + 270) + '\n'
+                    else:
+                        line = line + next_line
                 fdest.write(line)
 
             # if the line has two numeric values separated by three spaces, we assume it's a coordinate line 
@@ -169,7 +190,7 @@ class BoundaryConditions:
         for row in spec_matrix:
             np.savetxt(fdest, row, fmt='%7.0f')
 
-    def _write_sp2_file(self, site_idx, time_idx, lon, lat):
+    def _write_sp2_file(self, site_idx, time_idx, lon, lat,swan_spec_file='SpecSWAN.out'):
         """
         Write a single ``.sp2`` file for one site/time-step combination.
 
@@ -198,19 +219,23 @@ class BoundaryConditions:
         The spectral energy is normalised by ``0.1E-05`` before being passed
         to :meth:`_write_sp2_spectrum`.
         """
-        spec_matrix = np.matrix(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+
+        try:
+            spec_matrix = np.matrix(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+        except ValueError:
+            spec_matrix = np.matrix(self.data_spectra[time_idx, 0, 0, :, :]) / 0.1e-5
 
         time_str = pd.to_datetime(self.dataset.time.values[time_idx]).strftime('%Y%m%d.%H%M%S')
         sp2_path = (
             f"{self.init.dict_folders['run']}"
             f"bounds_conds/point_{site_idx}/spec_time{time_idx}_point{site_idx}.sp2"
         )
-        with open(f"{self.init.dict_folders['input']}SpecSWAN.out") as forigin:
+        with open(f"{self.init.dict_folders['input']}{swan_spec_file}") as forigin:
             with open(sp2_path, "w") as fdest:
                 self._write_sp2_header(forigin, fdest, lon, lat)
                 self._write_sp2_spectrum(fdest, spec_matrix, time_str)
 
-    def _write_site_filelist(self, site_idx):
+    def _write_site_filelist(self, site_idx,swan_spec_file='SpecSWAN.out'):
         """
         Create the output directory and ``filelist_<site_idx>.txt`` for one boundary site.
 
@@ -246,7 +271,7 @@ class BoundaryConditions:
         with open(filelist_path, "w") as filelist:
             filelist.write('FILELIST\n')
             for idx_time in range(len(self.dataset.time)):
-                self._write_sp2_file(site_idx, idx_time, self.lon.values, self.lat.values)
+                self._write_sp2_file(site_idx, idx_time, self.lon.values, self.lat.values,swan_spec_file)
                 filelist.write(
                     f"3600 0.2 'bounds_conds/point_{site_idx}/"
                     f"spec_time{idx_time}_point{site_idx}.sp2'\n"
@@ -268,8 +293,7 @@ class BoundaryConditions:
                 x, y = location_points[idx_site]
                 floc.write(f"{x} {y} 'bounds_conds/filelist_{idx_site}.txt'\n")
 
-
-    def spectra_from_swan(self, input_filename,location_points, point_indexes=None):
+    def spectra_from_swan(self, input_filename,location_points=None, point_indexes=None):
         """
         Convert a SWAN spectral output file into XBeach boundary condition files.
 
@@ -302,38 +326,235 @@ class BoundaryConditions:
         from ``params.txt``; :attr:`dict_boundaries` is not populated in that
         case.
         """
+
+        if self.is_spatial_varying and (location_points is None or point_indexes is None):
+            raise ValueError("Spatially varying boundary conditions require both 'location_points' and 'point_indexes' to be provided.")
+
         self.dataset = self._load_dataset(input_filename, point_indexes)
         self.data_spectra = self.dataset.efth
-        self.number_spectrum_locs = len(self.dataset.site)
-
-        self.dict_boundaries = {
-            'w_bc_version': 3,
-            'n_spectrum_loc': self.number_spectrum_locs,
-            'bcfilepath': 'bounds_conds/loclist.txt',
-        }
+        try:
+            self.number_spectrum_locs = len(self.dataset.site)
+        except AttributeError:
+            self.number_spectrum_locs = len(self.dataset.lon)
 
         for idx_site in range(self.number_spectrum_locs):
-            self._write_site_filelist(idx_site)
+            self._write_site_filelist(idx_site,input_filename)
 
-        if self.number_spectrum_locs != len(location_points):
-            raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
+        if self.is_spatial_varying:
+            if self.number_spectrum_locs != len(location_points):
+                raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
 
-        self._write_loclist(location_points)
+            self._write_loclist(location_points)
 
-    def fill_boundaries_section(self):
+            self.dict_boundaries = {
+                'wbctype': 'swan',
+                'w_bc_version': 3,
+                'n_spectrum_loc': self.number_spectrum_locs,
+                'bcfilepath': 'bounds_conds/loclist.txt',
+            }
+        else:
+            self.dict_boundaries = {
+                'wbctype': 'swan',
+                'bcfilepath': 'bounds_conds/filelist_0.txt',
+            }
+
+    def _download_CMDS(self,utc_offset_hours, filepath=None,wave_info=None,format_localtime=False):
+        """
+        Download CMDS wave data for the specified region and time period.
+
+        Initializes a :class:`CMDSDownloader` configured for wave variables
+        and spatial bounds derived from *wind_info*, then downloads the data
+        and optionally reformats timestamps to local time.
+
+        Parameters
+        ----------
+        utc_offset_hours : int
+            Time difference to UTC in hours for local-time conversion.
+        filepath : str or None, optional
+            Destination path for the downloaded CMDS NetCDF file.
+            If ``None``, a default path is used.
+        wind_info : dict or None, optional
+            Spatial extent dictionary.  Expected keys: ``lon_ll_corner_wind``,
+            ``lat_ll_corner_wind``, ``nx_wind``, ``ny_wind``, ``dx_wind``,
+            ``dy_wind``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
+
+        Returns
+        -------
+        str
+            Path to the downloaded (or local-time-formatted) NetCDF file.
+        """
+        filepath = Path(filepath)
+        CMDSdownload_obj = CMDSDownloader.for_IBI_waves(
+                        lon_min = wave_info['lon_ll_corner_wave'],
+                        lon_max = wave_info['lon_ll_corner_wave'] + (wave_info['nx_wave'] * wave_info['dx_wave']),
+                        lat_min = wave_info['lat_ll_corner_wave'],
+                        lat_max = wave_info['lat_ll_corner_wave'] + (wave_info['ny_wave'] * wave_info['dy_wave']),
+                        start_datetime_local = self.init.ini_date,
+                        end_datetime_local = self.init.end_date,
+                        utc_offset_hours = utc_offset_hours,
+                        output_path = filepath.parent,
+                        output_filename = filepath.name
+                        )
+        self.filepath_utc = CMDSdownload_obj.download()
+        print("\t CMDS IBI wave data downloaded successfully")
+        if format_localtime:
+            self.filepath_localtime = CMDSdownload_obj.format_to_localtime()
+            return self.filepath_localtime
+        return self.filepath_utc
+
+    def get_waves_from_CMDS(self,utc_offset_hours,waves_info_dict,filename='waves_ibi_cmds.nc',override=False,format_localtime=False):
+        """
+        Download CMDS wave data for the current domain, or skip if already present.
+
+        Checks whether the CMDS wave NetCDF file already exists in the domain
+        input directory.  If it does not exist (or *override* is ``True``),
+        the data are downloaded via :meth:`_download_CMDS`.
+
+        Parameters
+        ----------
+        utc_offset_hours : int
+            Time difference to UTC in hours for local-time conversion.
+        wind_info_dict : dict
+            Spatial extent dictionary forwarded to :meth:`_download_CMDS`.
+        filename : str, optional
+            Name of the CMDS wave NetCDF output file.
+            Defaults to ``'waves_cmds.nc'``.
+        override : bool, optional
+            If ``True``, re-downloads the file even if it already exists.
+            Defaults to ``False``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
+        """
+        filepath = f"{self.init.dict_folders['input']}/{filename}"
+        file_exists = utils.verify_file(filepath)
+        if not file_exists or override:
+            self._download_CMDS(utc_offset_hours,wave_info=waves_info_dict,filepath=filepath,format_localtime=format_localtime)
+        else:
+            print("\t CMDS wave data already exists, skipping download")
+
+    def create_jonswap_from_netcdf(self,nc_file='waves_ibi_cmds.nc', output_name='jonswap_table.txt',  gammajsp=3.3, s=20.0, duration=3600, dtbc=0.3):
+        ds = xr.open_dataset(f"{self.init.dict_folders['input']}/{nc_file}")
+        ds = ds.isel(longitude=0, latitude=0)  # Select the first grid point for simplicity
+        hm0 = ds["VHM0"].values
+        tp = ds["VTPK"].values
+        dirn = ds["VMDR"].values
+
+        if len(hm0.shape) > 1:
+            hm0 = hm0.ravel()
+            tp = tp.ravel()
+            dirn = dirn.ravel()
+
+        n = len(hm0)
+
+        out = np.column_stack([
+            hm0, tp, dirn,
+            np.full(n, gammajsp),
+            np.full(n, s),
+            np.full(n, duration),
+            np.full(n, dtbc),
+        ])
+
+        np.savetxt(f"{self.init.dict_folders['run']}/{output_name}", out, fmt="%.3f %.3f %.3f %.4f %.4f %.0f %.3f")
+        ds.close()
+
+        self.dict_boundaries = {
+                'wbctype': 'jonstable',
+                'bcfilepath': output_name,
+            }
+
+        print(f"JONSWAP table written to {output_name} ({n} rows)")
+
+    def load_existing_jonswap_spectra(self, input_filename):
+        """
+        Generate boundary condition spectra using the JONSWAP definition.
+
+        Sets the ``wbctype`` parameter in :attr:`dict_boundaries` based on
+        :attr:`is_time_varying`: ``'jons_table'`` when time-varying is enabled,
+        ``'jons'`` otherwise.  When time-varying is disabled, the input file
+        is verified to contain at least one ``'='`` character (indicating a
+        parameterised format).
+
+        Parameters
+        ----------
+        input_filename : str
+            Name of the JONSWAP input file located in
+            ``self.init.dict_folders["input"]``.
+
+        Raises
+        ------
+        ValueError
+            If :attr:`is_time_varying` is ``False`` and the input file does not
+            contain any ``'='`` symbol.
+        """
+        if not hasattr(self, 'dict_boundaries') or self.dict_boundaries is None:
+            self.dict_boundaries = {}
+        if self.is_time_varying:
+            self.dict_boundaries['wbctype'] = 'jonstable'
+        else:
+            self.dict_boundaries['wbctype'] = 'jons'
+            filepath = os.path.join(self.init.dict_folders["input"], input_filename)
+
+            # quick validation to check if input file is in expected format (key=value pairs, at least one pair)
+            with open(filepath, 'r') as f:
+                content = f.read()
+            if '=' not in content:
+                raise ValueError(f"Input file must contain at least one '=' symbol.")
+        
+        input_folder = Path(self.init.dict_folders["input"])
+        run_folder = Path(self.init.dict_folders["run"])
+
+        input_path = input_folder / input_filename
+        if not input_path.exists():
+            raise FileNotFoundError(
+                f"Input file '{input_filename}' not found in {input_folder}."
+            )
+
+        try:
+            np.loadtxt(input_path)
+        except ValueError as exc:
+            raise ValueError(
+                f"Could not parse '{input_filename}' as a numeric array: {exc}"
+            ) from exc
+
+        shutil.copy(str(input_path), str(run_folder / input_filename))
+
+        self.dict_boundaries['bcfilepath'] = input_filename 
+
+    def fill_boundaries_section(self, extra_params=None):
         """
         Write the boundary-condition parameters to ``params.txt``.
 
-        Converts every value in :attr:`dict_boundaries` to ``str`` (required
-        by the placeholder-substitution engine) and calls
-        :func:`utils.fill_files` to replace the corresponding ``$placeholder``
-        tokens in ``<run>/params.txt``.
+        Merges :attr:`DEFAULT_PROPAGATION_PARAMS` (the default "Waves:
+        boundary and propagation" settings), :attr:`dict_boundaries`, and
+        *extra_params*, converts every value to ``str`` (required by the
+        placeholder-substitution engine), and calls :func:`utils.fill_files`
+        to replace the corresponding ``$placeholder`` tokens in
+        ``<run>/params.txt``.
 
-        Must be called after :meth:`spectra_from_swan` has populated
+        Must be called after :meth:`spectra_from_swan`,
+        :meth:`create_jonswap_from_netcdf`, or
+        :meth:`load_existing_jonswap_spectra` has populated
         :attr:`dict_boundaries`.
+
+        Parameters
+        ----------
+        extra_params : dict, optional
+            Overrides for the default "Waves: boundary and propagation"
+            parameters (``lateralwave``, ``dtbc``, ``scheme``, ``waveform``,
+            ``gamma``, ``gammax``, ``nspr``, ``nmax``, ``snells``). Any key
+            present here takes precedence over the corresponding default in
+            :attr:`DEFAULT_PROPAGATION_PARAMS`. Defaults to ``None`` (no
+            overrides).
         """
-        for param in self.dict_boundaries:
-            self.dict_boundaries[param]=str(self.dict_boundaries[param])
+        params_to_fill = {
+            **self.dict_boundaries,
+            **(extra_params or {}),
+        }
+        params_to_fill = {param: str(value) for param, value in params_to_fill.items()}
 
         print (f'\n*** Adding/Editing boundary information for domain in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',self.dict_boundaries)
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',params_to_fill)

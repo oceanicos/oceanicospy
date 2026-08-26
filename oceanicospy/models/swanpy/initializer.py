@@ -59,7 +59,7 @@ class Initializer:
         self.dict_ini_data = dict_ini_data
         self.folder_names = ['input', 'pros', 'run', 'output']
         self.dict_folders = {
-            name: f'{self.root_path}{name}/' for name in self.folder_names
+            name: f'{Path(self.root_path) / name}/' for name in self.folder_names
         }
 
         print('*** Initializing SWAN model ***\n')

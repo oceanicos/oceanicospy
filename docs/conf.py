@@ -30,7 +30,7 @@ release = '0.1.0'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'slides']
 
 suppress_warnings = ["myst.header"]  # (si usas MyST)
 autodoc_mock_imports = ["utide","geopandas","shapely"]

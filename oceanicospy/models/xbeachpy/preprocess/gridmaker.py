@@ -130,6 +130,41 @@ class _RectangularGridBuilder:
     def __init__(self, gridmaker: "GridMaker") -> None:
         self._gm = gridmaker
 
+    def from_coordinates(
+        self,
+        x_start: float,
+        x_end: float,
+        y_start: float,
+        y_end: float,
+        dx: float,
+        dy: Optional[float] = None,
+        crs: Optional[str] = None,
+    ) -> Grid:
+        """
+        Build a rectangular grid from the bounding box defined by two corner coordinates.
+
+        Parameters
+        ----------
+        x_start, x_end : float
+            Minimum and maximum x coordinates of the grid bounding box.
+        y_start, y_end : float
+            Minimum and maximum y coordinates of the grid bounding box.
+        dx : float
+            Grid spacing in the x direction.
+        dy : float, optional
+            Grid spacing in the y direction. Defaults to *dx*.
+        crs : str, optional
+            CRS string for metadata only (e.g. ``"EPSG:9377"``).
+
+        Returns
+        -------
+        Grid
+        """
+        grid = Grid.from_coordinates(x_start, x_end, y_start, y_end, dx, dy=dy, crs=crs)
+        self._gm._grid = grid
+        self._gm._grid_dict = self._export(grid)
+        return grid
+
     def from_shapefile(
         self,
         source_file: str,
@@ -303,12 +338,70 @@ class GridMaker:
         shutil.copy(str(x_file), str(run_folder / "x.grd"))
         shutil.copy(str(y_file), str(run_folder / "y.grd"))
 
-        return {
+        self._grid_dict = {
             "xfilepath": "x.grd",
             "yfilepath": "y.grd",
             "meshes_x": meshes_x,
             "meshes_y": meshes_y,
         }
+
+        return self._grid_dict
+
+    def load_existing_DELFTgrid(self, xygrid_filename) -> dict:
+        """
+        Load an existing DELFT3D-style grid from a single file containing both
+        x and y coordinate matrices, validate it, copy the file into the run
+        folder, and return a descriptor dictionary.
+
+        The file is expected to contain the x-coordinate matrix followed by
+        the y-coordinate matrix, separated by a comment line holding the
+        keyword ``y-coordinate``.
+
+        Parameters
+        ----------
+        xygrid_filename : str
+            Name of the grid file inside the project input folder.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``xyfilepath``, ``meshes_x``, and ``meshes_y``.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the grid file is not found in the input folder.
+        ValueError
+            If the x and y arrays do not have the same shape.
+        """
+        input_folder = Path(self.init.dict_folders["input"])
+        run_folder = Path(self.init.dict_folders["run"])
+
+        src = input_folder / xygrid_filename
+        if not src.exists():
+            raise FileNotFoundError(f"DELFT grid file not found: {src}")
+
+        lines = src.read_text().splitlines()
+
+        # Find the line after "missing value" which holds meshes_y and meshes_x
+        try:
+            mv_idx = next(i for i, line in enumerate(lines) if "missing value" in line.lower())
+            meshes_x, meshes_y = map(int, lines[mv_idx + 1].split())
+        except (StopIteration, ValueError, IndexError):
+            raise ValueError(
+                "Could not find '<meshes_y> <meshes_x>' line after 'missing value' directive."
+            )
+        
+        dst = run_folder / "xy.grd"
+        shutil.copy(str(src), str(dst))
+
+        self._grid_dict = {
+            "xyfilepath": "xy.grd",
+            "meshes_x": meshes_x,
+            "meshes_y": meshes_y,
+        }
+
+        return self._grid_dict
 
     def fill_grid_section(self) -> None:
         """Write the generated grid metadata to the params.txt file."""

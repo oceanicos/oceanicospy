@@ -3,10 +3,10 @@
 %%%                                                                          %%%
 %%% date:     30-May-24 	                                                 %%%
 %%% function: manual   
-%%% case:     $case_description                                               %%%
+%%% case:     $case_description                                              %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Physics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Physics %%%
 flow = $act_flow
 morphology = $act_morf
 sedtrans = $act_sedtrans
@@ -15,43 +15,73 @@ wavemodel = $act_wavemodel
 vegetation = $act_veg
 wind = $act_wnd
 
-%%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Grid parameters %%%
 
+gridform  = $gridform
+xyfile    = $xyfilepath
 xfile     = $xfilepath
 yfile     = $yfilepath
-depfile   = $depfilepath
 nx        = $meshes_x
 ny        = $meshes_y
+xori      = $xori
+yori      = $yori
+depfile   = $depfilepath
 vardx     = 1
 thetamin  = $thetamin
 thetamax  = $thetamax
 dtheta    = $dtheta
 thetanaut = 1
 alfa      = $alfa
+posdwn    = $posdwn
 
-%%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Waves: boundary and propagation %%%
 
-wbctype    = swan
-bcfile     = $bcfilepath
-wbcversion = $w_bc_version
+wbctype      = $wbctype
+bcfile       = $bcfilepath
+lateralwave  = $lateralwave
+dtbc         = $dtbc
+wbcversion   = $w_bc_version
 nspectrumloc = $n_spectrum_loc
+scheme       = $scheme
+gamma        = $gamma
+gammax       = $gammax
+nspr         = $nspr
+nmax         = $nmax
+snells       = $snells
 
-%%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-windfile     = $windfilepath
+%% Flow parameters %%%
+bedfriction  = $bedfriction
+bedfriccoef  = $bedfriccoef
+lat          = $lat
+eps          = $eps
+hmin         = $hmin
 
-%%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tideloc      = 1
+%%% Tide %%%
+tideloc      = $tideloc
+tidetype     = $tidetype
 zs0file      = $sealevelfilepath
 
-%%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tstart       = 0
-CFL          = 0.7
-tstop        = $tstop_value
-tstart       = $tstart_value
-tint         = $tint_value
-tintg        = $tintg_value
+%%% Wind %%%
+windfile     = $windfilepath
 
-%%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Model time %%%
+CFL          = $CFL_parameter
+tstart       = $tstart_value
+tstop        = $tstop_value
+tintg        = $tintg_value
+tintp        = $tintp_value
+
+%%% Sediment transport %%%
+facua        = $facua
+form         = $form
+dilatancy    = $dilatancy
+
+%%% Avalanching %%%
+hswitch      = $hswitch
+dryslp       = $dryslp
+wetslp       = $wetslp
+
+%%% Output selection %%%
 outputformat = netcdf
 ncfilename = $outputfilepath
 
@@ -63,3 +93,6 @@ $string_points
 
 npointvar    = $len_point_vars
 $point_vars
+
+nrugauge = $len_rugauge_points
+$string_rugauge_points

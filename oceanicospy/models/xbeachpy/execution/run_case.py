@@ -1,5 +1,8 @@
 import glob
+import shutil
 import numpy as np
+from pathlib import Path
+import re
 
 from .... import utils
 
@@ -30,6 +33,18 @@ class CaseRunner():
         self.dict_comp_data = dict_comp_data
         print('\n*** Initializing Case Runner ***\n')
 
+    def _delete_placeholder_leftover(self):
+        """
+        Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
+
+        Scans the domain ``.swn`` run file and overwrites any remaining
+        ``$word`` tokens that were not substituted during preprocessing.
+        """
+        run_file = Path(f'{self.init.dict_folders["run"]}params.txt')
+        text = run_file.read_text()
+        text = re.sub(r"\$\w+", " ", text)  # wipe leftovers
+        run_file.write_text(text)
+
     def write_output_file(self, filename):
         """
         Set the NetCDF output file name in the computation parameters.
@@ -42,7 +57,7 @@ class CaseRunner():
         """
         self.dict_comp_data['outputfilepath'] = filename
 
-    def write_output_points(self, filename=None):
+    def write_output_points(self, filename=None,point_type='regular'):
         """
         Load output point coordinates from a text file and register them.
 
@@ -57,6 +72,8 @@ class CaseRunner():
             Name of the whitespace-delimited text file with output point
             coordinates (two columns: x, y).  The file must reside in the
             case input directory (``init.dict_folders["input"]``).
+        point_type : str, optional
+            Type of output points to write (e.g., 'regular', 'rugauge').
         """
         try:
             points_file = glob.glob(f'{self.init.dict_folders["input"]}{filename}')[0]
@@ -65,13 +82,32 @@ class CaseRunner():
 
         if points_file:
             points_data = np.loadtxt(points_file)
-            self.dict_comp_data['len_points'] = len(points_data)
-            string_points = [f'{point[0]} {point[1]}\n' for point in points_data]
+            if points_data.ndim == 1:
+                points_data = points_data.reshape(1, -1)
+            if points_data.shape[1] == 3:
+                string_points = [f'{point[0]} {point[1]} {int(point[2])}\n' for point in points_data]
+            elif points_data.shape[1] == 2:
+                string_points = [f'{point[0]} {point[1]}\n' for point in points_data]
+            else:
+                raise ValueError(f"Output points file must have 2 or 3 columns, but found {points_data.shape[1]}.")
             string_points[-1] = string_points[-1].strip()  # remove trailing newline
-            self.dict_comp_data['string_points'] = ''.join(string_points)
+
+            if point_type == 'regular':
+                self.dict_comp_data['len_points'] = len(points_data)
+                self.dict_comp_data['string_points'] = ''.join(string_points)
+            elif point_type == 'rugauge':
+                self.dict_comp_data['len_rugauge_points'] = len(points_data)
+                self.dict_comp_data['string_rugauge_points'] = ''.join(string_points)
+            else:
+                raise ValueError(f"Unknown point_type '{point_type}'. Must be 'regular' or 'rugauge'.")
         else:
-            self.dict_comp_data['len_points'] = 0
-            self.dict_comp_data['string_points'] = ''
+            if point_type == 'regular':
+                self.dict_comp_data['len_points'] = 0
+                self.dict_comp_data['string_points'] = ''
+            elif point_type == 'rugauge':
+                self.dict_comp_data['len_rugauge_points'] = 0
+                self.dict_comp_data['string_rugauge_points'] = ''
+            
 
     def select_global_vars(self, list_vars=None):
         """
@@ -114,6 +150,10 @@ class CaseRunner():
         else:
             self.dict_comp_data['len_point_vars'] = 0
             self.dict_comp_data['point_vars'] = ''
+    
+    def fill_extra_sections(self,not_default_params=None):
+        if not_default_params:
+            utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', not_default_params)
 
     def fill_computation_section(self):
         """
@@ -134,5 +174,30 @@ class CaseRunner():
 
         str_comp_data = {k: str(v) for k, v in self.dict_comp_data.items()}
         self.dict_comp_data.update(str_comp_data)
-
+        
         utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', self.dict_comp_data)
+        self._delete_placeholder_leftover()
+
+    def purge_leftover_placeholders(self):
+        """
+        Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
+        """
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', self.dict_comp_data) # to delete unused variables
+
+    def fill_slurm_file(self,case_name,ntasks,image_name):
+        """
+        Fills the SLURM script with the necessary parameters for running the XBeach model.
+        This includes paths, simulation name, number of domains, and parent domains.
+        """
+        self.script_dir = Path(__file__).resolve().parent.parent
+        self.data_dir = self.script_dir.parent.parent.parent / 'data'
+
+        shutil.copy(f'{self.data_dir}/hpc_slurm_templates/launcher_model_cecc_base.slurm',
+                    f'{self.init.dict_folders["run"]}launcher_model.slurm')
+        
+        launch_dict = dict(case_name=case_name,
+                            run_path_case=f'{self.init.dict_folders["run"]}',
+		            output_path_case=f'{self.init.dict_folders["output"]}',
+                            number_tasks=ntasks,
+                            image_name=image_name)
+        utils.fill_files(f'{self.init.dict_folders["run"]}launcher_model.slurm', launch_dict)
