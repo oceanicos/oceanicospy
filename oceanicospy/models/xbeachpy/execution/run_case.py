@@ -1,4 +1,5 @@
 import glob
+import shutil
 import numpy as np
 from pathlib import Path
 import re
@@ -182,3 +183,21 @@ class CaseRunner():
         Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
         """
         utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', self.dict_comp_data) # to delete unused variables
+
+    def fill_slurm_file(self,case_name,ntasks,image_name):
+        """
+        Fills the SLURM script with the necessary parameters for running the XBeach model.
+        This includes paths, simulation name, number of domains, and parent domains.
+        """
+        self.script_dir = Path(__file__).resolve().parent.parent
+        self.data_dir = self.script_dir.parent.parent.parent / 'data'
+
+        shutil.copy(f'{self.data_dir}/hpc_slurm_templates/launcher_model_cecc_base.slurm',
+                    f'{self.init.dict_folders["run"]}launcher_model.slurm')
+        
+        launch_dict = dict(case_name=case_name,
+                            run_path_case=f'{self.init.dict_folders["run"]}',
+		            output_path_case=f'{self.init.dict_folders["output"]}',
+                            number_tasks=ntasks,
+                            image_name=image_name)
+        utils.fill_files(f'{self.init.dict_folders["run"]}launcher_model.slurm', launch_dict)
