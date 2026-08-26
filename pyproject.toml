@@ -64,6 +64,10 @@ dev = [
   "build",
   "twine",
 ]
+slides = [
+  "quarto-cli>=1.6",
+  "jupyter>=1.1",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

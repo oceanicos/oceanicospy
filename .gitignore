@@ -31,3 +31,9 @@ dist/
 .vscode/
 requirements.txt
 .venv/
+
+# Quarto build artifacts
+/.quarto/
+**/.quarto/
+docs/slides/**/index.html
+docs/slides/**/index_files/

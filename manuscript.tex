@@ -1,0 +1,590 @@
+%% 
+%% Copyright 2007, 2008, 2009 Elsevier Ltd
+%% 
+%% This file is part of the 'Elsarticle Bundle'.
+%% ---------------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.2 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'Elsarticle Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+
+%% Template article for Elsevier's document class `elsarticle'
+%% with numbered style bibliographic references
+%% SP 2008/03/01
+
+\documentclass[preprint,12pt, a4paper]{elsarticle}
+
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+\usepackage{hyperref}
+\setlength{\parindent}{0pt}
+%% The amsthm package provides extended theorem environments
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+\usepackage{lineno}
+\usepackage{listings}
+
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  breaklines=true,
+  showstringspaces=false
+}
+
+\journal{SoftwareX}
+
+\begin{document}
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}}
+
+\begin{frontmatter}
+%--- INSTRUCTIONS TO BE DELETED OR COMMENTED BEFORE SUBMISSION 
+
+%   {\large\textbf{SoftwareX article template Version 4 (November 2023)}}
+%   Before you complete this template, a few important points to note:
+%   \begin{itemize}
+% \item	This template is for an original SoftwareX article. If you are submitting an update to a software article that has already been published, please use the Software Update Template found on the Guide for Authors page.
+% \item	The format of a software article is very different to a traditional research article. To help you write yours, we have created this template. We will only consider software articles submitted using this template.
+% \item	It is mandatory to publicly share the code/software referred to in your software article. You’ll find information on our software sharing criteria in the SoftwareX \href{https://www.elsevier.com/journals/softwarex/2352-7110/guide-for-authors}{Guide for Authors}.  
+% \item	It’s important to consult the \href{https://www.elsevier.com/journals/softwarex/2352-7110/guide-for-authors}{Guide for Authors} when preparing your manuscript; it highlights mandatory requirements and is packed with useful advice.
+% \end{itemize}
+% %
+% Still got questions?
+% Email our editorial team at softwarex@elsevier.com.
+
+% \textbf{Now you are ready to fill in the template below. As you complete each section, please carefully read the associated instructions. All sections are mandatory, unless marked optional.
+% Once you have completed the template, delete these instructions. In addition, please delete the instructions in the template (the text written in italics).}
+%--- END OF INSTRUCTIONS TO BE DELETED OR COMMENTED BEFORE SUBMISSION 
+ 
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \address for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \address{Address\fnref{label3}}
+%% \fntext[label3]{}
+
+\title{oceanicospy: a python library for numerical modelling workflow in coastal applications}
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{}
+%% \address[label1]{}
+%% \address[label2]{}
+
+\cortext[cor1]{corresponding author. Email address: ffayalac@unal.edu.co (Franklin Ayala)}
+
+\author[label1]{Franklin Ayala\corref{cor1}}
+\author[label1]{Daniela Rosero-Melo}
+\author[label1]{Juan Diego Torres-Toro}
+\author[label1]{Andrés F. Osorio}
+\author[label2]{Juan David Osorio-Cano}
+
+\address[label1]{Universidad Nacional de Colombia, Sede Medellín, Facultad de Minas, Departamento de Geociencias y Medio Ambiente, Grupo de investigación OCEANICOS, Cra 80 No. 65–223, Bloque M2, Medellín, Colombia}
+\address[label2]{Universidad Nacional de Colombia, Sede Caribe, Grupo Estudios Ambientales del Caribe, San Andrés, Colombia}
+
+\begin{abstract}
+%% Text of abstract 
+% \textit{Ca. 100 words. The abstract is followed by a maximum of six keywords
+% and some mandatory and optional metadata.}
+
+% \textit{Your main body of text (sections 1-5 below) should be a maximum 6 pages in total (excluding metadata, tables, figures, references) with a 3000-word limit (we ask that more priority is placed on the word limit versus the page count). Though we strictly insist on the author following the template, in exceptional circumstances, we can be flexible with the page numbers and word limit. In such cases, it should be discussed with the managing editor or publisher prior to submission. All queries regarding the same can be reached at softwarex@elsevier.com.}
+
+Coastal wave and hydrodynamic modelling involves scientific workflows that are often difficult to reproduce and maintain due to fragmented scripting practices and highly specialized model configurations. This paper presents \textit{oceanicospy}, an open-source Python library developed to automate and standardize the scientific pipeline required to deploy coastal-scale numerical modelling projects. The framework integrates recurring tasks typically required in coastal simulations, including observational data processing, spectral and temporal wave analysis, geospatial preprocessing, forcing data retrieval, numerical model configuration, and post-processing analysis. By consolidating fragmented workflows into a unified object-oriented framework, \textit{oceanicospy} reduces repetitive manual tasks, improves reproducibility, and facilitates collaborative coastal modelling research and operational applications.
+
+\end{abstract}
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+coastal wave modelling \sep hydrodynamic modelling \sep Python \sep SWAN \sep XBeach \sep Automation
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
+
+\section*{Metadata}
+\label{}
+\begin{table}[!h]
+\begin{tabular}{|l|p{6.5cm}|p{6.5cm}|}
+\hline
+\textbf{Nr.} & \textbf{Code metadata description} & \textbf{Metadata} \\
+\hline
+C1 & Current code version & 0.1.0 \\
+\hline
+C2 & Permanent link to code/repository used for this code version & \url{https://github.com/oceanicos-dev-org/oceanicospy} \\
+\hline
+C3  & Permanent link to Reproducible Capsule & 
+\\
+\hline
+C4 & Legal Code License   & GNU General Public License (GPL) \\
+\hline
+C5 & Code versioning system used & git \\
+\hline
+C6 & Software code languages, tools, and services used & python, Climate Data Store API (CDSAPI), Copernicus Marine Toolbox \\
+\hline
+C7 & Compilation requirements, operating environments \& dependencies & numpy, pandas, scipy, xarray, matplotlib, geopandas, shapely, pyproj, wavespectra, windrose, utide, h5py, netcdf4, cdsapi, copernicusmarine, requests, PyWavelets, and EMD-signal \\
+\hline
+C8 & If available Link to developer documentation/manual & \url{https://oceanicospy.readthedocs.io/en/latest/contributing.html} \\
+\hline
+C9 & Support email for questions & oceanicos\_med@unal.edu.co \\
+\hline
+\end{tabular}
+\caption{Code metadata (mandatory)}
+\label{codeMetadata} 
+\end{table}
+
+\section{Motivation and significance}
+% \textit{In this section, we want you to introduce the scientific background and the motivation for developing the software.}
+
+% \begin{itemize}
+%     \item \textit{Explain why the software is important and describe the exact (scientific) problem(s) it solves.}
+%     \item \textit{Indicate in what way the software has contributed (or will contribute in the future) to the process of scientific discovery; if available, please cite a research paper using the software.}
+%     \item \textit{Provide a description of the experimental setting. (How does the user use the software?)}
+%     \item \textit{Introduce related work in literature (cite or list algorithms used, other software etc.).}
+% \end{itemize}
+
+Numerical wind-wave and hydrodynamic modelling involves a workflow with multiple stages to develop robust research findings and solutions. As part of this workflow, different physics-based tools such as the Simulating WAves Nearshore (SWAN) \cite{Booij_etal_1999} and XBeach \cite{Roelvink_etal_2009} models are frequently employed to represent coastal wave processes essential for hazard management, forecasting, and coastal engineering design. The modelling process brings different challenges in research:
+
+\begin{itemize}
+    \item \textbf{It is iterative:} whether applied to practical scenarios or foundational research, these models are typically executed iteratively during calibration and validation phases. This process often leads to data duplication and non-standardized, time-consuming manual tasks.
+
+    \item \textbf{It is complex:} these numerical tools, typically written in high-level languages, require highly specific data formats and configuration to solve the initial value problem they address. This specificity often makes the setup phase error-prone and difficult to manage. It also requires advanced skills to manipulate in-situ data and to obtain new insights from analysis that ultimately present technical barriers to potential users.
+
+    \item \textbf{It is comprehensive:} despite sharing a common operational ground, several tasks –such as retrieving data from common sources, processing raw data from in-situ sensors, analysing time series, and coupling models– are usually hardcoded with manual scripting within individual research groups. While some existing tools attempt to manage the interfacing of these sophisticated models or the application of certain techniques, they are often either too specialized to cover the modelling workflow as a whole \cite{xbeach_toolbox,wrap_swan} or lack the descriptive flexibility required for broader implementations \cite{oceanwaves_python}.
+\end{itemize}
+
+Although specialized tools have emerged in the oceanography field, they generally address narrow challenges in the modelling workflow like the analysis and visualization of model datasets \cite{Almansi_etal_2019} or the automated preparation of input data from common sources for the model \cite{Argaez_etal_2025}.Consequently, automating the scientific pipeline is essential to standardize workflows, enhance the reproducibility of the simulation results, reduce possible uncertainties that compromise simulation quality, and improve the generalization of different solutions.
+
+\textit{oceanicospy} is an open-source, user-friendly Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale. It is designed to streamline the entire range of programming tasks involved in numerical modelling: reading in-situ observations, preparing input data, defining simulation structures and configurations, post-processing simulation results, and complementing simulations with additional or simultaneous necessary analyses.
+
+This framework provides a unified environment where new features can be maintained long-term, addressing the challenge of the non-persistence of techniques that have proven valuable in specific wave research contexts. Furthermore, these inherently complex numerical models are interfaced with high-level programming languages that are widely used, user-friendly, and highly compatible with existing scientific tools.
+
+Users can access the library through the Python Package Index (PyPI) as follows:
+
+\begin{verbatim}
+    pip install oceanicospy
+\end{verbatim}
+
+This retrieves the latest stable release. For developers, the latest development version can be accessed cloning the GitHub repository:
+
+\begin{verbatim}
+    git clone git@github.com:oceanicos-dev-org/oceanicospy.git
+\end{verbatim}
+
+Contributing via Pull Requests (PRs) from a forked copy of the repository following the GitHub guidelines is strongly recommended.
+
+This library integrates several software packages and algorithms designed for specific tasks within the wave research workflow. These include tools for handling wave spectra data \cite{Guedes_etal}, decomposing tidal signals \cite{Codiga2011,Bowman_etal}, applying Empirical Mode Decomposition (EMD) \cite{laszuk_2017}, and performing wavelet transform \cite{Lee_etal_2019}. Additionally, methods from widely recognized libraries such as scipy are integrated into the source code \cite{Virtanen_etal_2020}.
+
+\section{Software description}
+
+% \textit{Describe the software. Provide enough detail to help the reader understand its impact.}
+
+\textit{oceanicospy} is a Python library (compatible with version 3.7 and higher) designed as a utility toolbox to centralize and standardize recurring programming practices. It covers the full modelling workflow, from processing raw in-situ records to post-processing model outputs. The library is built primarily on established packages such as numpy, pandas, xarray, h5py, geopandas, netCDF4, pyproj, and scipy. Specialized features also uses particular packages, including PyWavelets, EMD-signal, wavespectra, UTide, cdsapi, and copernicusmarine. 
+
+\subsection{Software architecture}
+
+This library is organized into 7 subpackages: \texttt{analysis}, \texttt{downloads}, \texttt{gis}, \texttt{models}, \texttt{observations}, \texttt{plots}, and \texttt{utils}. Fig. \ref{fig:workflow} shows how the main subpackages can be used into the modelling workflow.
+
+\begin{figure}
+    \centering
+    \includegraphics[
+        width=\linewidth,
+        trim={0.5cm 1.8cm 0.3cm 0.2cm},
+        clip
+    ]{Figure1_architecture.jpg}
+    \caption{Workflow of the \textit{oceanicospy} package for downloading, preprocessing, analyzing, and running SWAN and XBeach simulations.}
+    \label{fig:workflow}
+\end{figure}
+
+\subsection{Software functionalities}
+
+The following features are intended for integration into the full modelling workflow, though they remain flexible enough to be used as standalone tools for targeted tasks.
+
+\subsubsection{analysis}
+This subpackage provides a suite of tools to carry out temporal, spectral and statistical techniques for the characterization of wind-generated waves.
+
+The spectral module supports the application of different spectral methods over sea surface pressure time series such as Fast Fourier Transform (FFT), Welch method \cite{Welch1967}, and wavelets transform \cite{Torrence_and_Compo1998}. The temporal module supports the zero-upcrossing method to obtain wave integral parameters and the Empirical Mode Decomposition (EMD)  \cite{Huang_etal_1998}. Other modules such as extreme analysis with peaks over threshold (POT) method, tidal decomposition, and climatology analysis are also implemented under this section.
+
+\subsubsection{observations}
+This subpackage provides fundamental units (python classes) to parse instrument records that typically came in diverse formats such as raw binary, plain-text, etc. Those instruments are commonly deployed in coastal field campaigns and are widely used in coastal applications: pressure sensor loggers, Acoustic Doppler Current Profiler (ADCP), weather stations, wave buoys, HOBO loggers, and Conductivity, Temperature and Depth (CTD) devices. \texttt{observations} provides an standard way to read, handle and postprocess those data to later use in calibration or validation stages.
+
+\subsubsection{downloads}
+The \texttt{downloads} module provides three data retrieval classes designed to interface with common data sources. The \texttt{ERA5Downloader} submits spatially and temporally bounded requests to the Copernicus Climate Data Store (CDS API) for ECMWF ERA5 reanalysis fields \cite{Hersbach_etal_2020}. The \texttt{CMDSDownloader} queries the Copernicus Marine Data Store using the copernicusmarine client library, featuring pre-configured factory methods for CMEMS global wave and wind analysis fields \cite{cmems_wav_001_027,cmems_wind_l4_nrt_012_004}. Additionally, the \texttt{UHSLCDownloader} fetches research-quality tide gauge records from the University of Hawaii Sea Level Center (UHSLC) \cite{Caldwell_etal_2015}. Data retrieved through these API calls is automatically transformed and standardized across the library, ensuring consistency with in-situ records commonly used in standard numerical modelling workflows.
+
+\subsubsection{gis}
+The \texttt{gis} module provides geographical data structures and processing tools allowing the construction of geometric objects used in hydrodynamic modelling such as grids or profiles. Those entities can be used in the workflow to interpolate bathymetric data and to build model configurations that typically requires spatial information to define the area to represent. Additional utilities support CRS reprojection, spatial masking, and merging of overlapping grid domains.
+
+\subsubsection{models}
+The \texttt{models} subpackage is the numerical model integration layer. It provides Python wrappers for SWAN and XBeach as nested subpackages, both following a common pipeline.
+
+Both model wrappers (\texttt{swanpy} and \texttt{xbeachpy}) share the same internal structure and lifecycle: an \texttt{Initializer} class sets up the baseline for a simulation. The \texttt{preprocess} nested subpackage populates the configuration file with physical inputs using different modules that handle the computational grids (\texttt{GridMaker}), bathymetry information (\texttt{BathyMaker}), boundary conditions from ERA5/CMDS reanalysis or parent-domain SWAN spectra (\texttt{BoundaryConditions}), wind forcing (\texttt{WindForcing}), and water level forcing (\texttt{WaterLevelForcing}). The \texttt{execution} nested subpackage defines a \texttt{CaseRunner} class that finalizes the run file (filling computation time blocks, nesting sections, and output variable). \texttt{swanpy} additionally has a \texttt{postprocess} nested subpackage that parses SWAN plain-text output into more readable and accessible formats such as pandas DataFrames and xarray Datasets.
+  
+\subsubsection{plots and utils}
+\texttt{plots} subpackage provides a lightweight visualization toolkit helpful for quick inspection of wave data. \texttt{utils} subpackage is the cross-cutting support layer made with low-level helpers that provide file handling, computations of wave properties, profiling and convenience wrappers to avoid repetition and lack of consistency across the main subpackages.
+  
+ \subsection{Sample code snippets analysis}
+This library has been written following object-oriented programming principles. Each basic step in the workflow is treated as an object. The following example displays a class that prepares the filesystem before any simulation work is fully configured.
+
+\begin{lstlisting}
+class Initializer:
+    """
+    Utility class for setting up the directory structure and baseline configuration files required to run XBeach model simulations.
+
+    It automates the creation and cleanup of the project folder tree and the generation of a ``params.txt`` file from a template stamped with user-supplied configuration flags.
+
+    The directory layout produced by this class is:
+
+    .. code-block:: text
+
+        root_path/
+        |-- input/      - place your static input files here before running
+        |-- pros/
+        |-- run/
+        |   |-- params.txt     - generated from the bundled template
+        |-- output/
+
+    Parameters
+    ----------
+    root_path : str
+        Root directory of the case. All sub-folders are created inside this path. Must end with a trailing slash (e.g. ``'path/to/case/'``).
+    dict_ini_data : dict
+        Case-level flags that override the package defaults in
+        ``xbeachpy/utils/defaults.py`` and are substituted into
+        ``params.txt``.  Typical keys:
+
+        - ``case_description`` - free-form label (not used by XBeach)
+        - ``act_morf`` - morphological updating (``0`` = off)
+        - ``act_sedtrans`` - sediment transport (``0`` = off)
+        - ``act_wavemodel`` - spectral wave model (``1`` = surfbeat)
+        - ``dims`` - number of dimensions (``2`` = 2D)
+
+    ini_date : datetime, optional
+        Simulation start date.  Used downstream by preprocessing and execution classes to slice forcing datasets and compute ``tstop``.
+    end_date : datetime, optional
+        Simulation end date.  Same usage as ``ini_date``.
+    """
+
+    def __init__(self, root_path, dict_ini_data, ini_date=None, end_date=None):
+
+        self.root_path = root_path
+        self.ini_date = ini_date
+        self.end_date = end_date
+        self.dict_ini_data = dict_ini_data
+        self.folder_names = ['input', 'pros', 'run', 'output']
+        self.dict_folders = {
+            name: f'{self.root_path}{name}/' for name in self.folder_names
+        }
+
+        print('*** Initializing XBeach model ***\n')
+
+    def _generate_baseline_XBeach(self, template_in, template_out, replacement_dict):
+        """
+        Render an XBeach configuration template and write the result to disk.
+
+        Uses :class:`string.Template` with ``safe_substitute`` so that any placeholder not present in *replacement_dict* is left unchanged rather than raising an error.
+
+        Parameters
+        ----------
+        template_in : str or Path
+            Path to the source template file (e.g. ``params_base.txt``).
+        template_out : str or Path
+            Destination path for the rendered file (e.g. ``run/params.txt``).
+        replacement_dict : dict
+            Key-value pairs used to fill ``$key`` placeholders inside the template.
+            Unmapped placeholders are preserved as-is.
+        """
+        template_text = Path(template_in).read_text()
+        filled_text = Template(template_text).safe_substitute(replacement_dict)
+        Path(template_out).write_text(filled_text)
+
+    def create_folders(self):
+        """
+        Create the full project folder structure.
+
+        **Step 1 - top-level directories**
+
+        Creates the four standard sub-directories under ``root_path``:
+        ``input/``, ``pros/``, ``run/``, and ``output/``.  On a re-run,
+        ``run/`` and ``output/`` are wiped with ``shutil.rmtree`` before being
+        recreated so that stale files from a previous execution do not pollute the new case. ``input/`` and ``pros/`` are always left untouched.
+
+        All directories are created with ``Path.mkdir(parents=True, exist_ok=True)``, so missing intermediate paths are handled automatically.
+        """
+        print('\n\t*** Creating project folder structure ***\n')
+
+        for folder_name in self.folder_names:
+            folder_path = Path(self.dict_folders[folder_name])
+            if folder_name in ['output', 'run'] and folder_path.exists():
+                shutil.rmtree(folder_path)
+            folder_path.mkdir(parents=True, exist_ok=True)
+
+    def replace_ini_data(self):
+        """
+        Copy the base ``params.txt`` template into ``run/`` and substitute case flags.
+
+        Locates the bundled ``params_base.txt`` template (under
+        ``data/model_config_templates/xbeach/``), merges the package defaults
+        from ``xbeachpy/utils/defaults.py`` with the user-supplied
+        ``dict_ini_data`` (user values take precedence), and writes the
+        rendered file to ``<run>/params.txt``.
+
+        All values in ``dict_ini_data`` are cast to ``str`` before substitution
+        as required by the :class:`string.Template` engine.
+
+        Must be called after :meth:`create_folders` so that ``run/`` exists.
+        """
+        print('\n\t*** Copying base XBeach configuration file into run folder ***\n')
+
+        self.script_dir = Path(__file__).resolve().parent
+        self.data_dir = self.script_dir.parent.parent.parent / 'data'
+
+        str_ini_data = {k: str(v) for k, v in self.dict_ini_data.items()}
+        merged = {**utils.defaults, **str_ini_data}
+
+        self._generate_baseline_XBeach(
+            f'{self.data_dir}/model_config_templates/xbeach/params_base.txt',
+            f'{self.dict_folders["run"]}params.txt',
+            merged
+        )
+\end{lstlisting}
+
+Private helper methods are defined to hide certain complex and internal logic while breaks some tasks into smaller parts. Instance methods are meant to be called in a sequence to replicate the staged workflow typically followed during numerical modelling. 
+
+\subsection{Unit testing}
+
+Part of the core functionalities in the source code have been verified using unit tests. These can be accessed through the \texttt{tests/} folder and follow the same directory structure as the library itself. They can be executed by running \verb|pytest --cov=oceanicospy tests/| from the root directory of the repository. The \texttt{-{-}cov} flag is recommended for a comprehensive coverage report.
+
+\section{Illustrative examples}
+
+% \textit{Provide at least one illustrative example to demonstrate the major
+% functions of your software/code.}
+
+The following example demonstrates the end-to-end workflow for configuring a one-dimensional (1D) nearshore hydrodynamic simulation using XBeach under surfbeat mode. The example chains different instantiated classes: \texttt{Initializer} creates the folder structure and stamps \texttt{params.txt} with case flags. \texttt{GridMaker} computes the cross-shore distance axis from two projected endpoints and writes the grid files. \texttt{BathyMaker} interpolates bed elevations from a raw XYZ file onto that grid. \texttt{WindForcing} and \texttt{WaterLevelForcing} fetch external forcing data (ERA5 winds via the CDS API and tide-gauge records from UHSLC) and convert them to XBeach-ready ASCII files. \texttt{BoundaryConditions} parses a SWAN spectral output file and generates the \texttt{.sp2} spectra at the offshore boundary per timestep. Finally, \texttt{CaseRunner} closes \texttt{params.txt} by writing the output variable selection, gauge positions, and computation timing. Each class replaces its own section of \texttt{params.txt} as it runs, so the file builds up incrementally across the workflow.
+               
+\begin{lstlisting}[language=Python]
+from oceanicospy.models import xbeachpy
+from datetime import datetime
+
+path_case = 'model_runs/1D_xbeach/'
+ini_case_data = dict(
+    case_description='1D profile Caribbean coast',
+    act_morf=0,
+    act_sedtrans=0,
+    act_wavemodel=1,
+    dims=1
+)
+# simulation period
+ini_date = datetime(2008, 11, 20, 11)
+end_date = datetime(2008, 11, 24, 21)
+
+# setting up simulation structure
+case = xbeachpy.Initializer(
+    root_path=path_case,
+    dict_ini_data=ini_case_data,
+    ini_date=ini_date,
+    end_date=end_date
+)
+
+# grid setup
+grid_params_case = dict(thetamin=-20, thetamax=160, dtheta=180, alfa = 161)
+case_grid = xbeachpy.preprocess.GridMaker(init=case,grid_params=grid_params_case)
+profile_axis = case_grid.build_profile.from_coordinates(
+    start = (4054866.827, 2962460.496),
+    end = (4051803.311, 2963542.255),
+    dx=5.0,
+    auto_extend=True,
+)
+case_grid.fill_grid_section()
+
+# bathymetry setup
+case_bathy = xbeachpy.preprocess.BathyMaker(init=case)
+case_bathy.build_z_from_bathy(xyz_filepath='topobathymetry.xyz', geometry_object=profile_axis)
+case_bathy.fill_bathy_section()
+
+# wind setup
+wind_dict = dict(
+    lon_ll_corner_wind=-82,
+    lat_ll_corner_wind=12.567536, 
+    nx_wind=1,
+    ny_wind=1,
+    dx_wind=0.025,
+    dy_wind=0.025
+)
+case_winds = xbeachpy.preprocess.WindForcing(
+    init=case,
+    wind_info=wind_dict,
+    use_link=False
+)
+case_winds.get_winds_from_ERA5(utc_offset_hours=-5, format_localtime=True)
+case_winds.write_ERA5_ascii(
+    era5_filename='winds_era5_localtime.nc',
+    ascii_filename='winds.wnd',
+    lon_target=-81.673937,
+    lat_target=12.567536
+)
+case_winds.fill_wind_section()
+
+# water level setup
+case_wl = xbeachpy.preprocess.WaterLevelForcing(init=case, use_link=False)
+df_wl = case_wl.get_waterlevel_from_UHSLC(station_id=737)
+# to correct the known -2 m datum shift for station 737
+correction_mask = (
+    (df_wl.index >= datetime(1997, 1, 1, 0)) &
+    (df_wl.index <= datetime(2018, 12, 31, 18))
+)
+df_wl.loc[correction_mask, 'depth[m]'] -= 2.0
+case_wl.write_UHSLC_ascii(df_wl, 'water_levels.wl')
+case_wl.fill_wl_section()
+
+# Boundary conditions
+case_bounds.spectra_from_swan(input_filename='SpecSWAN.out', 
+                              location_points=[(0,0)],
+                              point_indexes=[18])
+case_bounds.fill_boundaries_section()
+
+# Compilation setup
+comp_data_nonstat = dict(
+    tint_value=3600,    # output interval [s]
+    tintg_value=3600,   # global output interval [s]
+    tstart_value=3600.   # start time for outputs [s]
+)
+case_output = xbeachpy.execution.CaseRunner(
+    init=case,
+    dict_comp_data=comp_data_nonstat
+)
+case_output.write_output_file(filename='profile1D_Nov2008.nc')
+case_output.select_global_vars(list_vars=['zs', 'hh', 'zb0', 'H', 'u', 'urms'])
+case_output.write_output_points(filename='points_output.txt')
+case_output.select_point_vars(list_vars=['zs', 'H', 'urms', 'Sxx'])
+case_output.fill_computation_section()           \end{lstlisting}                            
+
+This example uses some input files that are expected to be placed in the \texttt{input/} folder for the simulation case: \verb|topobathymetry.xyz|, \verb|SpecSWAN.out|, and \verb|points_output.txt|. After running this set of commands, the configuration file for XBeach simulations (\texttt{params.txt}) will be completely set and a folder tree with the \texttt{input}, \texttt{output}, \texttt{pros}, and \texttt{run} directories will be populated with all the required information for the simulation. Once the model is run the outputs can be easily accessed with xarray and netCDF4. Figure \ref{fig:xbeach_1d_example} illustrates an example of a 1D XBeach simulation setup, including the cross-shore bathymetric profile, wave conditions, and the temporal evolution of $H_{rms}$ at selected output points.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figure2_illustrative_example.png}
+    \caption{Illustrative 1D XBeach simulation results. a) Surface elevation (dashed blue line) and Hrms (red line) along the profile. Two output points are selected (purple and green markers). Hrms time series for the two output points are shown in b).}
+    \label{fig:xbeach_1d_example}
+\end{figure}
+
+Readers are referred to the illustrative examples located in the \texttt{examples} folder in the package directory. The \texttt{gis}, \texttt{observations}, and \texttt{downloads} subpackages each contain one example, while the \texttt{analysis} and \texttt{models} subpackages provide several. For \texttt{swanpy}, two configurations are implemented for San Andrés Island in the Colombian Caribbean: i) a stationary case and ii) a non-stationary nested case for 2023. Similarly, \texttt{xbeachpy} includes two walkthrough examples: a 1D profile and a 2D domain. Each example is provided as an accessible Jupyter Notebook.
+
+\section{Impact}
+% \textit{This is the main section of the article and reviewers will weight it appropriately.
+% Please indicate:}
+% \begin{itemize}
+%     \item \textit{Any new research questions that can be pursued as a result of your software.}
+%     \item \textit{In what way, and to what extent, your software improves the pursuit of existing research questions.}
+%     \item \textit{Any ways in which your software has changed the daily practice of its users.}
+%     \item \textit{How widespread the use of the software is within and outside the intended user group (downloads, number of users if your software is a service, citable publications, etc.).}
+%     \item \textit{How the software is being used in commercial settings and/or how it has led to the creation of spin-off companies.}
+%     \end{itemize}
+% \textit{Please note that points 1 and 2 are best demonstrated by
+%   references to citable publications.}
+
+\textit{oceanicospy} facilitates the numerical wave and hydrodynamic modelling workflow, speeding up simulation setup and ultimately allowing researchers to focus on physical understanding and numerical improvements. For example, sensitivity analyses to evaluate the effects of different spatial, frequency-directional, and temporal resolutions can be easily implemented and reproduced. Similarly, the tool paves the way for testing different physical parameterizations without manual intervention in the design of simulation scenarios.
+
+This tool also accelerates the implementation of these models for operational purposes, enabling researchers to faster explore the predictability of various coastal variables and compare the performance of physics-based forecasting systems against data-driven systems.
+
+Furthermore, the integration of a comprehensive set of tasks typically performed within simulation workflows provides an accessible environment that interfaces these complex tools with beginner-friendly programming environments. This integration breaks down the technical barriers some users encounter when learning to use numerical models. In daily practice, this common framework fosters collaboration within and across coastal wave research groups, avoiding duplication of effort in improving modelling practices. New features are independently tested before being centralized and peer-reviewed through a version control system.
+
+\section{Conclusions}
+
+\textit{oceanicospy} provides a unified and a reproducible framework for coastal wave and hydrodynamics modelling workflow, by integrating typical and commonly chained tasks such as data retrieval, observational data processing, model configuration, and postprocessing analysis into a single Python environment. This scientific pipeline addresses a process that is typically complex, iterative and demands a comprehensive approach. The automation and standardization of those recurring tasks reduces repetitive manual work, minimizes configuration errors, and improves the reproducibility and transparency of numerical experiments. Its modular and object-oriented nature also facilitates collaboration, long-term maintenance, and the incorporation of new techniques into operational and research-oriented modelling pipelines.
+
+The framework bridges the gap between highly specialized numerical models and accessible scientific programming practices. Through the integration of established scientific Python libraries and dedicated wrappers for SWAN and XBeach, \textit{oceanicospy} enables users to automate complex workflows while maintaining flexibility for custom implementations.
+
+Numerical modelling at coastal scale is not limited to SWAN and XBeach models and adding other models would expand its use while preserving the existing framework and software pipeline. Furthermore, including support for retrieving data from other widely used reanalysis sources and data networks, as well as for reading data from additional sensors or reference models, would add significant value.
+
+\section*{Acknowledgements}
+\label{}
+% \textit{Optional. You can use this section to acknowledge colleagues who don’t qualify as a co-author but helped you in some way. }
+
+The authors acknowledge the technical support from Universidad Nacional de Colombia (Medellín and Caribbean campuses) and the Center of Excellence in Marine Science - CEMarin through the research project (in Spanish): \textit{“Fortalecimiento de la gestión del riesgo de desastres, a partir de la generación de conocimiento e innovación social para incrementar la capacidad de respuesta comunitaria, natural y económica del departamento Archipiélago de San Andres, Providencia y Santa Catalina - BPIN 2021000100041”}, funded by the Ministry of Science, Technology and Innovation through the Colombian General Royalty System (SGR).  Authors also thanks to Dr. Daniel Peláez and Eng. Alejandro Henao for providing initial input for refactored source code. 
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+
+During the preparation of this work the author(s) used Claude AI in order to proofread the code documentation. After using this tool/service, the author(s) reviewed and edited the content as needed and take(s) full responsibility for the content of the published article.
+
+%% The Appendices part is started with the command \appendix;
+%% appendix sections are then done as normal sections
+%% \appendix
+
+%% \section{}
+%% \label{}
+
+%% References:
+%% If you have bibdatabase file and want bibtex to generate the
+%% bibitems, please use
+%%
+
+\nocite{Ayala_etal2026}
+
+\bibliographystyle{elsarticle-num} 
+\bibliography{references}
+
+%% else use the following coding to input the bibitems directly in the
+%% TeX file.
+
+% \textit{If the software repository you used supplied a DOI or another
+% Persistent IDentifier (PID), please add a reference for your software
+% here. For more guidance on software citation, please see our guide for
+% authors or \href{https://f1000research.com/articles/9-1257/v2}{this
+%   article on the essentials of software citation by FORCE 11}, of
+% which Elsevier is a member.}
+
+% \large{\textbf{Reminder: Before you submit, please delete all 
+% the instructions in this document, 
+% including this paragraph. 
+% Thank you!}}
+
+\end{document}
+\endinput
+%%
+%% End of file `SoftwareX_article_template.tex'.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
