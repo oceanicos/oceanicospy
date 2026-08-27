@@ -40,7 +40,7 @@ class Vegetation():
         - ``'length'`` (*float*) — alongshore extent of the patch in metres.
     """
 
-    def __init__(self, dict_species, dict_locations, *args, **kwargs):
+    def __init__(self, dict_species, dict_locations, Cm, Kp, *args, **kwargs):
         """
         Parameters
         ----------
@@ -51,7 +51,7 @@ class Vegetation():
         """
         self.dict_species = dict_species
         self.dict_locations = dict_locations
-        self.dict_veggie = {}
+        self.dict_veggie = {'Cm': Cm, 'Kp': Kp}
 
     def definition_species(self):
         """
