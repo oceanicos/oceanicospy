@@ -9,7 +9,7 @@ format: revealjs
 ## What is `oceanicospy`?
 
 ::: {.incremental}
-- Open-source Python **framework** for coastal wave & hydrodynamic modelling workflows
+- Open-source Python **framework** for coastal wave and hydrodynamic modelling workflows
 - Standardizes the typical tasks from research groups in oceanography and coastal engineering.
 - Seven subpackages, one consistent design language across all of them
 - Built on top of well-supported libraries: `numpy`, `xarray`, `pandas`, `geopandas`, `scipy`, `matplotlib`, `wavespectra`, etc.
