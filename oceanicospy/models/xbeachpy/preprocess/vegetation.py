@@ -71,10 +71,10 @@ class Vegetation():
             for specie in self.dict_species.keys():
                 f.write(f'{specie}.txt\n')
 
-        self.dict_veggie = {
+        self.dict_veggie.update({
             'number_species': str(len(self.dict_species.keys())),
             'vegetation_file': 'veggielist.txt',
-        }
+        })
 
         for key, value in self.dict_veggie.items():
             self.dict_veggie[key] = str(value)

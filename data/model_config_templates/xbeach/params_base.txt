@@ -33,7 +33,7 @@ posdwn    = $posdwn
 
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-wbctype    = swan
+wbctype    = $bctype
 bcfile     = $bcfilepath
 wbcversion = $w_bc_version
 nspectrumloc = $n_spectrum_loc
