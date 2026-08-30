@@ -442,8 +442,8 @@
   <meta name="generator" content="quarto-1.9.38">
 
   <meta name="author" content="OCEANICOS developer team">
-  <meta name="dcterms.date" content="2026-08-28">
-  <title>oceanicospy 0.1.0</title>
+  <meta name="dcterms.date" content="2026-08-30">
+  <title>oceanicospy 0.1.0: release and new directions</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -1054,7 +1054,7 @@ margin-right: 0; }
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">oceanicospy 0.1.0</h1>
+  <h1 class="title">oceanicospy 0.1.0: release and new directions</h1>
   <p class="subtitle">Kick-off presentation: there was once a dream that was Rome</p>
 
 <div class="quarto-title-authors">
@@ -1065,14 +1065,18 @@ OCEANICOS developer team
 </div>
 </div>
 
-  <p class="date">2026-08-28</p>
+  <p class="date">2026-08-30</p>
 </section>
 <section id="what-is-oceanicospy" class="slide level2">
 <h2>What is <code>oceanicospy</code>?</h2>
 <ul>
-<li class="fragment">Open-source Python <strong>framework</strong> for coastal wave and hydrodynamic modelling workflows</li>
+<li class="fragment">Open-source Python <strong>framework</strong> for workflows in coastal and ocean sciences:
+<ul>
+<li class="fragment">wave and hydrodynamic modelling.</li>
+<li class="fragment">data analysis.</li>
+</ul></li>
 <li class="fragment">Standardizes the typical tasks from research groups in oceanography and coastal engineering.</li>
-<li class="fragment">Seven subpackages, one consistent design language across all of them</li>
+<li class="fragment">Uses one consistent design language across all the library’s structure.</li>
 <li class="fragment">Built on top of well-supported libraries: <code>numpy</code>, <code>xarray</code>, <code>pandas</code>, <code>geopandas</code>, <code>scipy</code>, <code>matplotlib</code>, <code>wavespectra</code>, etc.</li>
 </ul>
 <aside class="notes">
@@ -1091,16 +1095,16 @@ display:block!important;
 </section>
 <section id="why-build-this" class="slide level2">
 <h2>Why build this?</h2>
-<p>Coastal numerical modelling (SWAN, XBeach, Delft3D, etc.) is a workflow, not a single script, this workflow is:</p>
+<p>Ocean/coastal numerical modelling and data analysis are workflows, not single scripts, those workflows typically are:</p>
 <ul>
 <li class="fragment"><strong>Iterative</strong> — calibration &amp; validation cycles run the same setup over and over, duplicating data and manual steps.</li>
 <li class="fragment"><strong>Complex</strong> — models demand highly specific formats; setup is error-prone and has a steep learning curve for newcomers.</li>
 <li class="fragment"><strong>Comprehensive</strong> — data retrieval, in-situ data processing, time-series analysis, and model configuration are usually hardcoded per research group, with no shared standard.</li>
 </ul>
-<p>Existing tools tend to be either too narrow (one task) or too rigid to generalize — <code>oceanicospy</code> targets the whole pipeline.</p>
+<p>Existing tools tend to be either too narrow (one task) or too rigid to generalize — <code>oceanicospy</code> aims to target the whole pipeline.</p>
 </section>
-<section id="high-level-structure" class="slide level2">
-<h2>High-level structure</h2>
+<section id="current-structure" class="slide level2">
+<h2>Current structure</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource tree number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href></a>oceanicospy/</span>
 <span id="cb1-2"><a href></a>├── analysis/         temporal &amp; spectral analysis (WaveSpectralAnalyzer, WaveTemporalAnalyzer, etc.)</span>
 <span id="cb1-3"><a href></a>├── downloads/        ERA5 · Copernicus Marine (CMDS) · UHSLC fetchers</span>
@@ -1118,15 +1122,17 @@ display:block!important;
 <ul>
 <li class="fragment">Temporal, spectral &amp; statistical characterization of waves:
 <ul>
-<li class="fragment">spectral: FFT, Welch method, wavelet transform</li>
+<li class="fragment">spectral: FFT, Welch method, wavelet transform, tidal decomposition</li>
 <li class="fragment">temporal: zero-upcrossing, Empirical Mode Decomposition (EMD)</li>
-<li class="fragment">extremes: peaks-over-threshold (POT), tidal decomposition, climatology</li>
+<li class="fragment">extremes: peaks-over-threshold (POT)</li>
 </ul></li>
 </ul>
 <p>Everything retrieved or derived is transformed to the same conventions used across the library — no separate glue code per data source.</p>
+<p><em>More techniques in ocean and coastal sciences are welcome: data assimilation, PCA, climatology, etc.</em></p>
 </section>
 <section id="downloads" class="slide level2">
 <h2><code>downloads</code></h2>
+<p>This module aim to handle the download process from common sources:</p>
 <ul>
 <li class="fragment">Three fetchers, one standardized output:
 <ul>
@@ -1135,20 +1141,31 @@ display:block!important;
 <li class="fragment"><code>UHSLCDownloader</code> → research-quality tide-gauge records from the University of Hawaii Sea Level Center</li>
 </ul></li>
 </ul>
+<p><strong>AVISO+, SAR, GFS, and many more data sources are still to be included!</strong></p>
 </section>
-<section id="observations-one-reader-family-per-instrument-class" class="slide level2">
-<h2><code>observations</code> — one reader family per instrument class</h2>
+<section id="gis" class="slide level2">
+<h2>Gis</h2>
+<p>To be implemented!</p>
+</section>
+<section class="slide level2">
+
+</section>
+<section id="observations" class="slide level2">
+<h2><code>observations</code></h2>
+<p>This subpackage centralizes the scripts required to read data from multiple devices. This follows one reader family per instrument class</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource tree number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a href></a>observations/</span>
 <span id="cb2-2"><a href></a>├── pressure_sensors/   BaseLogger (ABC)  →  RBR · AQUAlogger · Bluelog</span>
 <span id="cb2-3"><a href></a>├── ctd/                CTDBase (ABC)     →  CastawayCTD · SeaSunMarineTechCTD</span>
 <span id="cb2-4"><a href></a>├── weather_stations/   WeatherStationBase (ABC) → DavisVantagePro · WeatherSens · Rainwise</span>
-<span id="cb2-5"><a href></a>├── awac.py             AWAC</span>
-<span id="cb2-6"><a href></a>├── buoy.py             WaveBuoy</span>
+<span id="cb2-5"><a href></a>├── awac.py             AWAC (currently Nortek)</span>
+<span id="cb2-6"><a href></a>├── buoy.py             WaveBuoy (currently Spotter)</span>
 <span id="cb2-7"><a href></a>└── hobo.py             HOBO_Temp · HOBO_TempCond</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>There are some <strong>abstract bases per instrument family</strong>, each base represents the typical behaviour of a instrument and then there are concrete subclasses per vendor/model.</p>
+<p><strong>Lab equipment and echosounders would be great additions to this.</strong></p>
 </section>
 <section id="models-the-automation-core" class="slide level2">
 <h2><code>models</code> — the automation core</h2>
+<p>We encapsulate part of the modelling workflow for the following models:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource tree number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href></a>models/</span>
 <span id="cb3-2"><a href></a>├── swanpy/</span>
 <span id="cb3-3"><a href></a>│   ├── initializer.py        Initializer</span>
@@ -1162,20 +1179,39 @@ display:block!important;
 <span id="cb3-11"><a href></a>    │                         WaterLevelForcing · BoundaryConditions</span>
 <span id="cb3-12"><a href></a>    ├── execution/            CaseRunner</span>
 <span id="cb3-13"><a href></a>    └── utils/                defaults (params.txt fallback values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>swanpy</code> and <code>xbeachpy</code> <strong>share the same subpackage structure</strong> on purpose and it follows the common steps for modelling worflows</p>
+<p><code>swanpy</code> and <code>xbeachpy</code> currently <strong>share the same subpackage structure</strong> on purpose and it follows the common steps for modelling worflows</p>
+<p><em>WW3, DELFT3D, CROCO, SWASH, or any other model can have its own tool and easily included</em></p>
 </section>
-<section id="programming-paradigm-object-oriented-design" class="slide level2">
-<h2>Programming paradigm: Object-Oriented Design</h2>
-<p><code>oceanicospy</code> leans on OOP in two complementary ways:</p>
+<section class="slide level2">
+
+</section>
+<section id="plots-and-utils" class="slide level2">
+<h2><code>plots</code> and <code>utils</code></h2>
+<ul>
+<li class="fragment"><strong><code>plots</code></strong> — house style + quick plotting helpers:
+<ul>
+<li class="fragment"><code>style</code> sets one consistent <code>matplotlib</code> look (fonts, sizes, no grid) applied library-wide on import.</li>
+<li class="fragment"><code>basic_plots</code>: <code>plot_wave_parameters</code>, <code>plot_1d_wave_spectra</code>, <code>plot_wind_rose</code> — ready-made figures from the standard data conventions.</li>
+</ul></li>
+<li class="fragment"><strong><code>utils</code></strong> — shared helpers used across every subpackage:
+<ul>
+<li class="fragment"><code>constants</code> (gravity, water density, atmospheric pressure), <code>wave_props</code>, <code>wind</code>, <code>waterlevel</code>, <code>metrics</code> (e.g. <code>stats</code> for model-vs-observation skill scores), <code>files</code> (template filling, symlinks, file patching).</li>
+</ul></li>
+</ul>
+<p>Both subpackages back the rest of the library — figures and formulas stay consistent no matter which subpackage calls them.</p>
+</section>
+<section id="how-have-we-built-it-object-oriented-design-oop" class="slide level2">
+<h2>How have we built it? Object-Oriented Design (OOP)</h2>
+<p><code>oceanicospy</code> leans on OOP, which is an approach different than functions. This library follows it in two complementary ways:</p>
 <ol type="1">
 <li class="fragment"><strong>Inheritance</strong> — abstract base classes define a stable <em>contract</em> per family (instruments), subclasses fill in the vendor-specific parsing.</li>
-<li class="fragment"><strong>Composition / shared state</strong> — one <em>case</em> object is created once and passed into every collaborating class (models), instead of every class re-deriving the same paths and metadata.</li>
+<li class="fragment"><strong>Composition / shared state</strong> — one <em>case</em> object is created once and passed into every modelling step.</li>
 </ol>
 <p>Both patterns keep user-facing code declarative: build small config <code>dicts</code>, hand them to a class, call a couple of methods.</p>
 </section>
-<section id="pattern-1-inheritance-observations" class="slide level2">
-<h2>Pattern 1 — Inheritance (<code>observations</code>)</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href></a><span class="kw">class</span> BaseLogger(ABC):           <span class="co"># oceanicospy/observations/pressure_sensors/pressure_sensor_base.py</span></span>
+<section id="pattern-1-inheritance-observations-example" class="slide level2">
+<h2>Pattern 1 — Inheritance (<code>observations</code> example)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href></a><span class="kw">class</span> BaseLogger(ABC):   <span class="co"># oceanicospy/observations/pressure_sensors/pressure_sensor_base.py</span></span>
 <span id="cb4-2"><a href></a>    <span class="kw">def</span> get_clean_records(<span class="va">self</span>, detrended<span class="op">=</span><span class="va">True</span>):</span>
 <span id="cb4-3"><a href></a>        df <span class="op">=</span> <span class="va">self</span>.get_raw_records()</span>
 <span id="cb4-4"><a href></a>        df <span class="op">=</span> <span class="va">self</span>._standardize_columns(df)   <span class="co"># ← subclass-defined</span></span>
@@ -1190,13 +1226,13 @@ display:block!important;
 <span id="cb4-13"><a href></a>    <span class="at">@abstractmethod</span></span>
 <span id="cb4-14"><a href></a>    <span class="kw">def</span> _assign_burst_id(<span class="va">self</span>, df): ...</span>
 <span id="cb4-15"><a href></a></span>
-<span id="cb4-16"><a href></a><span class="kw">class</span> RBR(BaseLogger):        ...            <span class="co"># implements the vendor-specific bits</span></span>
+<span id="cb4-16"><a href></a><span class="kw">class</span> RBR(BaseLogger):        ...            <span class="co"># implements the vendor-specific class</span></span>
 <span id="cb4-17"><a href></a><span class="kw">class</span> AQUAlogger(BaseLogger): ...</span>
 <span id="cb4-18"><a href></a><span class="kw">class</span> Bluelog(BaseLogger):    ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>get_clean_records()</code> is the same call for every sensor — a <strong>template-method</strong> pattern.</p>
 </section>
-<section id="pattern-2-composition-models" class="slide level2">
-<h2>Pattern 2 — Composition (<code>models</code>)</h2>
+<section id="pattern-2-composition-models-example" class="slide level2">
+<h2>Pattern 2 — Composition (<code>models</code> example)</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href></a>case <span class="op">=</span> Initializer(root_path<span class="op">=</span>path_case, dict_ini_data<span class="op">=</span>ini_case_data)</span>
 <span id="cb5-2"><a href></a>case.create_folders()</span>
 <span id="cb5-3"><a href></a>case.replace_ini_data()</span>
@@ -1212,10 +1248,10 @@ display:block!important;
 <li class="fragment">Each class only adds <em>its own</em> section to the model config file (<code>run.swn</code> / <code>params.txt</code>)</li>
 </ul>
 </section>
-<section id="quick-example-swanpy-2d-stationary-case" class="slide level2">
-<h2>Quick example — <code>swanpy</code>, 2D stationary case</h2>
+<section id="quick-example-swanpy" class="slide level2">
+<h2>Quick example — <code>swanpy</code></h2>
 <p>San Andrés island — 2D spherical SWAN grid, side boundary forcing</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-code-line-numbers="1-2|4-11|13-16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href></a><span class="im">from</span> oceanicospy.models.swanpy <span class="im">import</span> Initializer</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-code-line-numbers="1|2-5|6-8|9-11|13-16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href></a><span class="im">from</span> oceanicospy.models.swanpy <span class="im">import</span> Initializer</span>
 <span id="cb6-2"><a href></a><span class="im">from</span> oceanicospy.models.swanpy.preprocess <span class="im">import</span> (</span>
 <span id="cb6-3"><a href></a>    GridMaker, BathyMaker, WindForcing,</span>
 <span id="cb6-4"><a href></a>    BottomFrictionProcessor, BoundaryConditions,</span>
@@ -1371,25 +1407,15 @@ BOUN SIDE E CLOCKW CON PAR 1.7 9 90 2</code></pre>
 <span id="cb14-5"><a href></a><span class="fu">git</span> clone git@github.com:oceanicos-dev-org/oceanicospy.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li class="fragment">License: GNU GPL · versioned with <code>git</code> · PRs from a forked copy welcome</li>
-<li class="fragment">Docs: <code>oceanicospy.readthedocs.io</code></li>
+<li class="fragment">Docs: <a href="https://oceanicospy.readthedocs.io/en/stable/">oceanicospy.readthedocs.io/en/stable/</a></li>
 <li class="fragment">Core functionality is covered by <code>tests/</code>, mirroring the library’s own directory structure:</li>
 </ul>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href></a><span class="ex">pytest</span> <span class="at">--cov</span><span class="op">=</span>oceanicospy tests/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="design-takeaways" class="slide level2">
-<h2>Design takeaways</h2>
-<ul>
-<li class="fragment"><strong>Consistent shape</strong>: <code>swanpy</code> and <code>xbeachpy</code> both split into <code>preprocess/</code> → <code>execution/</code> (→ <code>postprocess/</code>), each class owning one section of the model config file</li>
-<li class="fragment"><strong>Config as data</strong>: plain <code>dicts</code> in, template files (<code>run.swn</code>, <code>params.txt</code>) out via <code>string.Template</code></li>
-<li class="fragment"><strong>Composition over inheritance</strong> for model workflows; <strong>inheritance</strong> (ABCs) where a stable per-vendor makes sense (instruments)</li>
-<li class="fragment">Results come back as <code>xarray</code>/<code>pandas</code> objects — no lock-in to a specific plotting stack</li>
-</ul>
-</section>
 <section id="why-it-matters" class="slide level2">
 <h2>Why it matters</h2>
 <ul>
-<li class="fragment">Faster iteration on <strong>sensitivity analyses</strong> — spatial, frequency-directional &amp; temporal resolution — without re-plumbing scripts each time</li>
-<li class="fragment">Lowers the technical barrier for newcomers learning SWAN/XBeach — same shape, less bespoke glue code</li>
+<li class="fragment">Lowers the technical barrier for newcomers learning numerical models or research tools.</li>
 <li class="fragment">A shared framework across the research group avoids duplicating effort every time modelling practices improve</li>
 <li class="fragment">Not limited to SWAN &amp; XBeach — the pipeline is designed so new models, data sources, and instruments can slot into the same shape</li>
 </ul>

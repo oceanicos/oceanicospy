@@ -1,5 +1,5 @@
 ---
-title: "oceanicospy 0.1.0"
+title: "oceanicospy 0.1.0: release and new directions"
 subtitle: "Kick-off presentation: there was once a dream that was Rome"
 author: "OCEANICOS developer team"
 date: last-modified
@@ -9,9 +9,11 @@ format: revealjs
 ## What is `oceanicospy`?
 
 ::: {.incremental}
-- Open-source Python **framework** for coastal wave and hydrodynamic modelling workflows
+- Open-source Python **framework** for workflows in coastal and ocean sciences:
+    - wave and hydrodynamic modelling.
+    - data analysis.
 - Standardizes the typical tasks from research groups in oceanography and coastal engineering.
-- Seven subpackages, one consistent design language across all of them
+- Uses one consistent design language across all the library's structure.
 - Built on top of well-supported libraries: `numpy`, `xarray`, `pandas`, `geopandas`, `scipy`, `matplotlib`, `wavespectra`, etc.
 :::
 
@@ -23,19 +25,20 @@ Framing slide — set the scope before diving into structure.
 
 ## Why build this?
 
-Coastal numerical modelling (SWAN, XBeach, Delft3D, etc.) is a workflow, not a single script, this workflow is:
+Ocean/coastal numerical modelling and data analysis are workflows, not single scripts, those workflows typically are:
 
 ::: {.incremental}
+
 - **Iterative** — calibration & validation cycles run the same setup over and over, duplicating data and manual steps.
 - **Complex** — models demand highly specific formats; setup is error-prone and has a steep learning curve for newcomers.
 - **Comprehensive** — data retrieval, in-situ data processing, time-series analysis, and model configuration are usually hardcoded per research group, with no shared standard.
-:::
 
-Existing tools tend to be either too narrow (one task) or too rigid to generalize — `oceanicospy` targets the whole pipeline.
+Existing tools tend to be either too narrow (one task) or too rigid to generalize — `oceanicospy` aims to target the whole pipeline.
+:::
 
 ---
 
-## High-level structure
+## Current structure
 
 ```{.tree}
 oceanicospy/
@@ -58,17 +61,21 @@ Every subpackage is a Python package with its own `__init__.py` re-exporting its
 
 ::: {.incremental}
 - Temporal, spectral & statistical characterization of waves:
-  - spectral: FFT, Welch method, wavelet transform
+  - spectral: FFT, Welch method, wavelet transform, tidal decomposition
   - temporal: zero-upcrossing, Empirical Mode Decomposition (EMD)
-  - extremes: peaks-over-threshold (POT), tidal decomposition, climatology
-:::
+  - extremes: peaks-over-threshold (POT)
 
 Everything retrieved or derived is transformed to the same conventions used across 
 the library — no separate glue code per data source.
 
+*More techniques in ocean and coastal sciences are welcome: data assimilation, PCA, climatology, etc.*
+:::
+
 ---
 
 ## `downloads` 
+
+This module aim to handle the download process from common sources:
 
 ::: {.incremental}
 - Three fetchers, one standardized output:
@@ -76,25 +83,42 @@ the library — no separate glue code per data source.
   - `CMDSDownloader` → CMEMS global wave/wind fields via the Copernicus Marine Toolbox
   - `UHSLCDownloader` → research-quality tide-gauge records from the University of Hawaii Sea Level Center
 :::
+
+**AVISO+, SAR, GFS, and many more data sources are still to be included!**
+
 ---
 
-## `observations` — one reader family per instrument class
+## Gis
+
+To be implemented!
+
+---
+
+---
+
+## `observations`
+This subpackage centralizes the scripts required to read data from multiple devices.
+This follows one reader family per instrument class
 
 ```{.tree}
 observations/
 ├── pressure_sensors/   BaseLogger (ABC)  →  RBR · AQUAlogger · Bluelog
 ├── ctd/                CTDBase (ABC)     →  CastawayCTD · SeaSunMarineTechCTD
 ├── weather_stations/   WeatherStationBase (ABC) → DavisVantagePro · WeatherSens · Rainwise
-├── awac.py             AWAC
-├── buoy.py             WaveBuoy
+├── awac.py             AWAC (currently Nortek)
+├── buoy.py             WaveBuoy (currently Spotter)
 └── hobo.py             HOBO_Temp · HOBO_TempCond
 ```
 There are some **abstract bases per instrument family**, each base represents the typical behaviour of a instrument 
 and then there are concrete subclasses per vendor/model.
 
+**Lab equipment and echosounders would be great additions to this.**
+
 ---
 
 ## `models` — the automation core
+
+We encapsulate part of the modelling workflow for the following models:
 
 ```{.tree}
 models/
@@ -111,29 +135,46 @@ models/
     ├── execution/            CaseRunner
     └── utils/                defaults (params.txt fallback values)
 ```
-
-`swanpy` and `xbeachpy` **share the same subpackage structure** on purpose and 
+`swanpy` and `xbeachpy` currently **share the same subpackage structure** on purpose and 
 it follows the common steps for modelling worflows
+
+*WW3, DELFT3D, CROCO, SWASH, or any other model can have its own tool and easily included*
 
 ---
 
-## Programming paradigm: Object-Oriented Design
+---
 
-`oceanicospy` leans on OOP in two complementary ways:
+## `plots` and `utils`
+
+::: {.incremental}
+- **`plots`** — house style + quick plotting helpers:
+  - `style` sets one consistent `matplotlib` look (fonts, sizes, no grid) applied library-wide on import.
+  - `basic_plots`: `plot_wave_parameters`, `plot_1d_wave_spectra`, `plot_wind_rose` — ready-made figures from the standard data conventions.
+- **`utils`** — shared helpers used across every subpackage:
+  - `constants` (gravity, water density, atmospheric pressure), `wave_props`, `wind`, `waterlevel`, `metrics` (e.g. `stats` for model-vs-observation skill scores), `files` (template filling, symlinks, file patching).
+
+Both subpackages back the rest of the library — figures and formulas stay consistent no matter which subpackage calls them.
+:::
+
+---
+
+## How have we built it? Object-Oriented Design (OOP)
+
+`oceanicospy` leans on OOP, which is an approach different than functions. This library follows it in two complementary ways:
 
 ::: {.incremental}
 1. **Inheritance** — abstract base classes define a stable *contract* per family (instruments), subclasses fill in the vendor-specific parsing.
-2. **Composition / shared state** — one *case* object is created once and passed into every collaborating class (models), instead of every class re-deriving the same paths and metadata.
+2. **Composition / shared state** — one *case* object is created once and passed into every modelling step.
 :::
 
 Both patterns keep user-facing code declarative: build small config `dicts`, hand them to a class, call a couple of methods.
 
 ---
 
-## Pattern 1 — Inheritance (`observations`)
+## Pattern 1 — Inheritance (`observations` example)
 
 ```{.python}
-class BaseLogger(ABC):           # oceanicospy/observations/pressure_sensors/pressure_sensor_base.py
+class BaseLogger(ABC):   # oceanicospy/observations/pressure_sensors/pressure_sensor_base.py
     def get_clean_records(self, detrended=True):
         df = self.get_raw_records()
         df = self._standardize_columns(df)   # ← subclass-defined
@@ -148,7 +189,7 @@ class BaseLogger(ABC):           # oceanicospy/observations/pressure_sensors/pre
     @abstractmethod
     def _assign_burst_id(self, df): ...
 
-class RBR(BaseLogger):        ...            # implements the vendor-specific bits
+class RBR(BaseLogger):        ...            # implements the vendor-specific class
 class AQUAlogger(BaseLogger): ...
 class Bluelog(BaseLogger):    ...
 ```
@@ -157,7 +198,7 @@ class Bluelog(BaseLogger):    ...
 
 ---
 
-## Pattern 2 — Composition (`models`)
+## Pattern 2 — Composition (`models` example)
 
 ```{.python}
 case = Initializer(root_path=path_case, dict_ini_data=ini_case_data)
@@ -179,11 +220,11 @@ case_run    = CaseRunner(init=case, dict_comp_data=comp_data)
 
 ---
 
-## Quick example — `swanpy`, 2D stationary case
+## Quick example — `swanpy`
 
 San Andrés island — 2D spherical SWAN grid, side boundary forcing
 
-```{.python code-line-numbers="1-2|4-11|13-16"}
+```{.python code-line-numbers="1|2-5|6-8|9-11|13-16"}
 from oceanicospy.models.swanpy import Initializer
 from oceanicospy.models.swanpy.preprocess import (
     GridMaker, BathyMaker, WindForcing,
@@ -379,7 +420,7 @@ git clone git@github.com:oceanicos-dev-org/oceanicospy.git
 
 ::: {.incremental}
 - License: GNU GPL · versioned with `git` · PRs from a forked copy welcome
-- Docs: `oceanicospy.readthedocs.io`
+- Docs: [oceanicospy.readthedocs.io/en/stable/](https://oceanicospy.readthedocs.io/en/stable/)
 - Core functionality is covered by `tests/`, mirroring the library's own directory structure:
 
 ```{.bash}
@@ -389,22 +430,10 @@ pytest --cov=oceanicospy tests/
 
 ---
 
-## Design takeaways
-
-::: {.incremental}
-- **Consistent shape**: `swanpy` and `xbeachpy` both split into `preprocess/` → `execution/` (→ `postprocess/`), each class owning one section of the model config file
-- **Config as data**: plain `dicts` in, template files (`run.swn`, `params.txt`) out via `string.Template`
-- **Composition over inheritance** for model workflows; **inheritance** (ABCs) where a stable per-vendor makes sense (instruments)
-- Results come back as `xarray`/`pandas` objects — no lock-in to a specific plotting stack
-:::
-
----
-
 ## Why it matters
 
 ::: {.incremental}
-- Faster iteration on **sensitivity analyses** — spatial, frequency-directional & temporal resolution — without re-plumbing scripts each time
-- Lowers the technical barrier for newcomers learning SWAN/XBeach — same shape, less bespoke glue code
+- Lowers the technical barrier for newcomers learning numerical models or research tools.
 - A shared framework across the research group avoids duplicating effort every time modelling practices improve
 - Not limited to SWAN & XBeach — the pipeline is designed so new models, data sources, and instruments can slot into the same shape
 :::
