@@ -94,8 +94,6 @@ To be implemented!
 
 ---
 
----
-
 ## `observations`
 This subpackage centralizes the scripts required to read data from multiple devices.
 This follows one reader family per instrument class
@@ -139,8 +137,6 @@ models/
 it follows the common steps for modelling worflows
 
 *WW3, DELFT3D, CROCO, SWASH, or any other model can have its own tool and easily included*
-
----
 
 ---
 
@@ -458,3 +454,4 @@ Open a pull request from your fork against `main` — a maintainer will review a
 
 Questions, feedback, and contributions welcome.
 
+# Thanks!
