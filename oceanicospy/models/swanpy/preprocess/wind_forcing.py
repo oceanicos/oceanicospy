@@ -81,7 +81,8 @@ class WindForcing:
         v10 = ds_era5.variables['v10'].values
         u10 = ds_era5.variables['u10'].values
         time = pd.to_datetime(ds_era5.variables['valid_time'].values)
-        time_to_write = time.format(formatter=lambda x: x.strftime('%Y%m%d.%H%M'))
+        # time_to_write = time.format(formatter=lambda x: x.strftime('%Y%m%d.%H%M'))
+        time_to_write = time.strftime('%Y%m%d.%H%M')
 
         file = open(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{ascii_filename}','w')
         for idx,t in enumerate(time_to_write):
