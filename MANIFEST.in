@@ -1,0 +1,11 @@
+# Top-level metadata
+include README.md
+include LICENSE
+include CHANGELOG.md
+include pyproject.toml
+
+# Model configuration templates (required at runtime by xbeachpy and swanpy)
+recursive-include data/model_config_templates *
+
+# Font files bundled with the plots subpackage
+recursive-include oceanicospy/plots *.ttf

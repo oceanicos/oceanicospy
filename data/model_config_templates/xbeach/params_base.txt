@@ -1,0 +1,65 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% XBeach parameter settings input file                                     %%%
+%%%                                                                          %%%
+%%% date:     30-May-24 	                                                 %%%
+%%% function: manual   
+%%% case:     $case_description                                               %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Physics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+flow = $act_flow
+morphology = $act_morf
+sedtrans = $act_sedtrans
+swrunup = $act_swrunup
+wavemodel = $act_wavemodel
+vegetation = $act_veg
+wind = $act_wnd
+
+%%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+xfile     = $xfilepath
+yfile     = $yfilepath
+depfile   = $depfilepath
+nx        = $meshes_x
+ny        = $meshes_y
+vardx     = 1
+thetamin  = $thetamin
+thetamax  = $thetamax
+dtheta    = $dtheta
+thetanaut = 1
+alfa      = $alfa
+
+%%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+wbctype    = swan
+bcfile     = $bcfilepath
+wbcversion = $w_bc_version
+nspectrumloc = $n_spectrum_loc
+
+%%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+windfile     = $windfilepath
+
+%%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tideloc      = 1
+zs0file      = $sealevelfilepath
+
+%%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tstart       = 0
+CFL          = 0.7
+tstop        = $tstop_value
+tstart       = $tstart_value
+tint         = $tint_value
+tintg        = $tintg_value
+
+%%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+outputformat = netcdf
+ncfilename = $outputfilepath
+
+nglobalvar   = $len_global_vars
+$global_vars
+
+npoints = $len_points
+$string_points
+
+npointvar    = $len_point_vars
+$point_vars
