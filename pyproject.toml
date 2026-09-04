@@ -68,6 +68,10 @@ slides = [
   "quarto-cli>=1.6",
   "jupyter>=1.1",
 ]
+sfincs = [
+  "hydromt_sfincs>=1.2.2",
+  "pyswmm>=2.1.0",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
