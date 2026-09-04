@@ -307,6 +307,7 @@ class BoundaryConditions:
         self.number_spectrum_locs = len(self.dataset.site)
 
         self.dict_boundaries = {
+            'bctype': 'swan',
             'w_bc_version': 3,
             'n_spectrum_loc': self.number_spectrum_locs,
             'bcfilepath': 'bounds_conds/loclist.txt',
@@ -320,6 +321,32 @@ class BoundaryConditions:
 
         self._write_loclist(location_points)
 
+    def _write_parametric_file(self, method, filename, wave_params):
+        filepath=f"{self.init.dict_folders['run']}{filename}"
+        if method == 'jons':
+            for k in ['Hm0','Tp','dir']:
+                if k not in wave_params.keys():
+                    raise ValueError(f"A values for {k} was not defined")
+
+            with open(filepath, "w") as fjon:
+                fjon.write(f"Hm0 = {wave_params['Hm0']}\nTp = {wave_params['Tp']}\nmainang ={wave_params['dir']}")
+        elif method == 'jonstable':
+            with open(filepath, "w") as fjon:
+                for t in wave_params.keys():
+                    fjon.write(f"{wave_params[t]['Hm0']} {wave_params[t]['Tp']} {wave_params[t]['dir']} 3.3 10 {wave_params[t]['dt']} 1\n")
+                
+            
+
+    def parametric_jonswap(self, method, wave_params, txt_name='jonswap.txt'):
+        "accepted methods jons, jonstable"
+        self._write_parametric_file(method, txt_name, wave_params)
+        self.dict_boundaries = {
+            'bctype': method,
+            'w_bc_version': 3,
+            'n_spectrum_loc': 0,
+            'bcfilepath': txt_name,
+            }
+        
     def fill_boundaries_section(self):
         """
         Write the boundary-condition parameters to ``params.txt``.

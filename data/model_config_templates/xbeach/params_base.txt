@@ -13,6 +13,7 @@ sedtrans = $act_sedtrans
 swrunup = $act_swrunup
 wavemodel = $act_wavemodel
 vegetation = $act_veg
+porcanflow = $act_porcanflow
 wind = $act_wnd
 
 %%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,10 +29,11 @@ thetamax  = $thetamax
 dtheta    = $dtheta
 thetanaut = 1
 alfa      = $alfa
+posdwn    = $posdwn
 
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-wbctype    = swan
+wbctype    = $bctype
 bcfile     = $bcfilepath
 wbcversion = $w_bc_version
 nspectrumloc = $n_spectrum_loc
@@ -40,8 +42,16 @@ nspectrumloc = $n_spectrum_loc
 windfile     = $windfilepath
 
 %%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tideloc      = 1
+tideloc      = $act_tide
 zs0file      = $sealevelfilepath
+
+%%% Vegetation
+nveg = $number_species
+vegcanflo = $act_vegcanflow
+veggiefile = $vegetation_file
+veggiemapfile = $vegetation_map_file
+Cm = $Cm
+Kp = $Kp
 
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0
